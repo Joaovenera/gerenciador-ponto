@@ -1,0 +1,130 @@
+registro-ponto-app/
+├── backend/
+│   ├── src/
+│   │   ├── config/
+│   │   │   ├── database.js       # Configuração do SQLite
+│   │   │   └── auth.js           # Configuração de autenticação (JWT)
+│   │   ├── controllers/
+│   │   │   ├── authController.js
+│   │   │   ├── funcionarioController.js
+│   │   │   ├── pontoController.js
+│   │   │   ├── relatorioController.js
+│   │   │   └── utilsController.js
+│   │   ├── middlewares/
+│   │   │   ├── auth.js           # Middleware de autenticação
+│   │   │   ├── admin.js          # Middleware para verificar permissões de admin
+│   │   │   └── validation.js     # Validação de dados de entrada
+│   │   ├── models/
+│   │   │   ├── Usuario.js        # Modelo para autenticação
+│   │   │   ├── Funcionario.js    # Modelo de funcionário
+│   │   │   └── Ponto.js          # Modelo de registro de ponto
+│   │   ├── routes/
+│   │   │   ├── v1/              # API Versioning
+│   │   │   │   ├── auth.js
+│   │   │   │   ├── funcionarios.js
+│   │   │   │   ├── pontos.js
+│   │   │   │   ├── relatorios.js
+│   │   │   │   └── utils.js
+│   │   │   └── index.js         # Arquivo de rotas principal
+│   │   ├── services/
+│   │   │   ├── authService.js
+│   │   │   ├── funcionarioService.js
+│   │   │   ├── pontoService.js
+│   │   │   ├── relatorioService.js
+│   │   │   ├── qrcodeService.js
+│   │   │   └── gpsService.js
+│   │   ├── utils/
+│   │   │   ├── errorHandler.js
+│   │   │   ├── exportService.js  # Para exportação Excel/PDF
+│   │   │   └── validations.js
+│   │   └── app.js               # Configuração principal do Express
+│   ├── .env                     # Variáveis de ambiente
+│   ├── package.json
+│   └── server.js                # Ponto de entrada da aplicação
+│
+└── frontend/
+    ├── public/
+    ├── src/
+    │   ├── assets/
+    │   ├── components/
+    │   │   ├── common/          # Componentes reutilizáveis
+    │   │   ├── auth/            # Componentes de autenticação
+    │   │   ├── funcionarios/    # Componentes de gerenciamento de funcionários
+    │   │   ├── pontos/          # Componentes de registro de ponto
+    │   │   └── relatorios/      # Componentes de relatórios
+    │   ├── contexts/
+    │   │   └── AuthContext.js   # Contexto para gerenciamento de autenticação
+    │   ├── hooks/
+    │   │   └── useAuth.js       # Hook para usar o contexto de autenticação
+    │   ├── pages/
+    │   │   ├── Login.js
+    │   │   ├── Dashboard.js
+    │   │   ├── Funcionarios.js
+    │   │   ├── RegistroPonto.js
+    │   │   └── Relatorios.js
+    │   ├── services/
+    │   │   └── api.js           # Configuração do Axios para consumir a API
+    │   ├── utils/
+    │   │   ├── formatters.js
+    │   │   └── validators.js
+    │   ├── App.js
+    │   └── index.js
+    ├── .env
+    └── package.json
+
+
+
+
+Funcionalidades do MVP
+- Cadastro de Funcionários
+Nome, cargo, setor, e-mail.
+Código ou QR Code para identificação.
+
+- Registro de Ponto	
+Check-in e check-out (entrada/saída).
+Data e horário do registro.
+Captura de localização (GPS).
+
+-Autenticação
+Login com usuário/senha.
+
+-Dashboard Simples
+Lista de registros de ponto por funcionário.
+Filtro por período.
+
+-Relatórios Básicos
+Total de horas trabalhadas por funcionário.
+Exportação para Excel ou PDF.
+
+-Painel Administrativo
+Gerenciar funcionários.
+Corrigir registros errados (admin).
+
+Back-end: Node.js (Express)
+Banco de Dados: SQLite 
+Front-end: React
+
+
+Rotas da API com API Versioning- Registro de Ponto
+ 1. Rotas de Autenticação (/auth)
+POST /auth/login → Autentica o usuário (admin ou funcionário).
+POST /auth/logout → Encerra a sessão do usuário.
+ 2. Rotas de Funcionários (/funcionarios)
+POST /funcionarios → Cadastra um novo funcionário.
+GET /funcionarios → Lista todos os funcionários.
+GET /funcionarios/:id → Busca um funcionário específico.
+PUT /funcionarios/:id → Atualiza os dados do funcionário.
+DELETE /funcionarios/:id → Remove um funcionário.
+ 3. Rotas de Registro de Ponto (/pontos)
+POST /pontos → Registra um check-in ou check-out.
+GET /pontos → Lista todos os registros de ponto.
+GET /pontos/:id → Obtém registros de um funcionário específico.
+PUT /pontos/:id → Corrige um registro (somente admin).
+DELETE /pontos/:id → Remove um registro de ponto (somente admin).
+ 4. Rotas de Relatórios (/relatorios)
+GET /relatorios/horas-trabalhadas → Calcula total de horas trabalhadas por período.
+GET /relatorios/export/excel → Exporta os registros para Excel.
+GET /relatorios/export/pdf → Exporta os registros para PDF.
+ 5. Rotas de Utilitários (/utils)
+GET /utils/qrcode/:id → Gera um QR Code para um funcionário.
+GET /utils/gps → Obtém a localização do funcionário no registro.
