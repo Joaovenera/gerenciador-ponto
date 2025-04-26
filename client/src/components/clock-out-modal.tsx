@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useCamera } from "@/hooks/use-camera";
@@ -30,7 +30,8 @@ export default function ClockOutModal({ isOpen, onClose, onConfirm }: ClockOutMo
     error: cameraError, 
     isCameraActive, 
     startCamera, 
-    takePhoto 
+    takePhoto,
+    setIsCameraActive
   } = useCamera();
   
   // Handle location request
@@ -78,6 +79,13 @@ export default function ClockOutModal({ isOpen, onClose, onConfirm }: ClockOutMo
       });
     }
   };
+  
+  // Auto start camera when step changes to camera
+  useEffect(() => {
+    if (step === "camera" && !isCameraActive) {
+      handleCameraStart();
+    }
+  }, [step, isCameraActive]);
   
   // Handle modal close and reset state
   const handleClose = () => {
