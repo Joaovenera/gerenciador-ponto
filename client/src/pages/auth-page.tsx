@@ -122,9 +122,9 @@ export default function AuthPage() {
                     name="username"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>CPF/Usuário</FormLabel>
+                        <FormLabel>CPF ou Usuário</FormLabel>
                         <FormControl>
-                          <Input placeholder="Digite seu CPF ou usuário" {...field} />
+                          <Input placeholder="Digite seu CPF ou nome de usuário" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
