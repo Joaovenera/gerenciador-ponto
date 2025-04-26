@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { User } from "@shared/schema";
-import { Menu, X, ClipboardList, Users, BarChart2, LogOut, User as UserIcon } from "lucide-react";
+import { Menu, X, ClipboardList, Users, BarChart2, LogOut, User as UserIcon, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
-type AdminTab = "records" | "employees" | "reports";
+type AdminTab = "overview" | "records" | "employees" | "reports";
 
 interface AdminMobileHeaderProps {
   activeTab: AdminTab;
@@ -60,6 +60,15 @@ export default function AdminMobileHeader({ activeTab, onTabChange, user }: Admi
               
               <div className="flex-1 h-0 pt-14 pb-4 overflow-y-auto">
                 <nav className="mt-5 px-2 space-y-1">
+                  <Link href="/admin/overview">
+                    <a 
+                      className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${activeTab === "overview" ? "bg-gray-800 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"}`}
+                      onClick={() => handleTabClick("overview")}
+                    >
+                      <LayoutDashboard className="mr-4 h-5 w-5 text-gray-400 group-hover:text-gray-300" />
+                      Dashboard
+                    </a>
+                  </Link>
                   <Link href="/admin/records">
                     <a 
                       className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${activeTab === "records" ? "bg-gray-800 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"}`}
@@ -120,7 +129,15 @@ export default function AdminMobileHeader({ activeTab, onTabChange, user }: Admi
       </div>
       
       {/* Mobile Tab Navigation */}
-      <div className="flex justify-between bg-gray-800 text-sm text-gray-400">
+      <div className="flex justify-between bg-gray-800 text-xs text-gray-400">
+        <Button 
+          variant="ghost" 
+          className={`flex-1 flex flex-col items-center py-2 ${activeTab === "overview" ? "text-white border-b-2 border-primary" : ""}`}
+          onClick={() => onTabChange("overview")}
+        >
+          <LayoutDashboard className="mb-1 h-5 w-5" />
+          <span>Dashboard</span>
+        </Button>
         <Button 
           variant="ghost" 
           className={`flex-1 flex flex-col items-center py-2 ${activeTab === "records" ? "text-white border-b-2 border-primary" : ""}`}
