@@ -23,33 +23,36 @@ export default function AdminSidebar({ activeTab, onTabChange, user }: AdminSide
         </div>
         <div className="flex-1 flex flex-col overflow-y-auto">
           <nav className="flex-1 px-2 py-4 space-y-1">
-            <Link href="/admin/records">
-              <a 
-                className={`text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md ${activeTab === "records" ? "bg-gray-800 text-white" : ""}`}
-                onClick={() => onTabChange("records")}
-              >
-                <ClipboardList className={`mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-300 ${activeTab === "records" ? "text-gray-300" : ""}`} />
-                Registros de Ponto
-              </a>
-            </Link>
-            <Link href="/admin/employees">
-              <a 
-                className={`text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md ${activeTab === "employees" ? "bg-gray-800 text-white" : ""}`}
-                onClick={() => onTabChange("employees")}
-              >
-                <Users className={`mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-300 ${activeTab === "employees" ? "text-gray-300" : ""}`} />
-                Funcionários
-              </a>
-            </Link>
-            <Link href="/admin/reports">
-              <a 
-                className={`text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md ${activeTab === "reports" ? "bg-gray-800 text-white" : ""}`}
-                onClick={() => onTabChange("reports")}
-              >
-                <BarChart2 className={`mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-300 ${activeTab === "reports" ? "text-gray-300" : ""}`} />
-                Relatórios
-              </a>
-            </Link>
+            <div onClick={() => onTabChange("records")}>
+              <Link href="/admin/records">
+                <div 
+                  className={`text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md ${activeTab === "records" ? "bg-gray-800 text-white" : ""}`}
+                >
+                  <ClipboardList className={`mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-300 ${activeTab === "records" ? "text-gray-300" : ""}`} />
+                  Registros de Ponto
+                </div>
+              </Link>
+            </div>
+            <div onClick={() => onTabChange("employees")}>
+              <Link href="/admin/employees">
+                <div 
+                  className={`text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md ${activeTab === "employees" ? "bg-gray-800 text-white" : ""}`}
+                >
+                  <Users className={`mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-300 ${activeTab === "employees" ? "text-gray-300" : ""}`} />
+                  Funcionários
+                </div>
+              </Link>
+            </div>
+            <div onClick={() => onTabChange("reports")}>
+              <Link href="/admin/reports">
+                <div 
+                  className={`text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md ${activeTab === "reports" ? "bg-gray-800 text-white" : ""}`}
+                >
+                  <BarChart2 className={`mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-300 ${activeTab === "reports" ? "text-gray-300" : ""}`} />
+                  Relatórios
+                </div>
+              </Link>
+            </div>
           </nav>
         </div>
         <div className="flex-shrink-0 flex border-t border-gray-800 p-4">

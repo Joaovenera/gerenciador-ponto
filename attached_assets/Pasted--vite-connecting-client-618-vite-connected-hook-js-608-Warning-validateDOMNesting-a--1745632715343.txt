@@ -1,0 +1,352 @@
+[vite] connecting...
+client:618 [vite] connected.
+hook.js:608 Warning: validateDOMNesting(...): <a> cannot appear as a descendant of <a>. Error Component Stack
+    at a (<anonymous>)
+    at a (<anonymous>)
+    at wouter.js?v=c6e90146:337:18
+    at nav (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at AdminSidebar (admin-sidebar.tsx:15:40)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at AdminDashboard (dashboard.tsx:13:20)
+    at Route (wouter.js?v=c6e90146:323:16)
+    at ProtectedRoute (protected-route.tsx:14:3)
+    at Switch (wouter.js?v=c6e90146:379:17)
+    at Router (<anonymous>)
+    at Provider (chunk-M3NVYRND.js?v=c6e90146:48:15)
+    at TooltipProvider (@radix-ui_react-tooltip.js?v=c6e90146:58:5)
+    at AuthProvider (use-auth.tsx:31:32)
+    at QueryClientProvider (@tanstack_react-query.js?v=c6e90146:2805:3)
+    at App (<anonymous>)
+overrideMethod @ hook.js:608
+printWarning @ chunk-RPCDYKBN.js?v=c6e90146:521
+error @ chunk-RPCDYKBN.js?v=c6e90146:505
+validateDOMNesting @ chunk-RPCDYKBN.js?v=c6e90146:8256
+createInstance @ chunk-RPCDYKBN.js?v=c6e90146:8328
+completeWork @ chunk-RPCDYKBN.js?v=c6e90146:16290
+completeUnitOfWork @ chunk-RPCDYKBN.js?v=c6e90146:19224
+performUnitOfWork @ chunk-RPCDYKBN.js?v=c6e90146:19206
+workLoopSync @ chunk-RPCDYKBN.js?v=c6e90146:19137
+renderRootSync @ chunk-RPCDYKBN.js?v=c6e90146:19116
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=c6e90146:18874
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=c6e90146:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=c6e90146:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=c6e90146:555
+flush @ @tanstack_react-query.js?v=c6e90146:569
+batch @ @tanstack_react-query.js?v=c6e90146:587
+dispatch_fn @ @tanstack_react-query.js?v=c6e90146:996
+setData @ @tanstack_react-query.js?v=c6e90146:696
+onSuccess @ @tanstack_react-query.js?v=c6e90146:897
+resolve @ @tanstack_react-query.js?v=c6e90146:456
+Promise.then
+run @ @tanstack_react-query.js?v=c6e90146:498
+start @ @tanstack_react-query.js?v=c6e90146:536
+fetch @ @tanstack_react-query.js?v=c6e90146:926
+executeFetch_fn @ @tanstack_react-query.js?v=c6e90146:2211
+onSubscribe @ @tanstack_react-query.js?v=c6e90146:1898
+subscribe @ @tanstack_react-query.js?v=c6e90146:24
+(anonymous) @ @tanstack_react-query.js?v=c6e90146:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=c6e90146:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=c6e90146:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=c6e90146:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=c6e90146:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=c6e90146:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=c6e90146:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=c6e90146:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=c6e90146:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=c6e90146:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=c6e90146:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=c6e90146:19432
+commitRoot @ chunk-RPCDYKBN.js?v=c6e90146:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=c6e90146:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=c6e90146:18718
+workLoop @ chunk-RPCDYKBN.js?v=c6e90146:197
+flushWork @ chunk-RPCDYKBN.js?v=c6e90146:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=c6e90146:384Understand this error
+@radix-ui_react-select.js?v=c6e90146:880 Uncaught Error: A <Select.Item /> must have a value prop that is not an empty string. This is because the Select value can be set to an empty string to clear the selection and show the placeholder.
+    at @radix-ui_react-select.js?v=c6e90146:880:13
+    at renderWithHooks (chunk-RPCDYKBN.js?v=c6e90146:11548:26)
+    at updateForwardRef (chunk-RPCDYKBN.js?v=c6e90146:14325:28)
+    at beginWork (chunk-RPCDYKBN.js?v=c6e90146:15946:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=c6e90146:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=c6e90146:3699:24)
+    at invokeGuardedCallback (chunk-RPCDYKBN.js?v=c6e90146:3733:39)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=c6e90146:19765:15)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=c6e90146:19198:20)
+    at workLoopSync (chunk-RPCDYKBN.js?v=c6e90146:19137:13)
+(anonymous) @ @radix-ui_react-select.js?v=c6e90146:880
+renderWithHooks @ chunk-RPCDYKBN.js?v=c6e90146:11548
+updateForwardRef @ chunk-RPCDYKBN.js?v=c6e90146:14325
+beginWork @ chunk-RPCDYKBN.js?v=c6e90146:15946
+callCallback2 @ chunk-RPCDYKBN.js?v=c6e90146:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=c6e90146:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=c6e90146:3733
+beginWork$1 @ chunk-RPCDYKBN.js?v=c6e90146:19765
+performUnitOfWork @ chunk-RPCDYKBN.js?v=c6e90146:19198
+workLoopSync @ chunk-RPCDYKBN.js?v=c6e90146:19137
+renderRootSync @ chunk-RPCDYKBN.js?v=c6e90146:19116
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=c6e90146:18874
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=c6e90146:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=c6e90146:19432
+commitRoot @ chunk-RPCDYKBN.js?v=c6e90146:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=c6e90146:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=c6e90146:18718
+workLoop @ chunk-RPCDYKBN.js?v=c6e90146:197
+flushWork @ chunk-RPCDYKBN.js?v=c6e90146:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=c6e90146:384Understand this error
+@radix-ui_react-select.js?v=c6e90146:880 Uncaught Error: A <Select.Item /> must have a value prop that is not an empty string. This is because the Select value can be set to an empty string to clear the selection and show the placeholder.
+    at @radix-ui_react-select.js?v=c6e90146:880:13
+    at renderWithHooks (chunk-RPCDYKBN.js?v=c6e90146:11548:26)
+    at updateForwardRef (chunk-RPCDYKBN.js?v=c6e90146:14325:28)
+    at beginWork (chunk-RPCDYKBN.js?v=c6e90146:15946:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=c6e90146:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=c6e90146:3699:24)
+    at invokeGuardedCallback (chunk-RPCDYKBN.js?v=c6e90146:3733:39)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=c6e90146:19765:15)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=c6e90146:19198:20)
+    at workLoopSync (chunk-RPCDYKBN.js?v=c6e90146:19137:13)
+(anonymous) @ @radix-ui_react-select.js?v=c6e90146:880
+renderWithHooks @ chunk-RPCDYKBN.js?v=c6e90146:11548
+updateForwardRef @ chunk-RPCDYKBN.js?v=c6e90146:14325
+beginWork @ chunk-RPCDYKBN.js?v=c6e90146:15946
+callCallback2 @ chunk-RPCDYKBN.js?v=c6e90146:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=c6e90146:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=c6e90146:3733
+beginWork$1 @ chunk-RPCDYKBN.js?v=c6e90146:19765
+performUnitOfWork @ chunk-RPCDYKBN.js?v=c6e90146:19198
+workLoopSync @ chunk-RPCDYKBN.js?v=c6e90146:19137
+renderRootSync @ chunk-RPCDYKBN.js?v=c6e90146:19116
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=c6e90146:18874
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=c6e90146:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=c6e90146:19432
+commitRoot @ chunk-RPCDYKBN.js?v=c6e90146:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=c6e90146:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=c6e90146:18718
+workLoop @ chunk-RPCDYKBN.js?v=c6e90146:197
+flushWork @ chunk-RPCDYKBN.js?v=c6e90146:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=c6e90146:384Understand this error
+@radix-ui_react-select.js?v=c6e90146:880 Uncaught Error: A <Select.Item /> must have a value prop that is not an empty string. This is because the Select value can be set to an empty string to clear the selection and show the placeholder.
+    at @radix-ui_react-select.js?v=c6e90146:880:13
+    at renderWithHooks (chunk-RPCDYKBN.js?v=c6e90146:11548:26)
+    at updateForwardRef (chunk-RPCDYKBN.js?v=c6e90146:14325:28)
+    at beginWork (chunk-RPCDYKBN.js?v=c6e90146:15946:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=c6e90146:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=c6e90146:3699:24)
+    at invokeGuardedCallback (chunk-RPCDYKBN.js?v=c6e90146:3733:39)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=c6e90146:19765:15)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=c6e90146:19198:20)
+    at workLoopSync (chunk-RPCDYKBN.js?v=c6e90146:19137:13)
+(anonymous) @ @radix-ui_react-select.js?v=c6e90146:880
+renderWithHooks @ chunk-RPCDYKBN.js?v=c6e90146:11548
+updateForwardRef @ chunk-RPCDYKBN.js?v=c6e90146:14325
+beginWork @ chunk-RPCDYKBN.js?v=c6e90146:15946
+callCallback2 @ chunk-RPCDYKBN.js?v=c6e90146:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=c6e90146:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=c6e90146:3733
+beginWork$1 @ chunk-RPCDYKBN.js?v=c6e90146:19765
+performUnitOfWork @ chunk-RPCDYKBN.js?v=c6e90146:19198
+workLoopSync @ chunk-RPCDYKBN.js?v=c6e90146:19137
+renderRootSync @ chunk-RPCDYKBN.js?v=c6e90146:19116
+recoverFromConcurrentError @ chunk-RPCDYKBN.js?v=c6e90146:18736
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=c6e90146:18879
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=c6e90146:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=c6e90146:19432
+commitRoot @ chunk-RPCDYKBN.js?v=c6e90146:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=c6e90146:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=c6e90146:18718
+workLoop @ chunk-RPCDYKBN.js?v=c6e90146:197
+flushWork @ chunk-RPCDYKBN.js?v=c6e90146:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=c6e90146:384Understand this error
+@radix-ui_react-select.js?v=c6e90146:880 Uncaught Error: A <Select.Item /> must have a value prop that is not an empty string. This is because the Select value can be set to an empty string to clear the selection and show the placeholder.
+    at @radix-ui_react-select.js?v=c6e90146:880:13
+    at renderWithHooks (chunk-RPCDYKBN.js?v=c6e90146:11548:26)
+    at updateForwardRef (chunk-RPCDYKBN.js?v=c6e90146:14325:28)
+    at beginWork (chunk-RPCDYKBN.js?v=c6e90146:15946:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=c6e90146:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=c6e90146:3699:24)
+    at invokeGuardedCallback (chunk-RPCDYKBN.js?v=c6e90146:3733:39)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=c6e90146:19765:15)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=c6e90146:19198:20)
+    at workLoopSync (chunk-RPCDYKBN.js?v=c6e90146:19137:13)
+(anonymous) @ @radix-ui_react-select.js?v=c6e90146:880
+renderWithHooks @ chunk-RPCDYKBN.js?v=c6e90146:11548
+updateForwardRef @ chunk-RPCDYKBN.js?v=c6e90146:14325
+beginWork @ chunk-RPCDYKBN.js?v=c6e90146:15946
+callCallback2 @ chunk-RPCDYKBN.js?v=c6e90146:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=c6e90146:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=c6e90146:3733
+beginWork$1 @ chunk-RPCDYKBN.js?v=c6e90146:19765
+performUnitOfWork @ chunk-RPCDYKBN.js?v=c6e90146:19198
+workLoopSync @ chunk-RPCDYKBN.js?v=c6e90146:19137
+renderRootSync @ chunk-RPCDYKBN.js?v=c6e90146:19116
+recoverFromConcurrentError @ chunk-RPCDYKBN.js?v=c6e90146:18736
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=c6e90146:18879
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=c6e90146:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=c6e90146:19432
+commitRoot @ chunk-RPCDYKBN.js?v=c6e90146:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=c6e90146:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=c6e90146:18718
+workLoop @ chunk-RPCDYKBN.js?v=c6e90146:197
+flushWork @ chunk-RPCDYKBN.js?v=c6e90146:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=c6e90146:384Understand this error
+hook.js:608 The above error occurred in the <SelectItem> component:
+
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-select.js?v=c6e90146:853:7
+    at _c11 (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/src/components/ui/select.tsx:208:13)
+    at div
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-AXMZZQ2X.js?v=c6e90146:42:13
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2K77HOHX.js?v=c6e90146:79:13
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2K77HOHX.js?v=c6e90146:56:13
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-YH2BFEGE.js?v=c6e90146:39:15
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-select.js?v=c6e90146:764:13
+    at div
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2K77HOHX.js?v=c6e90146:79:13
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2K77HOHX.js?v=c6e90146:56:13
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-YH2BFEGE.js?v=c6e90146:39:15
+    at Provider (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-M3NVYRND.js?v=c6e90146:48:15)
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-select.js?v=c6e90146:307:58
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2K77HOHX.js?v=c6e90146:79:13
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2K77HOHX.js?v=c6e90146:56:13
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-AXMZZQ2X.js?v=c6e90146:42:13
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-L4E5E66O.js?v=c6e90146:258:22
+    at SelectPortal
+    at _c7 (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/src/components/ui/select.tsx:123:12)
+    at Provider (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-M3NVYRND.js?v=c6e90146:48:15)
+    at Provider (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-M3NVYRND.js?v=c6e90146:48:15)
+    at CollectionProvider (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-YH2BFEGE.js?v=c6e90146:29:13)
+    at Provider (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-M3NVYRND.js?v=c6e90146:48:15)
+    at Provider (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-M3NVYRND.js?v=c6e90146:48:15)
+    at Popper (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-OEBDR4V7.js?v=c6e90146:1953:11)
+    at Select (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-select.js?v=c6e90146:95:5)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at EmployeesTab (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/src/pages/admin/employees.tsx:49:21)
+    at div
+    at main
+    at div
+    at div
+    at div
+    at AdminDashboard (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/src/pages/admin/dashboard.tsx:28:20)
+    at Route (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=c6e90146:323:16)
+    at ProtectedRoute (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/src/lib/protected-route.tsx:22:3)
+    at Switch (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=c6e90146:379:17)
+    at Router
+    at Provider (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-M3NVYRND.js?v=c6e90146:48:15)
+    at TooltipProvider (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=c6e90146:58:5)
+    at AuthProvider (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/src/hooks/use-auth.tsx:27:32)
+    at QueryClientProvider (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=c6e90146:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+overrideMethod @ hook.js:608
+logCapturedError @ chunk-RPCDYKBN.js?v=c6e90146:14032
+update.callback @ chunk-RPCDYKBN.js?v=c6e90146:14052
+callCallback @ chunk-RPCDYKBN.js?v=c6e90146:11248
+commitUpdateQueue @ chunk-RPCDYKBN.js?v=c6e90146:11265
+commitLayoutEffectOnFiber @ chunk-RPCDYKBN.js?v=c6e90146:17093
+commitLayoutMountEffects_complete @ chunk-RPCDYKBN.js?v=c6e90146:17980
+commitLayoutEffects_begin @ chunk-RPCDYKBN.js?v=c6e90146:17969
+commitLayoutEffects @ chunk-RPCDYKBN.js?v=c6e90146:17920
+commitRootImpl @ chunk-RPCDYKBN.js?v=c6e90146:19353
+commitRoot @ chunk-RPCDYKBN.js?v=c6e90146:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=c6e90146:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=c6e90146:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=c6e90146:19432
+commitRoot @ chunk-RPCDYKBN.js?v=c6e90146:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=c6e90146:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=c6e90146:18718
+workLoop @ chunk-RPCDYKBN.js?v=c6e90146:197
+flushWork @ chunk-RPCDYKBN.js?v=c6e90146:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=c6e90146:384Understand this error
+hook.js:608 The above error occurred in the <SelectItem> component:
+
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-select.js?v=c6e90146:853:7
+    at _c11 (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/src/components/ui/select.tsx:208:13)
+    at div
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-AXMZZQ2X.js?v=c6e90146:42:13
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2K77HOHX.js?v=c6e90146:79:13
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2K77HOHX.js?v=c6e90146:56:13
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-YH2BFEGE.js?v=c6e90146:39:15
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-select.js?v=c6e90146:764:13
+    at div
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2K77HOHX.js?v=c6e90146:79:13
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2K77HOHX.js?v=c6e90146:56:13
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-YH2BFEGE.js?v=c6e90146:39:15
+    at Provider (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-M3NVYRND.js?v=c6e90146:48:15)
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-select.js?v=c6e90146:307:58
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2K77HOHX.js?v=c6e90146:79:13
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2K77HOHX.js?v=c6e90146:56:13
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-AXMZZQ2X.js?v=c6e90146:42:13
+    at https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-L4E5E66O.js?v=c6e90146:258:22
+    at SelectPortal
+    at _c7 (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/src/components/ui/select.tsx:123:12)
+    at Provider (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-M3NVYRND.js?v=c6e90146:48:15)
+    at Provider (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-M3NVYRND.js?v=c6e90146:48:15)
+    at CollectionProvider (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-YH2BFEGE.js?v=c6e90146:29:13)
+    at Provider (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-M3NVYRND.js?v=c6e90146:48:15)
+    at Provider (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-M3NVYRND.js?v=c6e90146:48:15)
+    at Popper (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-OEBDR4V7.js?v=c6e90146:1953:11)
+    at Select (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-select.js?v=c6e90146:95:5)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at EmployeesTab (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/src/pages/admin/employees.tsx:49:21)
+    at div
+    at main
+    at div
+    at div
+    at div
+    at AdminDashboard (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/src/pages/admin/dashboard.tsx:28:20)
+    at Route (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=c6e90146:323:16)
+    at ProtectedRoute (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/src/lib/protected-route.tsx:22:3)
+    at Switch (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=c6e90146:379:17)
+    at Router
+    at Provider (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-M3NVYRND.js?v=c6e90146:48:15)
+    at TooltipProvider (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=c6e90146:58:5)
+    at AuthProvider (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/src/hooks/use-auth.tsx:27:32)
+    at QueryClientProvider (https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=c6e90146:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+overrideMethod @ hook.js:608
+logCapturedError @ chunk-RPCDYKBN.js?v=c6e90146:14032
+update.callback @ chunk-RPCDYKBN.js?v=c6e90146:14052
+callCallback @ chunk-RPCDYKBN.js?v=c6e90146:11248
+commitUpdateQueue @ chunk-RPCDYKBN.js?v=c6e90146:11265
+commitLayoutEffectOnFiber @ chunk-RPCDYKBN.js?v=c6e90146:17093
+commitLayoutMountEffects_complete @ chunk-RPCDYKBN.js?v=c6e90146:17980
+commitLayoutEffects_begin @ chunk-RPCDYKBN.js?v=c6e90146:17969
+commitLayoutEffects @ chunk-RPCDYKBN.js?v=c6e90146:17920
+commitRootImpl @ chunk-RPCDYKBN.js?v=c6e90146:19353
+commitRoot @ chunk-RPCDYKBN.js?v=c6e90146:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=c6e90146:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=c6e90146:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=c6e90146:19432
+commitRoot @ chunk-RPCDYKBN.js?v=c6e90146:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=c6e90146:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=c6e90146:18718
+workLoop @ chunk-RPCDYKBN.js?v=c6e90146:197
+flushWork @ chunk-RPCDYKBN.js?v=c6e90146:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=c6e90146:384Understand this error
+chunk-RPCDYKBN.js?v=c6e90146:9129 Uncaught Error: A <Select.Item /> must have a value prop that is not an empty string. This is because the Select value can be set to an empty string to clear the selection and show the placeholder.
+    at @radix-ui_react-select.js?v=c6e90146:880:13
+    at renderWithHooks (chunk-RPCDYKBN.js?v=c6e90146:11548:26)
+    at updateForwardRef (chunk-RPCDYKBN.js?v=c6e90146:14325:28)
+    at beginWork (chunk-RPCDYKBN.js?v=c6e90146:15946:22)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=c6e90146:19753:22)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=c6e90146:19198:20)
+    at workLoopSync (chunk-RPCDYKBN.js?v=c6e90146:19137:13)
+    at renderRootSync (chunk-RPCDYKBN.js?v=c6e90146:19116:15)
+    at recoverFromConcurrentError (chunk-RPCDYKBN.js?v=c6e90146:18736:28)
+    at performSyncWorkOnRoot (chunk-RPCDYKBN.js?v=c6e90146:18879:28)

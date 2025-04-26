@@ -32,8 +32,8 @@ import EmployeeForm from "@/components/employee-form";
 export default function EmployeesTab() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
-  const [departmentFilter, setDepartmentFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [departmentFilter, setDepartmentFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<User | null>(null);
   
@@ -73,11 +73,11 @@ export default function EmployeesTab() {
           employee.role.toLowerCase().includes(searchTerm.toLowerCase());
         
         const matchesDepartment = 
-          !departmentFilter || 
+          departmentFilter === "all" || 
           employee.department === departmentFilter;
         
         const matchesStatus = 
-          !statusFilter || 
+          statusFilter === "all" || 
           employee.status === statusFilter;
         
         return matchesSearch && matchesDepartment && matchesStatus;
@@ -132,10 +132,10 @@ export default function EmployeesTab() {
                     <SelectValue placeholder="Todos os departamentos" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos os departamentos</SelectItem>
+                    <SelectItem value="all">Todos os departamentos</SelectItem>
                     {departments.map((department) => (
-                      <SelectItem key={department} value={department}>
-                        {department}
+                      <SelectItem key={department} value={department || "sem_departamento"}>
+                        {department || "Sem departamento"}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -149,7 +149,7 @@ export default function EmployeesTab() {
                     <SelectValue placeholder="Todos" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos</SelectItem>
+                    <SelectItem value="all">Todos</SelectItem>
                     <SelectItem value="active">Ativo</SelectItem>
                     <SelectItem value="inactive">Inativo</SelectItem>
                   </SelectContent>
