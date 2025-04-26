@@ -57,8 +57,10 @@ export default function CameraPage() {
     setPhotoData(photo);
     stopCamera();
     
-    // Here you can handle the photo data (send to server, etc.)
-    console.log("Photo captured");
+    // Store photo in session storage and return to previous page
+    sessionStorage.setItem('cameraPhoto', photo);
+    const returnTo = new URLSearchParams(window.location.search).get('returnTo');
+    window.location.href = returnTo === 'clockIn' ? '/' : '/';
   };
 
   return (

@@ -42,32 +42,20 @@ export default function ClockInModal({ isOpen, onClose, onConfirm }: ClockInModa
     }
   };
   
-  // Handle camera
-  const handleCameraStart = async () => {
-    if (!isCameraActive) {
-      const success = await startCamera();
-      if (success && videoRef.current) {
-        try {
-          // Garantir que o vídeo inicie e seja marcado como ativo
-          await videoRef.current.play();
-          // Força atualização da UI em caso de problemas de estado
-          setTimeout(() => {
-            if (!isCameraActive && videoRef.current && videoRef.current.readyState >= 2) {
-              setIsCameraActive(true);
-            }
-          }, 500);
-        } catch (e) {
-          console.error("Erro ao iniciar reprodução de vídeo:", e);
-        }
-      }
-    }
+  // Handle camera redirection
+  const handleCamera = () => {
+    window.location.href = '/camera?returnTo=clockIn';
   };
   
-  // Handle photo capture
-  const handleTakePhoto = () => {
-    takePhoto();
-    setStep("confirmation");
-  };
+  // Handle photo from camera page
+  useEffect(() => {
+    const photoFromCamera = sessionStorage.getItem('cameraPhoto');
+    if (photoFromCamera) {
+      setPhotoData(photoFromCamera);
+      setStep("confirmation");
+      sessionStorage.removeItem('cameraPhoto');
+    }
+  }, []);
   
   // Handle confirmation
   const handleConfirm = () => {
@@ -143,32 +131,16 @@ export default function ClockInModal({ isOpen, onClose, onConfirm }: ClockInModa
               </div>
             )}
             
-            <div className="relative bg-black rounded-lg overflow-hidden aspect-video mb-4">
-              {!isCameraActive ? (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Button onClick={handleCameraStart}>
-                    <Camera className="h-4 w-4 mr-2" />
-                    <span>Iniciar Câmera</span>
-                  </Button>
-                </div>
-              ) : (
-                <video 
-                  ref={videoRef} 
-                  autoPlay 
-                  playsInline 
-                  className="w-full h-full object-cover"
-                ></video>
-              )}
+            <div className="flex flex-col items-center justify-center space-y-4">
+              <Button 
+                onClick={handleCamera}
+                className="w-full"
+                size="lg"
+              >
+                <Camera className="h-4 w-4 mr-2" />
+                <span>Abrir Câmera</span>
+              </Button>
             </div>
-            
-            <Button 
-              onClick={handleTakePhoto}
-              className="w-full"
-              disabled={!isCameraActive}
-            >
-              <Camera className="h-4 w-4 mr-2" />
-              <span>Capturar Foto</span>
-            </Button>
           </div>
         )}
         
