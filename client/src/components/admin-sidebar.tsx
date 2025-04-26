@@ -1,10 +1,10 @@
 import { Link } from "wouter";
 import { User } from "@shared/schema";
-import { ClipboardList, Users, BarChart2, LogOut, User as UserIcon } from "lucide-react";
+import { ClipboardList, Users, BarChart2, LogOut, User as UserIcon, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 
-type AdminTab = "records" | "employees" | "reports";
+type AdminTab = "overview" | "records" | "employees" | "reports";
 
 interface AdminSidebarProps {
   activeTab: AdminTab;
@@ -23,6 +23,16 @@ export default function AdminSidebar({ activeTab, onTabChange, user }: AdminSide
         </div>
         <div className="flex-1 flex flex-col overflow-y-auto">
           <nav className="flex-1 px-2 py-4 space-y-1">
+            <div onClick={() => onTabChange("overview")}>
+              <Link href="/admin/overview">
+                <div 
+                  className={`text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md ${activeTab === "overview" ? "bg-gray-800 text-white" : ""}`}
+                >
+                  <LayoutDashboard className={`mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-300 ${activeTab === "overview" ? "text-gray-300" : ""}`} />
+                  Dashboard
+                </div>
+              </Link>
+            </div>
             <div onClick={() => onTabChange("records")}>
               <Link href="/admin/records">
                 <div 
