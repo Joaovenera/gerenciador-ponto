@@ -47,7 +47,10 @@ interface EmployeeFormProps {
   onSuccess: () => void;
 }
 
-export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps) {
+export default function EmployeeForm({
+  employee,
+  onSuccess,
+}: EmployeeFormProps) {
   const { toast } = useToast();
   const [isResetPassword, setIsResetPassword] = useState(false);
 
@@ -79,7 +82,6 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
     return password;
   };
 
-
   // Create employee mutation
   const createEmployeeMutation = useMutation({
     mutationFn: async (data: EmployeeFormValues) => {
@@ -105,10 +107,12 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
 
   // Update employee mutation
   const updateEmployeeMutation = useMutation({
-    mutationFn: async (data: EmployeeFormValues & { id: number, resetPassword?: boolean }) => {
+    mutationFn: async (
+      data: EmployeeFormValues & { id: number; resetPassword?: boolean },
+    ) => {
       const { id, resetPassword, ...userData } = data;
       // Hash the password (default to birth date in DDMMYYYY format)
-      const [year, month, day] = userData.birthDate.split('-');
+      const [year, month, day] = userData.birthDate.split("-");
       userData.password = await hashPassword(`${day}${month}${year}`);
       const res = await apiRequest("PUT", `/api/admin/users/${id}`, {
         ...userData,
@@ -142,11 +146,16 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
         resetPassword: isResetPassword,
       });
     } else {
-      createEmployeeMutation.mutate(data);
+      // A senha inicial será a data de nascimento sem hífens
+      createEmployeeMutation.mutate({
+        ...data,
+        password: data.birthDate.replace(/-/g, ""),
+      });
     }
   };
 
-  const isSubmitting = createEmployeeMutation.isPending || updateEmployeeMutation.isPending;
+  const isSubmitting =
+    createEmployeeMutation.isPending || updateEmployeeMutation.isPending;
 
   return (
     <Form {...form}>
@@ -243,7 +252,11 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder="email@exemplo.com" {...field} />
+                  <Input
+                    type="email"
+                    placeholder="email@exemplo.com"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -354,7 +367,9 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
             Cancelar
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+            {isSubmitting && (
+              <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+            )}
             {employee ? "Salvar" : "Criar"}
           </Button>
         </div>
