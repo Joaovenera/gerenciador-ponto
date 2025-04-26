@@ -21,7 +21,7 @@ services:
       - timetracker-network
 
   db:
-    image: postgres:16-alpine
+    image: postgres:17
     container_name: timetracker-db-dev
     restart: unless-stopped
     ports:
