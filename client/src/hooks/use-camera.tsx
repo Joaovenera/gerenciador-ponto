@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -54,7 +55,26 @@ export function useCamera(options?: UseCameraOptions): UseCameraResult {
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         streamRef.current = stream;
-        setIsCameraActive(true);
+        
+        // Wait for video to be ready
+        await new Promise((resolve) => {
+          if (videoRef.current) {
+            videoRef.current.onloadedmetadata = () => {
+              if (videoRef.current) {
+                videoRef.current.play()
+                  .then(() => {
+                    setIsCameraActive(true);
+                    resolve(true);
+                  })
+                  .catch((err) => {
+                    console.error("Error playing video:", err);
+                    resolve(false);
+                  });
+              }
+            };
+          }
+        });
+        
         return true;
       }
       return false;
