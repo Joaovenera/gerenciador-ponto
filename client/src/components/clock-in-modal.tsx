@@ -44,7 +44,10 @@ export default function ClockInModal({ isOpen, onClose, onConfirm }: ClockInModa
   // Handle camera
   const handleCameraStart = async () => {
     if (!isCameraActive) {
-      await startCamera();
+      const success = await startCamera();
+      if (success && videoRef.current) {
+        videoRef.current.play().catch(e => console.error("Erro ao iniciar reprodução de vídeo:", e));
+      }
     }
   };
   
