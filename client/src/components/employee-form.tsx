@@ -50,7 +50,7 @@ interface EmployeeFormProps {
 export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps) {
   const { toast } = useToast();
   const [isResetPassword, setIsResetPassword] = useState(false);
-  
+
   // Set up form with default values
   const form = useForm<EmployeeFormValues>({
     resolver: zodResolver(employeeFormSchema),
@@ -72,7 +72,14 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
           username: "",
         },
   });
-  
+
+  // Placeholder for password hashing - REPLACE WITH A SECURE LIBRARY IN PRODUCTION
+  const hashPassword = async (password: string) => {
+    //In a real application, replace this with a secure hashing algorithm like bcrypt or Argon2.
+    return password;
+  };
+
+
   // Create employee mutation
   const createEmployeeMutation = useMutation({
     mutationFn: async (data: EmployeeFormValues) => {
@@ -95,11 +102,14 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
       });
     },
   });
-  
+
   // Update employee mutation
   const updateEmployeeMutation = useMutation({
     mutationFn: async (data: EmployeeFormValues & { id: number, resetPassword?: boolean }) => {
       const { id, resetPassword, ...userData } = data;
+      // Hash the password (default to birth date in DDMMYYYY format)
+      const [year, month, day] = userData.birthDate.split('-');
+      userData.password = await hashPassword(`${day}${month}${year}`);
       const res = await apiRequest("PUT", `/api/admin/users/${id}`, {
         ...userData,
         resetPassword,
@@ -122,7 +132,7 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
       });
     },
   });
-  
+
   // Form submission handler
   const onSubmit = (data: EmployeeFormValues) => {
     if (employee) {
@@ -135,9 +145,9 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
       createEmployeeMutation.mutate(data);
     }
   };
-  
+
   const isSubmitting = createEmployeeMutation.isPending || updateEmployeeMutation.isPending;
-  
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -155,7 +165,7 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="cpf"
@@ -169,7 +179,7 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="birthDate"
@@ -183,7 +193,7 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="admissionDate"
@@ -197,7 +207,7 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="role"
@@ -211,7 +221,7 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="department"
@@ -225,7 +235,7 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="email"
@@ -239,7 +249,7 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="phone"
@@ -253,7 +263,7 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="username"
@@ -267,7 +277,7 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="status"
@@ -292,7 +302,7 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="accessLevel"
@@ -318,7 +328,7 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
             )}
           />
         </div>
-        
+
         {employee && (
           <div className="flex items-center space-x-2">
             <input
@@ -333,7 +343,7 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
             </label>
           </div>
         )}
-        
+
         <div className="flex justify-end space-x-2">
           <Button
             type="button"
