@@ -81,7 +81,19 @@ export default function AuthPage() {
     registerMutation.mutate(userData);
   };
 
-  // If we're still checking authentication or already logged in, don't render the page yet
+  const { isLoading } = useAuth();
+  
+  // If we're still checking authentication, show loading indicator
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
+        <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+        <h2 className="text-lg font-medium text-gray-700">Carregando...</h2>
+      </div>
+    );
+  }
+  
+  // If user is already logged in, don't render the login page
   if (user) {
     return null;
   }
@@ -136,7 +148,12 @@ export default function AuthPage() {
                     className="w-full" 
                     disabled={loginMutation.isPending}
                   >
-                    {loginMutation.isPending ? "Entrando..." : "Entrar"}
+                    {loginMutation.isPending ? (
+                      <div className="flex items-center justify-center">
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        <span>Autenticando...</span>
+                      </div>
+                    ) : "Entrar"}
                   </Button>
                 </form>
               </Form>
@@ -277,7 +294,12 @@ export default function AuthPage() {
                     className="w-full" 
                     disabled={registerMutation.isPending}
                   >
-                    {registerMutation.isPending ? "Cadastrando..." : "Cadastrar"}
+                    {registerMutation.isPending ? (
+                      <div className="flex items-center justify-center">
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        <span>Cadastrando...</span>
+                      </div>
+                    ) : "Cadastrar"}
                   </Button>
                 </form>
               </Form>

@@ -6,11 +6,12 @@ import {
   TimeRecordFilter
 } from "@shared/schema";
 import session from "express-session";
+import { Store } from "express-session";
 import { format } from "date-fns";
 
 export interface IStorage {
   // Session store
-  sessionStore: session.SessionStore;
+  sessionStore: Store;
   
   // User methods
   getUser(id: number): Promise<User | undefined>;

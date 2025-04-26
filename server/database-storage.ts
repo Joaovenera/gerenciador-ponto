@@ -11,6 +11,7 @@ import { IStorage } from "./storage";
 import { db, pool } from "./db";
 import { eq, and, gte, lt, desc } from "drizzle-orm";
 import session from "express-session";
+import { Store } from "express-session";
 import connectPg from "connect-pg-simple";
 import { format } from "date-fns";
 
@@ -18,7 +19,7 @@ import { format } from "date-fns";
 const PostgresSessionStore = connectPg(session);
 
 export class DatabaseStorage implements IStorage {
-  sessionStore: session.SessionStore;
+  sessionStore: Store;
 
   constructor() {
     this.sessionStore = new PostgresSessionStore({ 
