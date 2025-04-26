@@ -207,7 +207,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/admin/users/:id", isAdmin, async (req, res, next) => {
     try {
       const id = parseInt(req.params.id);
-      const user = await storage.updateUser(id, req.body);
+      const { resetPassword, birthDate, ...userData } = req.body;
+      
+      if (resetPassword) {
+        const [year, month, day] = birthDate.split("-");
+        userData.password = await hashPassword(`${day}${month}${year}`);
+      }
+      
+      const user = await storage.updateUser(id, userData);
       res.json(user);
     } catch (err) {
       next(err);

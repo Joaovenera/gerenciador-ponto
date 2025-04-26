@@ -111,9 +111,6 @@ export default function EmployeeForm({
       data: EmployeeFormValues & { id: number; resetPassword?: boolean },
     ) => {
       const { id, resetPassword, ...userData } = data;
-      // Hash the password (default to birth date in DDMMYYYY format)
-      const [year, month, day] = userData.birthDate.split("-");
-      userData.password = await hashPassword(`${day}${month}${year}`);
       const res = await apiRequest("PUT", `/api/admin/users/${id}`, {
         ...userData,
         resetPassword,
