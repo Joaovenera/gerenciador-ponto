@@ -147,9 +147,11 @@ export default function EmployeeForm({
       });
     } else {
       // A senha inicial será a data de nascimento sem hífens
+      // Converte YYYY-MM-DD para DDMMYYYY
+      const [year, month, day] = data.birthDate.split("-");
       createEmployeeMutation.mutate({
         ...data,
-        password: data.birthDate.replace(/-/g, ""),
+        password: `${day}${month}${year}`,
       });
     }
   };

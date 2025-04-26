@@ -170,8 +170,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).send("CPF/Usuário já existe");
       }
       
-      // Hash the password (default to birth date)
-      userData.password = await hashPassword(userData.birthDate.replace(/-/g, ""));
+      // Hash the password (default to birth date in DDMMYYYY format)
+      const [year, month, day] = userData.birthDate.split("-");
+      userData.password = await hashPassword(`${day}${month}${year}`);
       
       const user = await storage.createUser(userData);
       res.status(201).json(user);
