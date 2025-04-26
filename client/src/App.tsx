@@ -20,7 +20,7 @@ function Router() {
       <ProtectedRoute path="/" accessLevel="employee" component={EmployeeDashboard} />
       <ProtectedRoute path="/admin" accessLevel="admin" component={AdminDashboard} />
       <ProtectedRoute path="/admin/:tab" accessLevel="admin" component={AdminDashboard} />
-      <Route path="/camera" component={CameraPage} /> {/* Added camera route */}
+      <ProtectedRoute path="/camera" accessLevel="employee" component={CameraPage} />
       <Route component={NotFound} />
     </Switch>
   );
