@@ -14,7 +14,7 @@ export function ProtectedRoute({
   path,
   component: Component,
   accessLevel,
-}: ProtectedRouteProps) {
+}: ProtectedRouteProps): JSX.Element {
   const { user, isLoading, isFirstLogin } = useAuth();
 
   if (isLoading) {
