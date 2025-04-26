@@ -170,7 +170,7 @@ export default function RecordsTab() {
                     <SelectValue placeholder="Todos os funcionários" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos os funcionários</SelectItem>
+                    <SelectItem value="all">Todos os funcionários</SelectItem>
                     {users?.map((user) => (
                       <SelectItem key={user.id} value={user.id.toString()}>
                         {user.fullName}
@@ -187,7 +187,7 @@ export default function RecordsTab() {
                     <SelectValue placeholder="Todos" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos</SelectItem>
+                    <SelectItem value="all">Todos</SelectItem>
                     <SelectItem value="in">Entrada</SelectItem>
                     <SelectItem value="out">Saída</SelectItem>
                   </SelectContent>
