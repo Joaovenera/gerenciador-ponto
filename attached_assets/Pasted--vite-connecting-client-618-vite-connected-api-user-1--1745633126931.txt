@@ -1,0 +1,198 @@
+[vite] connecting...
+client:618 [vite] connected.
+/api/user:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 (Unauthorized)Understand this error
+/auth:1 [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) null
+hook.js:608 Warning: validateDOMNesting(...): <a> cannot appear as a descendant of <a>. Error Component Stack
+    at a (<anonymous>)
+    at a (<anonymous>)
+    at wouter.js?v=c6e90146:337:18
+    at nav (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at AdminMobileHeader (admin-mobile-header.tsx:17:45)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at AdminDashboard (dashboard.tsx:13:20)
+    at Route (wouter.js?v=c6e90146:323:16)
+    at ProtectedRoute (protected-route.tsx:22:3)
+    at Switch (wouter.js?v=c6e90146:379:17)
+    at Router (<anonymous>)
+    at Provider (chunk-M3NVYRND.js?v=c6e90146:48:15)
+    at TooltipProvider (@radix-ui_react-tooltip.js?v=c6e90146:58:5)
+    at AuthProvider (use-auth.tsx:31:32)
+    at QueryClientProvider (@tanstack_react-query.js?v=c6e90146:2805:3)
+    at App (<anonymous>)
+overrideMethod @ hook.js:608
+printWarning @ chunk-RPCDYKBN.js?v=c6e90146:521
+error @ chunk-RPCDYKBN.js?v=c6e90146:505
+validateDOMNesting @ chunk-RPCDYKBN.js?v=c6e90146:8256
+createInstance @ chunk-RPCDYKBN.js?v=c6e90146:8328
+completeWork @ chunk-RPCDYKBN.js?v=c6e90146:16290
+completeUnitOfWork @ chunk-RPCDYKBN.js?v=c6e90146:19224
+performUnitOfWork @ chunk-RPCDYKBN.js?v=c6e90146:19206
+workLoopSync @ chunk-RPCDYKBN.js?v=c6e90146:19137
+renderRootSync @ chunk-RPCDYKBN.js?v=c6e90146:19116
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=c6e90146:18874
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=c6e90146:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=c6e90146:18627Understand this error
+employees:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was receivedUnderstand this error
+employees:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was receivedUnderstand this error
+employees:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was receivedUnderstand this error
+hook.js:608 Warning: `value` prop on `input` should not be null. Consider using an empty string to clear the component or `undefined` for uncontrolled components. Error Component Stack
+    at input (<anonymous>)
+    at _c (input.tsx:6:6)
+    at chunk-2K77HOHX.js?v=c6e90146:79:13
+    at chunk-2K77HOHX.js?v=c6e90146:56:13
+    at form.tsx:109:9
+    at div (<anonymous>)
+    at form.tsx:78:6
+    at Controller (chunk-4BFJKWC4.js?v=c6e90146:298:35)
+    at FormField (form.tsx:35:6)
+    at div (<anonymous>)
+    at form (<anonymous>)
+    at FormProvider (chunk-4BFJKWC4.js?v=c6e90146:102:11)
+    at EmployeeForm (employee-form.tsx:50:40)
+    at div (<anonymous>)
+    at chunk-AXMZZQ2X.js?v=c6e90146:42:13
+    at chunk-L4E5E66O.js?v=c6e90146:59:7
+    at chunk-2K77HOHX.js?v=c6e90146:79:13
+    at chunk-2K77HOHX.js?v=c6e90146:56:13
+    at chunk-AXMZZQ2X.js?v=c6e90146:42:13
+    at chunk-LEHQQXMY.js?v=c6e90146:29:5
+    at @radix-ui_react-dialog.js?v=c6e90146:233:13
+    at @radix-ui_react-dialog.js?v=c6e90146:156:58
+    at Presence (chunk-E2WRGZOK.js?v=c6e90146:24:11)
+    at @radix-ui_react-dialog.js?v=c6e90146:147:64
+    at chunk-2K77HOHX.js?v=c6e90146:79:13
+    at chunk-2K77HOHX.js?v=c6e90146:56:13
+    at chunk-AXMZZQ2X.js?v=c6e90146:42:13
+    at chunk-L4E5E66O.js?v=c6e90146:258:22
+    at Presence (chunk-E2WRGZOK.js?v=c6e90146:24:11)
+    at Provider (chunk-M3NVYRND.js?v=c6e90146:48:15)
+    at DialogPortal (@radix-ui_react-dialog.js?v=c6e90146:109:11)
+    at _c3 (dialog.tsx:35:6)
+    at Provider (chunk-M3NVYRND.js?v=c6e90146:48:15)
+    at Dialog (@radix-ui_react-dialog.js?v=c6e90146:50:5)
+    at EmployeesTab (employees.tsx:33:21)
+    at div (<anonymous>)
+    at main (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at AdminDashboard (dashboard.tsx:13:20)
+    at Route (wouter.js?v=c6e90146:323:16)
+    at ProtectedRoute (protected-route.tsx:22:3)
+    at Switch (wouter.js?v=c6e90146:379:17)
+    at Router (<anonymous>)
+    at Provider (chunk-M3NVYRND.js?v=c6e90146:48:15)
+    at TooltipProvider (@radix-ui_react-tooltip.js?v=c6e90146:58:5)
+    at AuthProvider (use-auth.tsx:31:32)
+    at QueryClientProvider (@tanstack_react-query.js?v=c6e90146:2805:3)
+    at App (<anonymous>)
+overrideMethod @ hook.js:608Understand this error
+hook.js:608 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}. Error Component Stack
+    at DescriptionWarning (@radix-ui_react-dialog.js?v=c6e90146:329:29)
+    at @radix-ui_react-dialog.js?v=c6e90146:233:13
+    at @radix-ui_react-dialog.js?v=c6e90146:156:58
+    at Presence (chunk-E2WRGZOK.js?v=c6e90146:24:11)
+    at @radix-ui_react-dialog.js?v=c6e90146:147:64
+    at chunk-2K77HOHX.js?v=c6e90146:79:13
+    at chunk-2K77HOHX.js?v=c6e90146:56:13
+    at chunk-AXMZZQ2X.js?v=c6e90146:42:13
+    at chunk-L4E5E66O.js?v=c6e90146:258:22
+    at Presence (chunk-E2WRGZOK.js?v=c6e90146:24:11)
+    at Provider (chunk-M3NVYRND.js?v=c6e90146:48:15)
+    at DialogPortal (@radix-ui_react-dialog.js?v=c6e90146:109:11)
+    at _c3 (dialog.tsx:35:6)
+    at Provider (chunk-M3NVYRND.js?v=c6e90146:48:15)
+    at Dialog (@radix-ui_react-dialog.js?v=c6e90146:50:5)
+    at EmployeesTab (employees.tsx:33:21)
+    at div (<anonymous>)
+    at main (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at AdminDashboard (dashboard.tsx:13:20)
+    at Route (wouter.js?v=c6e90146:323:16)
+    at ProtectedRoute (protected-route.tsx:22:3)
+    at Switch (wouter.js?v=c6e90146:379:17)
+    at Router (<anonymous>)
+    at Provider (chunk-M3NVYRND.js?v=c6e90146:48:15)
+    at TooltipProvider (@radix-ui_react-tooltip.js?v=c6e90146:58:5)
+    at AuthProvider (use-auth.tsx:31:32)
+    at QueryClientProvider (@tanstack_react-query.js?v=c6e90146:2805:3)
+    at App (<anonymous>)
+overrideMethod @ hook.js:608Understand this warning
+client:223 [vite] hot updated: /src/lib/protected-route.tsx
+client:223 [vite] hot updated: /src/index.css?v=6dqNl2dPTPhJ7Uxl2BfhR
+hook.js:608 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}. Error Component Stack
+    at DescriptionWarning (@radix-ui_react-dialog.js?v=c6e90146:329:29)
+    at @radix-ui_react-dialog.js?v=c6e90146:233:13
+    at @radix-ui_react-dialog.js?v=c6e90146:156:58
+    at Presence (chunk-E2WRGZOK.js?v=c6e90146:24:11)
+    at @radix-ui_react-dialog.js?v=c6e90146:147:64
+    at chunk-2K77HOHX.js?v=c6e90146:79:13
+    at chunk-2K77HOHX.js?v=c6e90146:56:13
+    at chunk-AXMZZQ2X.js?v=c6e90146:42:13
+    at chunk-L4E5E66O.js?v=c6e90146:258:22
+    at Presence (chunk-E2WRGZOK.js?v=c6e90146:24:11)
+    at Provider (chunk-M3NVYRND.js?v=c6e90146:48:15)
+    at DialogPortal (@radix-ui_react-dialog.js?v=c6e90146:109:11)
+    at _c3 (dialog.tsx:35:6)
+    at Provider (chunk-M3NVYRND.js?v=c6e90146:48:15)
+    at Dialog (@radix-ui_react-dialog.js?v=c6e90146:50:5)
+    at EmployeesTab (employees.tsx:33:21)
+    at div (<anonymous>)
+    at main (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at AdminDashboard (dashboard.tsx:13:20)
+    at Route (wouter.js?v=c6e90146:323:16)
+    at ProtectedRoute (protected-route.tsx:14:3)
+    at Switch (wouter.js?v=c6e90146:379:17)
+    at Router (<anonymous>)
+    at Provider (chunk-M3NVYRND.js?v=c6e90146:48:15)
+    at TooltipProvider (@radix-ui_react-tooltip.js?v=c6e90146:58:5)
+    at AuthProvider (use-auth.tsx:31:32)
+    at QueryClientProvider (@tanstack_react-query.js?v=c6e90146:2805:3)
+    at App (<anonymous>)
+overrideMethod @ hook.js:608Understand this warning
+queryClient.ts:15 
+            
+            
+           POST https://da22a436-07d8-4fdf-9c39-180d2eb2fe3d-00-1fg7cmv19xiak.spock.replit.dev/api/admin/users 500 (Internal Server Error)
+apiRequest @ queryClient.ts:15
+mutationFn @ employee-form.tsx:79
+fn @ @tanstack_react-query.js?v=c6e90146:1189
+run @ @tanstack_react-query.js?v=c6e90146:494
+start @ @tanstack_react-query.js?v=c6e90146:536
+execute @ @tanstack_react-query.js?v=c6e90146:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=c6e90146:2630
+(anonymous) @ @tanstack_react-query.js?v=c6e90146:3295
+onSubmit @ employee-form.tsx:135
+(anonymous) @ chunk-4BFJKWC4.js?v=c6e90146:1465
+await in (anonymous)
+callCallback2 @ chunk-RPCDYKBN.js?v=c6e90146:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=c6e90146:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=c6e90146:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=c6e90146:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=c6e90146:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=c6e90146:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=c6e90146:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=c6e90146:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=c6e90146:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=c6e90146:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=c6e90146:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=c6e90146:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=c6e90146:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=c6e90146:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=c6e90146:5449Understand this error
