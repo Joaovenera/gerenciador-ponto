@@ -11,3 +11,11 @@
   export const db = drizzle(pool, { schema });
   export { pool };
 
+<<<<<<< HEAD
+=======
+export const pool = new Pool({ 
+  connectionString: process.env.DATABASE_URL
+});
+
+export const db = drizzle(pool, { schema });
+>>>>>>> 7d94f84 (Improve the platform's connection to the database for enhanced data management)
