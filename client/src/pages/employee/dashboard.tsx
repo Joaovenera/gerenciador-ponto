@@ -38,13 +38,13 @@ export default function EmployeeDashboard() {
   }, []);
   
   // Get user status (in/out)
-  const { data: statusData, isLoading: statusLoading } = useQuery({
+  const { data: statusData, isLoading: statusLoading } = useQuery<{ status: "in" | "out" }>({
     queryKey: ["/api/time-records/status"],
     refetchInterval: 30000, // Refetch every 30s
   });
 
   // Get client IP
-  const { data: ipData } = useQuery({
+  const { data: ipData } = useQuery<{ ip: string }>({
     queryKey: ["/api/ip"],
   });
 
@@ -68,8 +68,13 @@ export default function EmployeeDashboard() {
   // Group time records by date
   const groupedRecords = timeRecords ? groupRecordsByDate(timeRecords) : {};
 
+  // Define types for API responses
+  interface StatusResponse {
+    status: "in" | "out";
+  }
+
   // Get current user status
-  const currentStatus = statusData?.status || "out";
+  const currentStatus = (statusData as StatusResponse)?.status || "out";
 
   return (
     <div className="min-h-screen bg-gray-100">

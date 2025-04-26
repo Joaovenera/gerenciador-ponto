@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useLocation } from "wouter";
-import { Clock } from "lucide-react";
+import { Clock, Loader2 } from "lucide-react";
 
 const loginFormSchema = z.object({
   username: z.string().min(1, { message: "CPF/Usuário é obrigatório" }),
