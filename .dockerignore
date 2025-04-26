@@ -1,14 +1,55 @@
+# Dependency directories
 node_modules
-npm-debug.log
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs
+*.log
+
+# Build directories
 dist
+build
+out
+
+# Version control
 .git
 .github
+.gitignore
+
+# Editor directories and files
 .vscode
-*.log
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment files
 .env*
 !.env.example
+
+# System files
 .DS_Store
-README.md
+Thumbs.db
+
+# Replit specific
 .replit
-.config
+.replit.nix
+.config/
+replit.nix
+
+# Miscellaneous
 generated-icon.png
+README.md
+LICENSE
+
+# Docker files
+docker-compose.yml
+docker-compose.dev.yml
+Dockerfile
+Dockerfile.dev
+.dockerignore
