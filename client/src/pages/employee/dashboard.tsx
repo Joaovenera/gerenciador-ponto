@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LogOut, LogIn, User } from "lucide-react";
@@ -22,6 +23,7 @@ import { ptBR } from "date-fns/locale";
 
 export default function EmployeeDashboard() {
   const { user, logoutMutation } = useAuth();
+  const [location, navigate] = useLocation();
   const [currentTime, setCurrentTime] = useState(getCurrentTime());
   const [currentDate, setCurrentDate] = useState(formatDateWithWeekday(new Date()));
   const [isClockInModalOpen, setIsClockInModalOpen] = useState(false);
@@ -139,7 +141,7 @@ export default function EmployeeDashboard() {
             
             <div className="grid grid-cols-2 gap-4">
               <Button
-                onClick={() => setIsClockInModalOpen(true)}
+                onClick={() => navigate("/camera?type=in")}
                 disabled={currentStatus === "in" || registerRecordMutation.isPending}
                 className="flex flex-col items-center justify-center p-6 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -148,7 +150,7 @@ export default function EmployeeDashboard() {
               </Button>
               
               <Button
-                onClick={() => setIsClockOutModalOpen(true)}
+                onClick={() => navigate("/camera?type=out")}
                 disabled={currentStatus === "out" || registerRecordMutation.isPending}
                 className="flex flex-col items-center justify-center p-6 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >

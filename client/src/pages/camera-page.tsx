@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Camera, ChevronLeft, CheckCircle } from "lucide-react";
-import { useLocation, useHistory } from "wouter";
+import { useLocation } from "wouter";
 import { useGeolocation } from "@/hooks/use-geolocation";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -42,10 +42,23 @@ export default function CameraPage() {
     }
     
     // Request location on component mount
-    requestLocation();
+    requestLocation().catch(error => {
+      toast({
+        title: "Erro de localização",
+        description: "Não foi possível obter sua localização. Verifique as permissões do navegador.",
+        variant: "destructive",
+      });
+    });
     
     // Start camera
-    startCamera();
+    startCamera().catch(error => {
+      toast({
+        title: "Erro da câmera",
+        description: "Não foi possível acessar sua câmera. Verifique as permissões do navegador.",
+        variant: "destructive",
+      });
+    });
+    
     return () => stopCamera();
   }, []);
   
