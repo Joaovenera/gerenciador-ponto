@@ -1,0 +1,49 @@
+**Objetivo do Projeto:** Desenvolver um sistema simples de Ponto Eletrônico Web no Replit.
+
+**Requisitos Principais:**
+
+1.  **Interface do Funcionário:**
+    * **Acesso Principal:** Otimizada para smartphones (Mobile-First). Deve ser responsiva para funcionar bem em telas pequenas.
+    * **Acesso Secundário:** Funcional, mas menos prioritário, em desktops.
+    * **Funcionalidades:**
+        * Login simples (usuário/senha).
+        * Botão claro para "Registrar Entrada". Ao clicar:
+            * Solicitar permissão e capturar a **Geolocalização** (latitude, longitude) do dispositivo via API do navegador (`navigator.geolocation`).
+            * Solicitar permissão e **ativar a câmera** do dispositivo via API (`navigator.mediaDevices.getUserMedia`).
+            * Exibir um preview rápido da câmera e permitir/realizar a captura de uma **foto instantânea**. **IMPORTANTE: A foto deve ser tirada NA HORA, não pode ser selecionada da galeria do dispositivo.**
+            * Enviar o registro de entrada junto com a Geolocalização, a Foto capturada e o **endereço IP** do cliente para o servidor.
+        * Botão claro para "Registrar Saída". Funcionalidade similar à de entrada (capturar Geo, Foto instantânea, IP).
+        * Exibição do status atual (Dentro/Fora da empresa).
+        * Visualização dos próprios registros de ponto do dia atual e dos últimos 7 dias (sem exibir foto/geo/ip para o próprio funcionário nesta tela, para simplificar).
+
+2.  **Painel Administrativo:**
+    * **Acesso Principal:** Otimizado para Desktops.
+    * **Funcionalidades:**
+        * Login seguro para administradores.
+        * Visualização de **todos** os registros de ponto de todos os funcionários.
+        * Para cada registro, exibir: Usuário, Data/Hora, Tipo (Entrada/Saída), **Endereço IP capturado**, **Geolocalização capturada** (idealmente com um link para visualizar no mapa, ex: Google Maps), e a **Foto capturada** no momento do registro.
+        * Filtros para visualizar registros por intervalo de datas e/ou por funcionário.
+        * Gerenciamento de usuários (criar novos funcionários, visualizar lista - opcional: editar/desativar).
+        * (Opcional, mas útil) Capacidade de corrigir/adicionar registros manualmente com justificativa (sem captura de foto/geo/ip para registros manuais).
+        * Exportar relatórios de ponto (Ex: CSV), incluindo as informações de IP e Geolocalização (a foto pode ser mais complexa de exportar em CSV, talvez exportar um link ou ID).
+
+ Usar o Replit DB. e Armazenar imagens diretamente no Replit DB 
+
+
+
+para cadastro do funcionário 
+
+Nome Completo
+CPF
+Foto (de perfil)
+Data de Admissão
+Cargo/Função
+Departamento
+Status (Ativo/Inativo)
+Email
+Telefone
+Nível de Acesso (Funcionário/Admin)
+data de nascimento
+Credenciais de Login (usuário(cpf)/senha hash(senha padrão data de nascimento e ao realizar o primeiro login já precisa ser alterada))
+
+e se lembre que precisa possuir um usuário admin padrão senão não e possível realizar a primeira entrada no sistema
