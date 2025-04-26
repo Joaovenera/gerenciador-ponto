@@ -1,46 +1,36 @@
-version: '3.8'
+  version: '3.8'
 
-services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    container_name: timetracker-app-dev
-    restart: unless-stopped
-    ports:
-      - "5000:5000"
-    environment:
-      - NODE_ENV=development
-    env_file:
-      - .env
-    volumes:
-      - .:/app
-      - /app/node_modules
-    networks:
-      - timetracker-network
+  services:
+    app:
+      build:
+        context: .
+        dockerfile: Dockerfile.dev
+      container_name: timetracker-app-dev
+      restart: unless-stopped
+      ports:
+        - "5000:5000"
+      environment:
+        - NODE_ENV=development
+        - DATABASE_URL=postgres://root:root@db:5432/timetracker
+      volumes:
+        - .:/app
+        - /app/node_modules
+      depends_on:
+        - db
 
-  db:
-<<<<<<< HEAD
-    image: postgres:17
-=======
-    image: postgres:17-alpine
->>>>>>> 19bd248 (Switch database to self-hosted PostgreSQL for enhanced data control)
-    container_name: timetracker-db-dev
-    restart: unless-stopped
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=${PGUSER}
-      - POSTGRES_PASSWORD=${PGPASSWORD}
-      - POSTGRES_DB=${PGDATABASE}
-    volumes:
-      - postgres_data_dev:/var/lib/postgresql/data
-    networks:
-      - timetracker-network
+    db:
+      image: bitnami/postgresql:latest
+      container_name: timetracker-db-dev
+      restart: unless-stopped
+      ports:
+        - "5432:5432"
+      environment:
+        - POSTGRES_USER=root
+        - POSTGRES_PASSWORD=root
+        - POSTGRES_DB=timetracker
+      volumes:
+        - postgres_data_dev:/var/lib/postgresql/data
 
-networks:
-  timetracker-network:
-    driver: bridge
 
-volumes:
-  postgres_data_dev:
+  volumes:
+    postgres_data_dev:
