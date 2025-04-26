@@ -14,6 +14,7 @@ interface UseCameraResult {
   takePhoto: () => void;
   error: string | null;
   resetPhoto: () => void;
+  setIsCameraActive: (isActive: boolean) => void;
 }
 
 export function useCamera(options?: UseCameraOptions): UseCameraResult {
@@ -119,6 +120,7 @@ export function useCamera(options?: UseCameraOptions): UseCameraResult {
     stopCamera,
     takePhoto,
     error,
-    resetPhoto
+    resetPhoto,
+    setIsCameraActive
   };
 }

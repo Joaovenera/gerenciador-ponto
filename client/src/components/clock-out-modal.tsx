@@ -46,7 +46,18 @@ export default function ClockOutModal({ isOpen, onClose, onConfirm }: ClockOutMo
     if (!isCameraActive) {
       const success = await startCamera();
       if (success && videoRef.current) {
-        videoRef.current.play().catch(e => console.error("Erro ao iniciar reprodução de vídeo:", e));
+        try {
+          // Garantir que o vídeo inicie e seja marcado como ativo
+          await videoRef.current.play();
+          // Força atualização da UI em caso de problemas de estado
+          setTimeout(() => {
+            if (!isCameraActive && videoRef.current && videoRef.current.readyState >= 2) {
+              setIsCameraActive(true);
+            }
+          }, 500);
+        } catch (e) {
+          console.error("Erro ao iniciar reprodução de vídeo:", e);
+        }
       }
     }
   };
