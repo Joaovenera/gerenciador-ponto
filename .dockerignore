@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+dist
+.git
+.github
+.vscode
+*.log
+.env*
+!.env.example
+.DS_Store
+README.md
+.replit
+.config
+generated-icon.png
