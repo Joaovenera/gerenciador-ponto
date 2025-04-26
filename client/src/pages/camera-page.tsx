@@ -148,8 +148,8 @@ export default function CameraPage() {
     }
     
     registerRecordMutation.mutate({
-      latitude: position.latitude,
-      longitude: position.longitude,
+      latitude: position.latitude.toString(),
+      longitude: position.longitude.toString(),
       photo: photoData,
       type: recordType,
       ipAddress: clientIp,
