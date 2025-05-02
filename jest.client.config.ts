@@ -6,8 +6,14 @@ export default {
   transform: {
     '^.+\.(ts|tsx)$': ['ts-jest', {
       useESM: true,
+      tsconfig: 'tsconfig.json',
     }],
+    '^.+\.jsx?$': 'babel-jest',
   },
+  transformIgnorePatterns: [
+    '[/\\\\]node_modules[/\\\\].+\.(js|jsx|mjs|cjs|ts|tsx)$',
+  ],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/client/src/$1',
     '^@shared/(.*)$': '<rootDir>/shared/$1',

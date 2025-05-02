@@ -5,12 +5,29 @@ import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
-import { User, LoginCredentials, changePasswordSchema } from "@shared/schema";
+import { LoginCredentials, changePasswordSchema } from "@shared/schema";
 import createMemoryStore from "memorystore";
 
 declare global {
   namespace Express {
-    interface User extends User {}
+    // Definindo o tipo User para o Express que terá as mesmas propriedades do nosso User da aplicação
+    interface User {
+      id: number;
+      fullName: string;
+      cpf: string;
+      profilePicture: string | null;
+      admissionDate: string;
+      role: string;
+      department: string;
+      status: string;
+      email: string;
+      phone: string | null;
+      accessLevel: string;
+      birthDate: string;
+      username: string;
+      password: string;
+      firstLogin: boolean;
+    }
   }
 }
 
