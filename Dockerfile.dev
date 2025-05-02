@@ -1,16 +1,25 @@
 FROM node:20-alpine
 
-# Create app directory
+# Cria o diretório da aplicação
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copia apenas os pacotes primeiro
 COPY package*.json ./
 
-# Install dependencies
+# Instala dependências de produção
 RUN npm install
 
-# Expose the port the app runs on
+RUN npm install -dev
+
+# Copia o restante da aplicação
+COPY . .
+
+# Dá permissão para executar o script
+RUN chmod +x /app/scripts/start.sh
+
+# Expõe a porta
 EXPOSE 5000
 
-# Command to run the application in development mode
-CMD ["npm", "run", "dev"]
+# Comando de start
+CMD ["sh", "/app/scripts/start.sh"]
+#CMD ["ping","google.com"]
