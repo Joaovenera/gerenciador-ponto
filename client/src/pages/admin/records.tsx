@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,9 +35,52 @@ import {
   FileDown, 
   Search, 
   Edit, 
-  Trash2 
+  Trash2,
+  Plus,
+  Clock
 } from "lucide-react";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  DialogFooter,
+  DialogTrigger
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+
+// Schema de validação para o formulário de registro manual
+const manualRecordSchema = z.object({
+  userId: z.string({
+    required_error: "Selecione um funcionário",
+  }),
+  type: z.enum(["in", "out"], {
+    required_error: "Selecione o tipo de registro",
+  }),
+  timestamp: z.string({
+    required_error: "Selecione a data e hora",
+  }),
+  ipAddress: z.string({
+    required_error: "Insira o endereço IP",
+  }),
+  latitude: z.string({
+    required_error: "Insira a latitude",
+  }),
+  longitude: z.string({
+    required_error: "Insira a longitude",
+  }),
+  photo: z.string({
+    required_error: "Insira uma URL para a foto",
+  }),
+  justification: z.string().optional(),
+});
+
+type ManualRecordFormValues = z.infer<typeof manualRecordSchema>;
 
 export default function RecordsTab() {
   const { toast } = useToast();
@@ -49,6 +95,61 @@ export default function RecordsTab() {
     photo: "",
     justification: undefined
   });
+  
+  // Estado para controlar o modal de criação manual
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  
+  // Configuração do formulário de registro manual
+  const form = useForm<ManualRecordFormValues>({
+    resolver: zodResolver(manualRecordSchema),
+    defaultValues: {
+      userId: "",
+      type: "in",
+      timestamp: new Date().toISOString().slice(0, 16), // Format: YYYY-MM-DDThh:mm
+      ipAddress: "",
+      latitude: "",
+      longitude: "",
+      photo: "https://via.placeholder.com/300x200?text=Registro+Manual",
+      justification: "",
+    },
+  });
+  
+  // Criação manual de registros
+  const createRecordMutation = useMutation({
+    mutationFn: async (data: ManualRecordFormValues) => {
+      return await apiRequest("POST", "/api/admin/time-records", {
+        userId: parseInt(data.userId),
+        type: data.type,
+        timestamp: new Date(data.timestamp).toISOString(),
+        ipAddress: data.ipAddress,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        photo: data.photo,
+        justification: data.justification || undefined,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/time-records"] });
+      setCreateModalOpen(false);
+      form.reset();
+      toast({
+        title: "Registro criado",
+        description: "O registro de ponto manual foi criado com sucesso",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Erro ao criar registro",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // Função que lida com o envio do formulário
+  const onSubmit = (data: ManualRecordFormValues) => {
+    createRecordMutation.mutate(data);
+  };
   
   // Get all time records with filters
   const { data: timeRecords, isLoading: recordsLoading } = useQuery<TimeRecord[]>({
@@ -196,28 +297,39 @@ export default function RecordsTab() {
               </div>
             </div>
             
-            <div className="mt-4 flex justify-end space-x-2">
-              <Button 
-                variant="default" 
-                className="flex items-center"
-                onClick={() => {
-                  queryClient.invalidateQueries({ 
-                    queryKey: ["/api/admin/time-records"] 
-                  });
-                }}
-              >
-                <Search className="h-4 w-4 mr-2" />
-                Filtrar
-              </Button>
+            <div className="mt-4 flex justify-between items-center">
+              <Dialog open={createModalOpen} onOpenChange={setCreateModalOpen}>
+                <DialogTrigger asChild>
+                  <Button className="flex items-center bg-green-600 hover:bg-green-700">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Adicionar Ponto Manual
+                  </Button>
+                </DialogTrigger>
+              </Dialog>
               
-              <Button 
-                variant="outline" 
-                className="flex items-center"
-                onClick={handleExport}
-              >
-                <FileDown className="h-4 w-4 mr-2" />
-                Exportar CSV
-              </Button>
+              <div className="flex space-x-2">
+                <Button 
+                  variant="default" 
+                  className="flex items-center"
+                  onClick={() => {
+                    queryClient.invalidateQueries({ 
+                      queryKey: ["/api/admin/time-records"] 
+                    });
+                  }}
+                >
+                  <Search className="h-4 w-4 mr-2" />
+                  Filtrar
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  className="flex items-center"
+                  onClick={handleExport}
+                >
+                  <FileDown className="h-4 w-4 mr-2" />
+                  Exportar CSV
+                </Button>
+              </div>
             </div>
           </div>
           
@@ -376,6 +488,210 @@ export default function RecordsTab() {
         </div>
       </div>
       
+      {/* Manual Record Creation Modal */}
+      <Dialog open={createModalOpen} onOpenChange={setCreateModalOpen}>
+        <DialogContent className="sm:max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Adicionar Registro Manual</DialogTitle>
+            <DialogDescription>
+              Preencha os dados abaixo para criar um registro de ponto manual.
+              Este registro será marcado como "manual" no sistema.
+            </DialogDescription>
+          </DialogHeader>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {/* Funcionário */}
+                <FormField
+                  control={form.control}
+                  name="userId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Funcionário*</FormLabel>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione um funcionário" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {users?.map((user) => (
+                            <SelectItem key={user.id} value={user.id.toString()}>
+                              {user.fullName}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Tipo de Registro */}
+                <FormField
+                  control={form.control}
+                  name="type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tipo de Registro*</FormLabel>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o tipo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="in">Entrada</SelectItem>
+                          <SelectItem value="out">Saída</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {/* Data e Hora */}
+                <FormField
+                  control={form.control}
+                  name="timestamp"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Data e Hora*</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="datetime-local"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Endereço IP */}
+                <FormField
+                  control={form.control}
+                  name="ipAddress"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Endereço IP*</FormLabel>
+                      <FormControl>
+                        <Input placeholder="192.168.1.1" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {/* Latitude */}
+                <FormField
+                  control={form.control}
+                  name="latitude"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Latitude*</FormLabel>
+                      <FormControl>
+                        <Input placeholder="-23.550520" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Longitude */}
+                <FormField
+                  control={form.control}
+                  name="longitude"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Longitude*</FormLabel>
+                      <FormControl>
+                        <Input placeholder="-46.633308" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* URL da Foto */}
+              <FormField
+                control={form.control}
+                name="photo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>URL da Foto*</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="https://via.placeholder.com/300x200" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Justificativa */}
+              <FormField
+                control={form.control}
+                name="justification"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Justificativa (opcional)</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Insira uma justificativa para este registro manual" 
+                        {...field} 
+                        className="h-20"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <DialogFooter>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setCreateModalOpen(false)}
+                >
+                  Cancelar
+                </Button>
+                <Button 
+                  type="submit" 
+                  disabled={createRecordMutation.isPending}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  {createRecordMutation.isPending ? (
+                    <span className="flex items-center">
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Salvando...
+                    </span>
+                  ) : (
+                    <span className="flex items-center">
+                      <Clock className="mr-2 h-4 w-4" />
+                      Registrar Ponto
+                    </span>
+                  )}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
       {/* Photo Modal */}
       <Dialog 
         open={photoModal.open} 
