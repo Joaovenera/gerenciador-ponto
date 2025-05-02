@@ -172,8 +172,6 @@ export default function TimeRecordForm({
         variant: "destructive",
       });
     }
-      });
-    }
   };
 
   return (
