@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -34,7 +34,7 @@ const employeeFormSchema = z.object({
   department: z.string().min(1, "Departamento é obrigatório"),
   status: z.string().min(1, "Status é obrigatório"),
   email: z.string().email("Email inválido"),
-  phone: z.string().nullable().optional(),
+  phone: z.string().optional().or(z.literal('')),
   accessLevel: z.string().min(1, "Nível de acesso é obrigatório"),
   birthDate: z.string().min(1, "Data de nascimento é obrigatória"),
   username: z.string().min(1, "Nome de usuário é obrigatório"),
@@ -55,7 +55,7 @@ export default function EmployeeForm({
   const [isResetPassword, setIsResetPassword] = useState(false);
 
   // Set up form with default values
-  const form = useForm<EmployeeFormValues>({
+  const form = useForm<EmployeeFormValues, any, EmployeeFormValues>({
     resolver: zodResolver(employeeFormSchema),
     defaultValues: employee
       ? {
@@ -66,7 +66,7 @@ export default function EmployeeForm({
           department: employee.department,
           status: employee.status,
           email: employee.email,
-          phone: employee.phone,
+          phone: employee.phone || "",
           accessLevel: employee.accessLevel,
           birthDate: employee.birthDate,
           username: employee.username,
@@ -79,7 +79,7 @@ export default function EmployeeForm({
           department: "",
           status: "active",
           email: "",
-          phone: null,
+          phone: "",
           accessLevel: "employee",
           birthDate: "",
           username: "",
@@ -145,7 +145,7 @@ export default function EmployeeForm({
   });
 
   // Form submission handler
-  const onSubmit = (data: EmployeeFormValues) => {
+  const onSubmit: SubmitHandler<EmployeeFormValues> = async (data) => {
     if (employee) {
       updateEmployeeMutation.mutate({
         ...data,
