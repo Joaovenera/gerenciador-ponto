@@ -23,7 +23,7 @@ export const users = pgTable("users", {
 export const timeRecords = pgTable("time_records", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull(),
-  timestamp: timestamp("timestamp", { withTimezone: true }).notNull().defaultNow(),
+  timestamp: timestamp("timestamp").notNull().defaultNow(),
   type: text("type").notNull(), // "in" or "out"
   ipAddress: text("ip_address").notNull(),
   latitude: text("latitude").notNull(),

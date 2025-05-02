@@ -13,12 +13,7 @@ import { eq, and, gte, lt, desc } from "drizzle-orm";
 import session from "express-session";
 import { Store } from "express-session";
 import connectPg from "connect-pg-simple";
-import { format as dateFnsFormat } from "date-fns";
-import { 
-  getNowWithTimezone, 
-  adjustDateWithTimezone,
-  formatWithTimezone
-} from "./utils/date-utils";
+import { format } from "date-fns";
 
 // Create PostgreSQL session store
 const PostgresSessionStore = connectPg(session);
@@ -108,13 +103,10 @@ export class DatabaseStorage implements IStorage {
 
   // Time record methods
   async createTimeRecord(recordData: InsertTimeRecord): Promise<TimeRecord> {
-    // Usa a função de utilitário para obter a data atual com timezone
-    const timestampWithTz = getNowWithTimezone();
-
     const result = await db.insert(timeRecords)
       .values({
         ...recordData,
-        timestamp: timestampWithTz
+        timestamp: new Date()
       })
       .returning();
 
@@ -136,14 +128,12 @@ export class DatabaseStorage implements IStorage {
     }
 
     if (filter.startDate) {
-      // Ajusta a data de início com timezone
-      const startDate = adjustDateWithTimezone(filter.startDate);
+      const startDate = new Date(filter.startDate);
       conditions.push(gte(timeRecords.timestamp, startDate));
     }
 
     if (filter.endDate) {
-      // Ajusta a data de fim com timezone
-      const endDate = adjustDateWithTimezone(filter.endDate);
+      const endDate = new Date(filter.endDate);
       // Add one day to include the end date
       endDate.setDate(endDate.getDate() + 1);
       conditions.push(lt(timeRecords.timestamp, endDate));
@@ -174,12 +164,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateTimeRecord(id: number, recordData: Partial<TimeRecord>): Promise<TimeRecord> {
-    // Garante que o timestamp seja processado corretamente com timezone
+    // Garante que o timestamp seja um objeto Date se estiver presente
     let dataToUpdate = {...recordData};
     
-    if (dataToUpdate.timestamp) {
-      // Usa o utilitário para ajustar a data com o timezone correto
-      dataToUpdate.timestamp = adjustDateWithTimezone(dataToUpdate.timestamp);
+    if (dataToUpdate.timestamp && typeof dataToUpdate.timestamp === 'string') {
+      dataToUpdate.timestamp = new Date(dataToUpdate.timestamp);
     }
     
     const result = await db.update(timeRecords)
@@ -217,9 +206,9 @@ export class DatabaseStorage implements IStorage {
 
     // Add each record as a row
     for (const record of records) {
-      // Usa o utilitário para formatar a data com timezone
-      const date = formatWithTimezone(record.timestamp, "dd/MM/yyyy");
-      const time = formatWithTimezone(record.timestamp, "HH:mm:ss");
+      const recordDate = new Date(record.timestamp);
+      const date = format(recordDate, "dd/MM/yyyy");
+      const time = format(recordDate, "HH:mm:ss");
       const type = record.type === "in" ? "Entrada" : "Saída";
       const createdByName = userMap.get(record.createdBy) || `ID: ${record.createdBy}`;
       const userName = userMap.get(record.userId) || `ID: ${record.userId}`;
