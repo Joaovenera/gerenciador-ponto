@@ -18,6 +18,7 @@ export default function CameraPage() {
   const [photoData, setPhotoData] = useState<string | null>(null);
   const [recordType, setRecordType] = useState<"in" | "out">("in");
   const [step, setStep] = useState<"camera" | "confirmation">("camera");
+  const [justification, setJustification] = useState<string>("");
   
   // Get geolocation
   const { position, requestLocation } = useGeolocation();
@@ -153,6 +154,7 @@ export default function CameraPage() {
       photo: photoData,
       type: recordType,
       ipAddress: clientIp,
+      justification: justification.trim() || undefined,
     });
   };
   
@@ -246,6 +248,17 @@ export default function CameraPage() {
                 src={photoData} 
                 alt="Foto para registro de ponto"
                 className="w-full rounded-lg"
+              />
+            </div>
+            
+            <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+              <h2 className="font-medium mb-2">Justificativa (opcional)</h2>
+              <textarea
+                className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                placeholder="Digite uma justificativa, se necessário"
+                rows={3}
+                value={justification}
+                onChange={(e) => setJustification(e.target.value)}
               />
             </div>
           </div>
