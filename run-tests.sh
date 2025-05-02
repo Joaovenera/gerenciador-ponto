@@ -2,8 +2,8 @@
 
 # Run backend tests
 echo "Running backend tests..."
-node --experimental-vm-modules node_modules/jest/bin/jest.js --config=jest.config.ts
+NODE_OPTIONS="--experimental-vm-modules" npx jest --config=jest.config.ts
 
 # Run frontend tests
 echo "Running frontend tests..."
-node --experimental-vm-modules node_modules/jest/bin/jest.js --config=jest.client.config.ts
+NODE_OPTIONS="--experimental-vm-modules" npx jest --config=jest.client.config.ts

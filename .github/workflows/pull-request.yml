@@ -1,0 +1,76 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20.x
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run TypeScript compiler check
+      run: npm run check
+      
+  test-affected:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # This is important for detecting changed files
+    
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20.x
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Get changed files
+      id: changed-files
+      uses: tj-actions/changed-files@v39
+      
+    - name: Run tests for changed files
+      if: steps.changed-files.outputs.all_changed_files != ''
+      run: |
+        CHANGED_FILES="${{ steps.changed-files.outputs.all_changed_files }}"
+        if echo "$CHANGED_FILES" | grep -q "server/"; then
+          echo "Running backend tests..."
+          node --experimental-vm-modules node_modules/jest/bin/jest.js --config=jest.config.ts
+        fi
+        if echo "$CHANGED_FILES" | grep -q "client/"; then
+          echo "Running frontend tests..."
+          node --experimental-vm-modules node_modules/jest/bin/jest.js --config=jest.client.config.ts
+        fi
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
