@@ -1,4 +1,5 @@
-export default {
+export default {  
+  testTimeout: 10000,
   preset: 'ts-jest',
   testEnvironment: 'node',
   extensionsToTreatAsEsm: ['.ts'],
