@@ -15,9 +15,6 @@ import {
   Menu,
   X,
   Map,
-  BellRing,
-  Settings,
-  Shield,
 } from "lucide-react";
 import {
   formatDateWithWeekday,
@@ -25,7 +22,6 @@ import {
   getCurrentDate,
   getTypeIcon,
   getTypeColor,
-  cn,
 } from "@/lib/utils";
 import ClockInModal from "@/components/clock-in-modal";
 import ClockOutModal from "@/components/clock-out-modal";
@@ -61,7 +57,6 @@ import { ptBR } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { motion, AnimatePresence } from "framer-motion";
 
 export default function EmployeeDashboard() {
   const { user, logoutMutation } = useAuth();
@@ -74,27 +69,6 @@ export default function EmployeeDashboard() {
   const [isClockOutModalOpen, setIsClockOutModalOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [justificationModal, setJustificationModal] = useState({ open: false, text: "" });
-  
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-  
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 300, damping: 24 } }
-  };
-
-  const clockDigitsVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 300, damping: 24, delay: 0.3 } }
-  };
 
   // Time interval to update current time
   useEffect(() => {
@@ -159,34 +133,41 @@ export default function EmployeeDashboard() {
       .substring(0, 2);
   };
 
-  
+  return (
+    <div className="min-h-screen bg-slate-50">
+      {/* Mobile-optimized Header */}
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
+        <div className="px-4 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <Clock className="h-4 w-4 text-primary" />
+            <div className="font-bold text-primary text-base">
+              Ponto Eletrônico
             </div>
           </div>
 
           {user && (
-            <div className="flex items-center gap-2">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" size="icon" className="rounded-full h-9 w-9 border border-slate-200 shadow-sm">
-                      <Menu className="h-5 w-5" />
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent side="right" className="w-80 border-l shadow-lg">
-                    <SheetHeader className="pb-6">
-                      <SheetTitle className="flex items-center justify-between">
-                        <span className="text-xl font-bold text-slate-800">Menu</span>
-                        <SheetClose asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="rounded-full h-8 w-8 hover:bg-slate-100"
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </SheetClose>
-                      </SheetTitle>
-                    </SheetHeader>
+            <div className="flex items-center">
+              <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="rounded-full">
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-72">
+                  <SheetHeader className="pb-6">
+                    <SheetTitle className="flex items-center justify-between">
+                      <span>Menu</span>
+                      <SheetClose asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="rounded-full h-8 w-8"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </SheetClose>
+                    </SheetTitle>
+                  </SheetHeader>
 
                   <div className="space-y-6">
                     {/* User Profile Card */}
@@ -266,101 +247,64 @@ export default function EmployeeDashboard() {
       </header>
 
       {/* Main Content - Mobile Optimized */}
-      <main className="px-4 py-6 pb-20">
+      <main className="px-4 py-4 pb-16">
         {/* Clock Card - Improved */}
-        <motion.div variants={itemVariants}>
-          <Card className="mb-7 border-none overflow-hidden rounded-xl card-shadow bg-white/80 backdrop-blur-sm">
-            <CardContent className="p-0">
-              <div className="bg-gradient-to-br from-primary/95 via-primary to-blue-600 p-6 text-white">
-                <div className="flex items-start justify-between mb-6">
-                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
-                    <p className="text-white/80 text-sm font-medium flex items-center">
-                      <Calendar className="h-3.5 w-3.5 mr-1.5 opacity-80" />
-                      {currentDate}
-                    </p>
-                  </motion.div>
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.3 }}
-                  >
-                    <Badge
-                      variant={currentStatus === "in" ? "success" : "destructive"}
-                      className={cn(
-                        "px-3 py-1 text-xs border-0 shadow-md",
-                        currentStatus === "in" 
-                          ? "bg-emerald-500/90 text-white" 
-                          : "bg-rose-500/90 text-white"
-                      )}
-                    >
-                      <div
-                        className={`w-2 h-2 rounded-full mr-1.5 ${currentStatus === "in" ? "bg-white animate-pulse" : "bg-white"}`}
-                      ></div>
-                      <span className="font-medium">
-                        {currentStatus === "in" ? "Na empresa" : "Fora da empresa"}
-                      </span>
-                    </Badge>
-                  </motion.div>
+        <Card className="mb-5 border-none shadow-lg overflow-hidden">
+          <CardContent className="p-0">
+            <div className="bg-gradient-to-r from-primary/90 to-primary p-5 text-white">
+              <div className="flex items-start justify-between mb-6">
+                <div>
+                  <p className="text-white/70 text-sm font-medium">{currentDate}</p>
                 </div>
-
-                <div className="text-center mb-4">
-                  <motion.div 
-                    variants={clockDigitsVariants}
-                    className="text-7xl font-bold tracking-tight mb-1 font-mono"
-                  >
-                    {currentTime}
-                  </motion.div>
-                  <motion.p 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                    className="text-white/70 text-xs mt-2 font-medium"
-                  >
-                    É importante registrar o ponto de entrada e saída corretamente
-                  </motion.p>
-                </div>
+                <Badge
+                  variant={currentStatus === "in" ? "success" : "destructive"}
+                  className="px-2.5 py-0.5 text-xs bg-white/20 text-white border-0"
+                >
+                  <div
+                    className={`w-1.5 h-1.5 rounded-full mr-1.5 ${currentStatus === "in" ? "bg-green-400" : "bg-red-400"}`}
+                  ></div>
+                  <span>
+                    {currentStatus === "in" ? "Na empresa" : "Fora da empresa"}
+                  </span>
+                </Badge>
               </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+
+              <div className="text-center mb-4">
+                <div className="text-6xl font-bold tracking-tight">
+                  {currentTime}
+                </div>
+                <p className="text-white/60 text-xs mt-1">
+                  É importante registrar o ponto de entrada e saída corretamente
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Action Buttons */}
-        <motion.div 
-          variants={itemVariants} 
-          className="grid grid-cols-2 gap-4 mb-8"
-        >
-          <motion.div
-            whileHover={{ scale: currentStatus === "in" ? 1 : 1.03, y: currentStatus === "in" ? 0 : -3 }}
-            whileTap={{ scale: currentStatus === "in" ? 1 : 0.97 }}
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          <Button
+            onClick={() => navigate("/camera?type=in")}
+            disabled={
+              currentStatus === "in" || registerRecordMutation.isPending
+            }
+            className="flex flex-col items-center justify-center py-4 gap-3 bg-emerald-500 hover:bg-emerald-600 transition-all duration-300 shadow-md h-24 disabled:opacity-50 disabled:shadow-none"
           >
-            <Button
-              onClick={() => navigate("/camera?type=in")}
-              disabled={currentStatus === "in" || registerRecordMutation.isPending}
-              className="flex flex-col items-center justify-center py-5 gap-3 bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl h-24 w-full rounded-xl disabled:opacity-60 disabled:shadow-none disabled:cursor-not-allowed"
-            >
-              <div className="bg-white/20 p-2 rounded-full">
-                <LogIn className="h-6 w-6" />
-              </div>
-              <span className="font-medium">Entrada</span>
-            </Button>
-          </motion.div>
+            <LogIn className="h-6 w-6" />
+            <span className="font-medium">Entrada</span>
+          </Button>
 
-          <motion.div
-            whileHover={{ scale: currentStatus === "out" ? 1 : 1.03, y: currentStatus === "out" ? 0 : -3 }}
-            whileTap={{ scale: currentStatus === "out" ? 1 : 0.97 }}
+          <Button
+            onClick={() => navigate("/camera?type=out")}
+            disabled={
+              currentStatus === "out" || registerRecordMutation.isPending
+            }
+            className="flex flex-col items-center justify-center py-4 gap-3 bg-rose-500 hover:bg-rose-600 transition-all duration-300 shadow-md h-24 disabled:opacity-50 disabled:shadow-none"
           >
-            <Button
-              onClick={() => navigate("/camera?type=out")}
-              disabled={currentStatus === "out" || registerRecordMutation.isPending}
-              className="flex flex-col items-center justify-center py-5 gap-3 bg-gradient-to-br from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 transition-all duration-300 shadow-lg hover:shadow-xl h-24 w-full rounded-xl disabled:opacity-60 disabled:shadow-none disabled:cursor-not-allowed"
-            >
-              <div className="bg-white/20 p-2 rounded-full">
-                <LogOut className="h-6 w-6" />
-              </div>
-              <span className="font-medium">Saída</span>
-            </Button>
-          </motion.div>
-        </motion.div>
+            <LogOut className="h-6 w-6" />
+            <span className="font-medium">Saída</span>
+          </Button>
+        </div>
 
         {/* Records Section */}
         <Card className="border-none shadow-md overflow-hidden">
