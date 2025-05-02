@@ -32,9 +32,11 @@ import {
   FileDown, 
   Search, 
   Edit, 
-  Trash2 
+  Trash2,
+  PlusCircle 
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import TimeRecordForm from "@/components/time-record-form";
 
 export default function RecordsTab() {
   const { toast } = useToast();
@@ -48,16 +50,25 @@ export default function RecordsTab() {
     open: false, 
     photo: ""
   });
+  const [recordFormModal, setRecordFormModal] = useState<{
+    open: boolean; 
+    isEditing: boolean; 
+    record?: TimeRecord;
+  }>({
+    open: false,
+    isEditing: false,
+  });
   
   // Get all time records with filters
   const { data: timeRecords, isLoading: recordsLoading } = useQuery<TimeRecord[]>({
     queryKey: ["/api/admin/time-records", dateRange, selectedEmployee, selectedType],
     queryFn: async ({ queryKey }) => {
-      const [_, dateRange, employeeId, type] = queryKey;
+      const [_, dateRangeValue, employeeId, type] = queryKey;
+      const dateRangeObj = dateRangeValue as {start: string, end: string};
       
       const params = new URLSearchParams();
-      if (dateRange.start) params.append("startDate", dateRange.start as string);
-      if (dateRange.end) params.append("endDate", dateRange.end as string);
+      if (dateRangeObj.start) params.append("startDate", dateRangeObj.start);
+      if (dateRangeObj.end) params.append("endDate", dateRangeObj.end);
       if (employeeId) params.append("userId", employeeId as string);
       if (type) params.append("type", type as string);
       
