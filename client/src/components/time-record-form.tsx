@@ -115,7 +115,8 @@ export default function TimeRecordForm({
       console.log("Sending update request:", updateData);
       const response = await apiRequest("PUT", `/api/admin/time-records/${id}`, updateData);
       if (!response.ok) {
-        throw new Error("Falha ao atualizar registro");
+        const error = await response.json();
+        throw new Error(error.message || "Falha ao atualizar registro");
       }
       return response.json();
     },
@@ -140,26 +141,25 @@ export default function TimeRecordForm({
   const onSubmit = async (data: ManualTimeRecordFormValues) => {
     try {
       if (isEditing && record) {
-        console.log("Updating record:", {
+        const updateData = {
           id: record.id,
-          ...data,
-        });
-        
-        updateMutation.mutate({
-          id: record.id,
-          userId: data.userId,
+          userId: parseInt(data.userId.toString()),
           type: data.type,
           timestamp: new Date(data.timestamp).toISOString(),
-          ipAddress: data.ipAddress,
-          latitude: data.latitude,
-          longitude: data.longitude,
+          ipAddress: data.ipAddress || "Manual",
+          latitude: data.latitude || "0.0000000",
+          longitude: data.longitude || "0.0000000",
           photo: data.photo,
           justification: data.justification,
           isManual: true
-        });
+        };
+        
+        console.log("Updating record:", updateData);
+        await updateMutation.mutateAsync(updateData);
       } else {
-        createMutation.mutate({
+        await createMutation.mutateAsync({
           ...data,
+          userId: parseInt(data.userId.toString()),
           timestamp: new Date(data.timestamp).toISOString(),
           isManual: true
         });
