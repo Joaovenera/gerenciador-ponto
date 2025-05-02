@@ -212,7 +212,7 @@ export default function RecordsTab() {
       return await apiRequest("PUT", `/api/admin/time-records/${id}`, {
         userId: parseInt(recordData.userId),
         type: recordData.type,
-        timestamp: new Date(recordData.timestamp).toISOString(),
+        timestamp: recordData.timestamp, // Vamos deixar o PostgreSQL fazer a conversão
         ipAddress: recordData.ipAddress,
         latitude: recordData.latitude,
         longitude: recordData.longitude,

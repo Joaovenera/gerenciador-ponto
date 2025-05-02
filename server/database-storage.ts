@@ -164,8 +164,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateTimeRecord(id: number, recordData: Partial<TimeRecord>): Promise<TimeRecord> {
+    // Garante que o timestamp seja um objeto Date se estiver presente
+    let dataToUpdate = {...recordData};
+    
+    if (dataToUpdate.timestamp && typeof dataToUpdate.timestamp === 'string') {
+      dataToUpdate.timestamp = new Date(dataToUpdate.timestamp);
+    }
+    
     const result = await db.update(timeRecords)
-      .set(recordData)
+      .set(dataToUpdate)
       .where(eq(timeRecords.id, id))
       .returning();
 
