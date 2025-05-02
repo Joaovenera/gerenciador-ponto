@@ -158,9 +158,11 @@ export default function EmployeeForm({
       // A senha inicial será a data de nascimento sem hífens
       // Converte YYYY-MM-DD para DDMMYYYY
       const [year, month, day] = data.birthDate.split("-");
-      const formData = { ...data };
-      formData.password = `${day}${month}${year}`;
-      createEmployeeMutation.mutate(formData);
+      // Create a new object with a definite password field
+      createEmployeeMutation.mutate({
+        ...data,
+        password: `${day}${month}${year}`,
+      } as EmployeeFormValues & { password: string });
     }
   };
 
@@ -280,7 +282,11 @@ export default function EmployeeForm({
               <FormItem>
                 <FormLabel>Telefone</FormLabel>
                 <FormControl>
-                  <Input placeholder="(00) 00000-0000" {...field} />
+                  <Input 
+                    placeholder="(00) 00000-0000" 
+                    {...field} 
+                    value={field.value || ""} 
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

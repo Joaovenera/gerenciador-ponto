@@ -86,7 +86,7 @@ export default function EmployeesTab() {
   
   // Get unique departments for filter
   const departments = employees
-    ? [...new Set(employees.map((employee) => employee.department))].sort()
+    ? Array.from(new Set(employees.map((employee) => employee.department))).sort()
     : [];
   
   const handleEditEmployee = (employee: User) => {
