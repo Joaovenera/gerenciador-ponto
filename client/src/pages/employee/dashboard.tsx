@@ -81,18 +81,18 @@ export default function EmployeeDashboard() {
   }, []);
 
   // Get user status (in/out)
-  const { data: statusData, isLoading: statusLoading } = useQuery({
+  const { data: statusData, isLoading: statusLoading } = useQuery<{status: "in" | "out"}>({  
     queryKey: ["/api/time-records/status"],
     refetchInterval: 30000, // Refetch every 30s
   });
 
   // Get client IP
-  const { data: ipData } = useQuery({
+  const { data: ipData } = useQuery<{ip: string}>({  
     queryKey: ["/api/ip"],
   });
 
   // Get user's time records
-  const { data: timeRecords, isLoading: recordsLoading } = useQuery({
+  const { data: timeRecords, isLoading: recordsLoading } = useQuery<TimeRecord[]>({  
     queryKey: ["/api/time-records/me"],
   });
 
@@ -351,7 +351,7 @@ export default function EmployeeDashboard() {
                                   {record.justification ? (
                                     <span 
                                       className="flex items-center text-primary cursor-pointer hover:underline"
-                                      onClick={() => setJustificationModal({ open: true, text: record.justification })}
+                                      onClick={() => setJustificationModal({ open: true, text: record.justification || "" })}
                                     >
                                       <span className="mr-1">Com justificativa</span>
                                     </span>
@@ -502,7 +502,7 @@ export default function EmployeeDashboard() {
                                 {record.justification && (
                                   <div 
                                     className="mt-2 p-2 bg-slate-50 rounded-md border border-slate-100 cursor-pointer"
-                                    onClick={() => setJustificationModal({ open: true, text: record.justification })}
+                                    onClick={() => setJustificationModal({ open: true, text: record.justification || "" })}
                                   >
                                     <div className="flex items-center mb-1">
                                       <Activity className="h-3 w-3 text-primary mr-1" />

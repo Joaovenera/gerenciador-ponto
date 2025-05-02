@@ -275,13 +275,13 @@ export default function RecordsTab() {
   const { data: timeRecords, isLoading: recordsLoading } = useQuery<TimeRecord[]>({
     queryKey: ["/api/admin/time-records", dateRange, selectedEmployee, selectedType],
     queryFn: async ({ queryKey }) => {
-      const [_, dateRange, employeeId, type] = queryKey;
+      const [_, dateRangeParam, employeeId, type] = queryKey as [string, {start: string, end: string}, string, string];
       
       const params = new URLSearchParams();
-      if (dateRange.start) params.append("startDate", dateRange.start as string);
-      if (dateRange.end) params.append("endDate", dateRange.end as string);
-      if (employeeId) params.append("userId", employeeId as string);
-      if (type) params.append("type", type as string);
+      if (dateRangeParam.start) params.append("startDate", dateRangeParam.start);
+      if (dateRangeParam.end) params.append("endDate", dateRangeParam.end);
+      if (employeeId) params.append("userId", employeeId);
+      if (type) params.append("type", type);
       
       const res = await fetch(`/api/admin/time-records?${params.toString()}`, {
         credentials: "include",
@@ -546,7 +546,7 @@ export default function RecordsTab() {
                                 onClick={() => setPhotoModal({
                                   open: true, 
                                   photo: record.photo,
-                                  justification: record.justification
+                                  justification: record.justification || undefined
                                 })}
                               >
                                 <Camera className="h-4 w-4 mr-1" />
@@ -560,7 +560,7 @@ export default function RecordsTab() {
                                   onClick={() => setPhotoModal({
                                     open: true, 
                                     photo: record.photo,
-                                    justification: record.justification
+                                    justification: record.justification || undefined
                                   })}
                                 >
                                   <span className="text-xs">
