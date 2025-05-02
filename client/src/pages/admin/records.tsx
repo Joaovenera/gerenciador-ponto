@@ -98,7 +98,24 @@ export default function RecordsTab() {
   
   // Estado para controlar o modal de criação manual
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingRecord, setEditingRecord] = useState<TimeRecord | null>(null);
   const [ipInfo, setIpInfo] = useState({ ip: "", latitude: "", longitude: "" });
+  
+  // Formulário para edição de registros
+  const editForm = useForm<ManualRecordFormValues>({
+    resolver: zodResolver(manualRecordSchema),
+    defaultValues: {
+      userId: "",
+      type: "in",
+      timestamp: new Date().toISOString().slice(0, 16),
+      ipAddress: "",
+      latitude: "",
+      longitude: "",
+      photo: "",
+      justification: "",
+    }
+  });
   
   // Configuração do formulário de registro manual
   const form = useForm<ManualRecordFormValues>({
@@ -188,7 +205,68 @@ export default function RecordsTab() {
     },
   });
   
-  // Função que lida com o envio do formulário
+  // Mutation para atualizar registros
+  const updateRecordMutation = useMutation({
+    mutationFn: async (data: ManualRecordFormValues & { id: number }) => {
+      const { id, ...recordData } = data;
+      return await apiRequest("PATCH", `/api/admin/time-records/${id}`, {
+        userId: parseInt(recordData.userId),
+        type: recordData.type,
+        timestamp: new Date(recordData.timestamp).toISOString(),
+        ipAddress: recordData.ipAddress,
+        latitude: recordData.latitude,
+        longitude: recordData.longitude,
+        photo: recordData.photo,
+        justification: recordData.justification || undefined,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/time-records"] });
+      setEditModalOpen(false);
+      setEditingRecord(null);
+      editForm.reset();
+      toast({
+        title: "Registro atualizado",
+        description: "O registro de ponto foi atualizado com sucesso",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Erro ao atualizar registro",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Função para abrir o modal de edição
+  const handleEditRecord = (record: TimeRecord) => {
+    // Configurar o formulário com os dados do registro
+    setEditingRecord(record);
+    
+    // Iniciar o formulário de edição com os valores atuais
+    editForm.reset({
+      userId: record.userId.toString(),
+      type: record.type as "in" | "out",
+      timestamp: new Date(record.timestamp).toISOString().slice(0, 16),
+      ipAddress: record.ipAddress,
+      latitude: record.latitude,
+      longitude: record.longitude,
+      photo: record.photo,
+      justification: record.justification || "",
+    });
+    
+    setEditModalOpen(true);
+  };
+
+  // Função que lida com o envio do formulário de edição
+  const onEditSubmit = (data: ManualRecordFormValues) => {
+    if (editingRecord) {
+      updateRecordMutation.mutate({ ...data, id: editingRecord.id });
+    }
+  };
+
+  // Função que lida com o envio do formulário de criação
   const onSubmit = (data: ManualRecordFormValues) => {
     createRecordMutation.mutate(data);
   };
@@ -497,7 +575,11 @@ export default function RecordsTab() {
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                              <Button variant="ghost" className="text-primary hover:text-blue-700 h-8 w-8 p-0 mr-1">
+                              <Button 
+                                variant="ghost" 
+                                className="text-primary hover:text-blue-700 h-8 w-8 p-0 mr-1"
+                                onClick={() => handleEditRecord(record)}
+                              >
                                 <Edit className="h-4 w-4" />
                               </Button>
                               <Button 
@@ -749,6 +831,209 @@ export default function RecordsTab() {
                     <span className="flex items-center">
                       <Clock className="mr-2 h-4 w-4" />
                       Registrar Ponto
+                    </span>
+                  )}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Record Modal */}
+      <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
+        <DialogContent className="sm:max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Editar Registro de Ponto</DialogTitle>
+            <DialogDescription>
+              Altere os dados do registro conforme necessário.
+            </DialogDescription>
+          </DialogHeader>
+
+          <Form {...editForm}>
+            <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4 mt-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {/* Funcionário */}
+                <FormField
+                  control={editForm.control}
+                  name="userId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Funcionário*</FormLabel>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione um funcionário" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {users?.map((user) => (
+                            <SelectItem key={user.id} value={user.id.toString()}>
+                              {user.fullName}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Tipo de Registro */}
+                <FormField
+                  control={editForm.control}
+                  name="type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tipo de Registro*</FormLabel>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o tipo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="in">Entrada</SelectItem>
+                          <SelectItem value="out">Saída</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {/* Data e Hora */}
+                <FormField
+                  control={editForm.control}
+                  name="timestamp"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Data e Hora*</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="datetime-local"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Endereço IP */}
+                <FormField
+                  control={editForm.control}
+                  name="ipAddress"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Endereço IP*</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {/* Latitude */}
+                <FormField
+                  control={editForm.control}
+                  name="latitude"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Latitude*</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Longitude */}
+                <FormField
+                  control={editForm.control}
+                  name="longitude"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Longitude*</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* URL da Foto */}
+              <FormField
+                control={editForm.control}
+                name="photo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>URL da Foto*</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Justificativa */}
+              <FormField
+                control={editForm.control}
+                name="justification"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Justificativa (opcional)</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Insira uma justificativa para este registro" 
+                        {...field} 
+                        className="h-20"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <DialogFooter>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => {
+                    setEditModalOpen(false);
+                    setEditingRecord(null);
+                  }}
+                >
+                  Cancelar
+                </Button>
+                <Button 
+                  type="submit" 
+                  disabled={updateRecordMutation.isPending}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  {updateRecordMutation.isPending ? (
+                    <span className="flex items-center">
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Salvando...
+                    </span>
+                  ) : (
+                    <span className="flex items-center">
+                      <Edit className="mr-2 h-4 w-4" />
+                      Atualizar Registro
                     </span>
                   )}
                 </Button>
