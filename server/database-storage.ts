@@ -103,10 +103,17 @@ export class DatabaseStorage implements IStorage {
 
   // Time record methods
   async createTimeRecord(recordData: InsertTimeRecord): Promise<TimeRecord> {
+    // Cria o timestamp com informações de timezone
+    const now = new Date();
+    // Ajusta para considerar o timezone no registro
+    const timestampWithTz = new Date(
+      now.getTime() - (now.getTimezoneOffset() * 60000)
+    );
+
     const result = await db.insert(timeRecords)
       .values({
         ...recordData,
-        timestamp: new Date()
+        timestamp: timestampWithTz
       })
       .returning();
 
@@ -164,11 +171,21 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateTimeRecord(id: number, recordData: Partial<TimeRecord>): Promise<TimeRecord> {
-    // Garante que o timestamp seja um objeto Date se estiver presente
+    // Garante que o timestamp seja processado corretamente com timezone
     let dataToUpdate = {...recordData};
     
-    if (dataToUpdate.timestamp && typeof dataToUpdate.timestamp === 'string') {
-      dataToUpdate.timestamp = new Date(dataToUpdate.timestamp);
+    if (dataToUpdate.timestamp) {
+      // Converte para Date se for string
+      if (typeof dataToUpdate.timestamp === 'string') {
+        // Converte para Date com timezone preservado
+        const timestamp = new Date(dataToUpdate.timestamp);
+        
+        // Ajusta para considerar o timezone correto
+        const adjustedTimestamp = new Date(
+          timestamp.getTime() - (timestamp.getTimezoneOffset() * 60000)
+        );
+        dataToUpdate.timestamp = adjustedTimestamp;
+      }
     }
     
     const result = await db.update(timeRecords)
