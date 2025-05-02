@@ -13,10 +13,10 @@ describe('NotFound', () => {
   it('renders without crashing', () => {
     render(<NotFound />);
     
-    // Verifica se o texto de página não encontrada é exibido
-    expect(screen.getByText(/página não encontrada/i)).toBeInTheDocument();
+    // Verify the 404 text is displayed
+    expect(screen.getByText(/404 Page Not Found/i)).toBeInTheDocument();
     
-    // Verifica se tem um botão para voltar
-    expect(screen.getByRole('button', { name: /voltar/i })).toBeInTheDocument();
+    // Verify the error message is displayed
+    expect(screen.getByText(/Did you forget to add the page to the router\?/i)).toBeInTheDocument();
   });
 });

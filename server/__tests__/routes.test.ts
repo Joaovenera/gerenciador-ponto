@@ -15,7 +15,11 @@ describe('API Routes', () => {
   });
 
   afterAll((done) => {
-    server.close(done);
+    if (server && server.listening) {
+      server.close(done);
+    } else {
+      done();
+    }
   });
 
   describe('Authentication', () => {
