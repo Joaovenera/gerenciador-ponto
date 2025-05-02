@@ -36,6 +36,14 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -59,6 +67,7 @@ export default function EmployeeDashboard() {
   const [isClockInModalOpen, setIsClockInModalOpen] = useState(false);
   const [isClockOutModalOpen, setIsClockOutModalOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [justificationModal, setJustificationModal] = useState({ open: false, text: "" });
 
   // Time interval to update current time
   useEffect(() => {
@@ -327,7 +336,16 @@ export default function EmployeeDashboard() {
                                   {record.type === "in" ? "Entrada" : "Saída"}
                                 </p>
                                 <p className="text-xs text-slate-500">
-                                  Registrado com sucesso
+                                  {record.justification ? (
+                                    <span 
+                                      className="flex items-center text-primary cursor-pointer hover:underline"
+                                      onClick={() => setJustificationModal({ open: true, text: record.justification })}
+                                    >
+                                      <span className="mr-1">Com justificativa</span>
+                                    </span>
+                                  ) : (
+                                    "Registrado com sucesso"
+                                  )}
                                 </p>
                               </div>
                               <div className="text-right">
@@ -473,6 +491,26 @@ export default function EmployeeDashboard() {
           setIsClockOutModalOpen(false);
         }}
       />
+      
+      {/* Justification Modal */}
+      <Dialog open={justificationModal.open} onOpenChange={(open) => setJustificationModal({ ...justificationModal, open })}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Justificativa</DialogTitle>
+            <DialogDescription>
+              Justificativa fornecida para este registro de ponto.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="p-4 bg-gray-50 rounded-md">
+            <p className="text-sm text-gray-700 whitespace-pre-wrap">{justificationModal.text}</p>
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setJustificationModal({ open: false, text: "" })}>
+              Fechar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
