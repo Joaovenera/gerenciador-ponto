@@ -132,21 +132,21 @@ export default function TimeRecordForm({
 
   // Form submission handler
   const onSubmit = (data: ManualTimeRecordFormValues) => {
-    // Format the timestamp - keep the ISO string format but add seconds
-    const isoTimestamp = new Date(data.timestamp).toISOString();
+    // Format the timestamp
+    const timestampDate = new Date(data.timestamp);
     
     if (isEditing && record) {
       updateMutation.mutate({
         id: record.id,
         record: {
           ...data,
-          timestamp: isoTimestamp,
+          timestamp: timestampDate,
         },
       });
     } else {
       createMutation.mutate({
         ...data,
-        timestamp: isoTimestamp,
+        timestamp: timestampDate,
       });
     }
   };

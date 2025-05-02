@@ -206,28 +206,42 @@ export default function RecordsTab() {
               </div>
             </div>
             
-            <div className="mt-4 flex justify-end space-x-2">
-              <Button 
-                variant="default" 
-                className="flex items-center"
-                onClick={() => {
-                  queryClient.invalidateQueries({ 
-                    queryKey: ["/api/admin/time-records"] 
-                  });
-                }}
-              >
-                <Search className="h-4 w-4 mr-2" />
-                Filtrar
-              </Button>
-              
+            <div className="mt-4 flex justify-between">
               <Button 
                 variant="outline" 
                 className="flex items-center"
-                onClick={handleExport}
+                onClick={() => setRecordFormModal({
+                  open: true,
+                  isEditing: false
+                })}
               >
-                <FileDown className="h-4 w-4 mr-2" />
-                Exportar CSV
+                <PlusCircle className="h-4 w-4 mr-2" />
+                Adicionar Ponto Manual
               </Button>
+              
+              <div className="flex space-x-2">
+                <Button 
+                  variant="default" 
+                  className="flex items-center"
+                  onClick={() => {
+                    queryClient.invalidateQueries({ 
+                      queryKey: ["/api/admin/time-records"] 
+                    });
+                  }}
+                >
+                  <Search className="h-4 w-4 mr-2" />
+                  Filtrar
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  className="flex items-center"
+                  onClick={handleExport}
+                >
+                  <FileDown className="h-4 w-4 mr-2" />
+                  Exportar CSV
+                </Button>
+              </div>
             </div>
           </div>
           
@@ -325,7 +339,15 @@ export default function RecordsTab() {
                               </Button>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                              <Button variant="ghost" className="text-primary hover:text-blue-700 h-8 w-8 p-0 mr-1">
+                              <Button 
+                                variant="ghost" 
+                                className="text-primary hover:text-blue-700 h-8 w-8 p-0 mr-1"
+                                onClick={() => setRecordFormModal({
+                                  open: true,
+                                  isEditing: true,
+                                  record: record
+                                })}
+                              >
                                 <Edit className="h-4 w-4" />
                               </Button>
                               <Button 
@@ -379,6 +401,14 @@ export default function RecordsTab() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Time Record Form Modal */}
+      <TimeRecordForm
+        isOpen={recordFormModal.open}
+        onClose={() => setRecordFormModal({ open: false, isEditing: false })}
+        record={recordFormModal.record}
+        isEditing={recordFormModal.isEditing}
+      />
     </>
   );
 }
