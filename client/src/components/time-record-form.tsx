@@ -111,8 +111,11 @@ export default function TimeRecordForm({
   // Update mutation for editing
   const updateMutation = useMutation({
     mutationFn: async (data: any) => {
-      const { id, ...updateData } = data;
-      return apiRequest("PUT", `/api/admin/time-records/${id}`, updateData);
+      const { id, timestamp, ...updateData } = data;
+      return apiRequest("PUT", `/api/admin/time-records/${id}`, {
+        ...updateData,
+        timestamp: new Date(timestamp).toISOString(),
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/time-records"] });
