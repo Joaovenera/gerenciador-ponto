@@ -209,7 +209,7 @@ export default function RecordsTab() {
   const updateRecordMutation = useMutation({
     mutationFn: async (data: ManualRecordFormValues & { id: number }) => {
       const { id, ...recordData } = data;
-      return await apiRequest("PATCH", `/api/admin/time-records/${id}`, {
+      return await apiRequest("PUT", `/api/admin/time-records/${id}`, {
         userId: parseInt(recordData.userId),
         type: recordData.type,
         timestamp: new Date(recordData.timestamp).toISOString(),
