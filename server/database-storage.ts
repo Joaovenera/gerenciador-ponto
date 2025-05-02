@@ -140,11 +140,11 @@ export class DatabaseStorage implements IStorage {
     }
 
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+      query = query.where(and(...conditions)) as typeof query;
     }
 
     // Sort by timestamp (newest first)
-    query = query.orderBy(desc(timeRecords.timestamp));
+    query = query.orderBy(desc(timeRecords.timestamp)) as typeof query;
 
     return await query;
   }
