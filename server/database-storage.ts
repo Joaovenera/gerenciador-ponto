@@ -13,7 +13,7 @@ import { eq, and, gte, lt, desc } from "drizzle-orm";
 import session from "express-session";
 import { Store } from "express-session";
 import connectPg from "connect-pg-simple";
-import { format } from "date-fns";
+import { format as dateFnsFormat } from "date-fns";
 import { 
   getNowWithTimezone, 
   adjustDateWithTimezone,
