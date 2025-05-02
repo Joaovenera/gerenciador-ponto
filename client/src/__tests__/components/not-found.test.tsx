@@ -2,6 +2,13 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import NotFound from '@/pages/not-found';
 
+// Mock do useNavigate do wouter
+jest.mock('wouter', () => ({
+  useLocation: () => ['/not-found', () => {}],
+  useNavigate: () => jest.fn(),
+  Link: ({ children, ...props }: any) => <a {...props}>{children}</a>
+}));
+
 describe('NotFound', () => {
   it('renders without crashing', () => {
     render(<NotFound />);

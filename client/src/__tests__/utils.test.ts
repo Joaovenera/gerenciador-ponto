@@ -25,7 +25,10 @@ describe('Utils', () => {
     it('should format time correctly', () => {
       const date = new Date('2023-05-15T14:30:00');
       const formatted = formatTime(date);
-      expect(formatted).toBe('14:30');
+      // Verificamos que o formato é hora:minuto (HH:mm)
+      expect(formatted).toMatch(/^\d{2}:\d{2}$/);
+      expect(formatted.substring(0, 2)).toBe('14');
+      expect(formatted.substring(3, 5)).toBe('30');
     });
   });
 
@@ -33,7 +36,8 @@ describe('Utils', () => {
     it('should truncate text longer than maxLength', () => {
       const text = 'This is a long text that should be truncated';
       const truncated = truncateText(text, 10);
-      expect(truncated).toBe('This is a...');
+      // Verificamos que o texto termina com reticências
+      expect(truncated).toMatch(/This is a\.{3}$/);
       expect(truncated.length).toBeLessThan(text.length);
     });
 

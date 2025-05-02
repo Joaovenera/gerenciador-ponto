@@ -9,7 +9,8 @@ import { format } from "date-fns";
 // Check if user has admin access
 function isAdmin(req: Request, res: Response, next: Function) {
   if (!req.isAuthenticated()) return res.sendStatus(401);
-  if (req.user?.accessLevel !== "admin") return res.sendStatus(403);
+  const user = req.user as Express.User;
+  if (user.accessLevel !== "admin") return res.sendStatus(403);
   next();
 }
 
@@ -53,7 +54,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Time Record Routes
   app.post("/api/time-records", isAuthenticated, async (req, res, next) => {
     try {
-      const userId = req.user!.id;
+      const userId = (req.user as Express.User).id;
       const timeRecordData = insertTimeRecordSchema.parse({
         ...req.body,
         userId,
