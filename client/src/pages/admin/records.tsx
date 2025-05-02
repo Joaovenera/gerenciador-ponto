@@ -44,9 +44,10 @@ export default function RecordsTab() {
   });
   const [selectedEmployee, setSelectedEmployee] = useState<string>("");
   const [selectedType, setSelectedType] = useState<string>("");
-  const [photoModal, setPhotoModal] = useState<{open: boolean, photo: string}>({
+  const [photoModal, setPhotoModal] = useState<{open: boolean, photo: string, justification?: string}>({
     open: false, 
-    photo: ""
+    photo: "",
+    justification: undefined
   });
   
   // Get all time records with filters
@@ -310,11 +311,29 @@ export default function RecordsTab() {
                               <Button 
                                 variant="link" 
                                 className="text-primary hover:text-blue-700 p-0"
-                                onClick={() => setPhotoModal({open: true, photo: record.photo})}
+                                onClick={() => setPhotoModal({
+                                  open: true, 
+                                  photo: record.photo,
+                                  justification: record.justification
+                                })}
                               >
                                 <Camera className="h-4 w-4 mr-1" />
                                 Ver foto
                               </Button>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {record.justification ? (
+                                <div className="max-w-xs overflow-hidden text-ellipsis">
+                                  <span className="text-xs text-gray-500">
+                                    {record.justification.length > 50 
+                                      ? `${record.justification.substring(0, 50)}...` 
+                                      : record.justification
+                                    }
+                                  </span>
+                                </div>
+                              ) : (
+                                <span className="text-xs text-gray-400">Sem justificativa</span>
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                               <Button variant="ghost" className="text-primary hover:text-blue-700 h-8 w-8 p-0 mr-1">
@@ -337,7 +356,7 @@ export default function RecordsTab() {
                       })
                     ) : (
                       <tr>
-                        <td colSpan={7} className="px-6 py-4 text-center text-sm text-gray-500">
+                        <td colSpan={8} className="px-6 py-4 text-center text-sm text-gray-500">
                           Nenhum registro encontrado
                         </td>
                       </tr>
@@ -369,6 +388,13 @@ export default function RecordsTab() {
               className="w-full max-h-96 object-contain rounded-md"
             />
           </div>
+          
+          {photoModal.justification && (
+            <div className="mt-4 p-3 bg-gray-50 rounded-md">
+              <h4 className="text-sm font-medium text-gray-700 mb-1">Justificativa:</h4>
+              <p className="text-sm text-gray-600">{photoModal.justification}</p>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </>
