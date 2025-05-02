@@ -61,45 +61,45 @@ export default function AdminMobileHeader({ activeTab, onTabChange, user }: Admi
               <div className="flex-1 h-0 pt-14 pb-4 overflow-y-auto">
                 <nav className="mt-5 px-2 space-y-1">
                   <Link href="/admin/overview">
-                    <a 
+                    <div 
                       className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${activeTab === "overview" ? "bg-gray-800 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"}`}
                       onClick={() => handleTabClick("overview")}
                     >
                       <LayoutDashboard className="mr-4 h-5 w-5 text-gray-400 group-hover:text-gray-300" />
                       Dashboard
-                    </a>
+                    </div>
                   </Link>
                   <Link href="/admin/records">
-                    <a 
+                    <div 
                       className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${activeTab === "records" ? "bg-gray-800 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"}`}
                       onClick={() => handleTabClick("records")}
                     >
                       <ClipboardList className="mr-4 h-5 w-5 text-gray-400 group-hover:text-gray-300" />
                       Registros de Ponto
-                    </a>
+                    </div>
                   </Link>
                   <Link href="/admin/employees">
-                    <a 
+                    <div 
                       className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${activeTab === "employees" ? "bg-gray-800 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"}`}
                       onClick={() => handleTabClick("employees")}
                     >
                       <Users className="mr-4 h-5 w-5 text-gray-400 group-hover:text-gray-300" />
                       Funcionários
-                    </a>
+                    </div>
                   </Link>
                   <Link href="/admin/reports">
-                    <a 
+                    <div 
                       className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${activeTab === "reports" ? "bg-gray-800 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"}`}
                       onClick={() => handleTabClick("reports")}
                     >
                       <BarChart2 className="mr-4 h-5 w-5 text-gray-400 group-hover:text-gray-300" />
                       Relatórios
-                    </a>
+                    </div>
                   </Link>
                 </nav>
               </div>
               <div className="flex-shrink-0 flex border-t border-gray-800 p-4">
-                <a href="#" className="flex-shrink-0 group block">
+                <div className="flex-shrink-0 group block">
                   <div className="flex items-center">
                     <div>
                       <div className="h-10 w-10 rounded-full bg-gray-700 flex items-center justify-center text-gray-300">
@@ -120,7 +120,7 @@ export default function AdminMobileHeader({ activeTab, onTabChange, user }: Admi
                       </Button>
                     </div>
                   </div>
-                </a>
+                </div>
               </div>
             </div>
             <div className="flex-shrink-0 w-14"></div>
