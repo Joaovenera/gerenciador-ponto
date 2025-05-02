@@ -110,8 +110,9 @@ export default function TimeRecordForm({
 
   // Update mutation for editing
   const updateMutation = useMutation({
-    mutationFn: async (data: { id: number; record: any }) => {
-      return apiRequest("PUT", `/api/admin/time-records/${data.id}`, data.record);
+    mutationFn: async (data: any) => {
+      const { id, ...updateData } = data;
+      return apiRequest("PUT", `/api/admin/time-records/${id}`, updateData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/time-records"] });
@@ -137,11 +138,9 @@ export default function TimeRecordForm({
     
     if (isEditing && record) {
       updateMutation.mutate({
+        ...data,
         id: record.id,
-        record: {
-          ...data,
-          timestamp: timestampDate,
-        },
+        timestamp: timestampDate,
       });
     } else {
       createMutation.mutate({
