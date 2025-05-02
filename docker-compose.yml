@@ -9,6 +9,7 @@ services:
     restart: unless-stopped
     ports:
       - "5000:5000"
+<<<<<<< HEAD
     env_file:
       - .env
     depends_on:
@@ -16,14 +17,33 @@ services:
 
   db:
     image: bitnami/postgresql:latest
+=======
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env
+    volumes:
+      - ./.env:/app/.env
+    networks:
+      - timetracker-network
+
+  db:
+    image: postgres:17-alpine
+>>>>>>> 19bd248 (Switch database to self-hosted PostgreSQL for enhanced data control)
     container_name: timetracker-db
     restart: unless-stopped
     ports:
       - "5432:5432"
     environment:
+<<<<<<< HEAD
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
       - POSTGRES_DB=timetracker
+=======
+      - POSTGRES_USER=${PGUSER}
+      - POSTGRES_PASSWORD=${PGPASSWORD}
+      - POSTGRES_DB=${PGDATABASE}
+>>>>>>> 19bd248 (Switch database to self-hosted PostgreSQL for enhanced data control)
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

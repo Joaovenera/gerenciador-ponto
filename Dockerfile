@@ -1,5 +1,5 @@
 FROM node:20-alpine
-
+#
 # Cria o diretório da aplicação
 WORKDIR /app
 
