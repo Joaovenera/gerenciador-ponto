@@ -498,43 +498,81 @@ export default function EmployeeDashboard() {
           className="grid grid-cols-2 gap-4 mb-6"
         >
           <motion.div 
-            whileHover={{ scale: 1.03, y: -2 }} 
-            whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: currentStatus === "in" ? 1 : 1.03, y: currentStatus === "in" ? 0 : -2 }} 
+            whileTap={{ scale: currentStatus === "in" ? 1 : 0.97 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            className={currentStatus === "in" ? "relative" : ""}
           >
             <Button
               onClick={() => navigate("/camera?type=in")}
               disabled={currentStatus === "in" || registerRecordMutation.isPending}
-              className="w-full flex flex-col items-center justify-center py-6 gap-3 bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 transition-all duration-300 shadow-md h-28 rounded-xl disabled:opacity-60 disabled:shadow-none"
+              className={cn(
+                "w-full flex flex-col items-center justify-center py-6 gap-3 transition-all duration-300 shadow-md h-28 rounded-xl",
+                currentStatus === "in" ? 
+                  "bg-gray-300 cursor-not-allowed" : 
+                  "bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700"
+              )}
             >
               <motion.div 
-                animate={{ y: [0, -5, 0] }}
+                animate={currentStatus === "in" ? {} : { y: [0, -5, 0] }}
                 transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
               >
-                <LogIn className="h-7 w-7" />
+                <LogIn className={cn("h-7 w-7", currentStatus === "in" ? "text-gray-500" : "")} />
               </motion.div>
-              <span className="font-semibold text-lg">Entrada</span>
+              <span className={cn("font-semibold text-lg", currentStatus === "in" ? "text-gray-600" : "")}>Entrada</span>
             </Button>
+            
+            {currentStatus === "in" && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/5 rounded-xl">
+                <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg border border-gray-200">
+                  <p className="text-gray-700 text-sm font-medium flex items-center">
+                    <span className="bg-green-100 p-1 rounded-full mr-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-600"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </span>
+                    Você já está na empresa
+                  </p>
+                </div>
+              </div>
+            )}
           </motion.div>
 
           <motion.div 
-            whileHover={{ scale: 1.03, y: -2 }} 
-            whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: currentStatus === "out" ? 1 : 1.03, y: currentStatus === "out" ? 0 : -2 }} 
+            whileTap={{ scale: currentStatus === "out" ? 1 : 0.97 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            className={currentStatus === "out" ? "relative" : ""}
           >
             <Button
               onClick={() => navigate("/camera?type=out")}
               disabled={currentStatus === "out" || registerRecordMutation.isPending}
-              className="w-full flex flex-col items-center justify-center py-6 gap-3 bg-gradient-to-br from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 transition-all duration-300 shadow-md h-28 rounded-xl disabled:opacity-60 disabled:shadow-none"
+              className={cn(
+                "w-full flex flex-col items-center justify-center py-6 gap-3 transition-all duration-300 shadow-md h-28 rounded-xl",
+                currentStatus === "out" ? 
+                  "bg-gray-300 cursor-not-allowed" : 
+                  "bg-gradient-to-br from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700"
+              )}
             >
               <motion.div 
-                animate={{ y: [0, 5, 0] }}
+                animate={currentStatus === "out" ? {} : { y: [0, 5, 0] }}
                 transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
               >
-                <LogOut className="h-7 w-7" />
+                <LogOut className={cn("h-7 w-7", currentStatus === "out" ? "text-gray-500" : "")} />
               </motion.div>
-              <span className="font-semibold text-lg">Saída</span>
+              <span className={cn("font-semibold text-lg", currentStatus === "out" ? "text-gray-600" : "")}>Saída</span>
             </Button>
+            
+            {currentStatus === "out" && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/5 rounded-xl">
+                <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg border border-gray-200">
+                  <p className="text-gray-700 text-sm font-medium flex items-center">
+                    <span className="bg-rose-100 p-1 rounded-full mr-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-rose-600"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </span>
+                    Você já está fora da empresa
+                  </p>
+                </div>
+              </div>
+            )}
           </motion.div>
         </motion.div>
 
