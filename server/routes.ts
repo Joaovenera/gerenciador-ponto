@@ -67,38 +67,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get time records for logged in user with pagination
+  // Get time records for logged in user (last 7 days)
   app.get("/api/time-records/me", isAuthenticated, async (req, res, next) => {
     try {
       const userId = req.user!.id;
-      const page = parseInt(req.query.page as string) || 1;
-      const pageSize = parseInt(req.query.pageSize as string) || 30;
-      
-      // Calculate date range based on page and pageSize
-      const endDate = new Date();
-      endDate.setDate(endDate.getDate() - ((page - 1) * pageSize));
-      const startDate = new Date(endDate);
-      startDate.setDate(startDate.getDate() - pageSize);
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
       
       const filter = {
         userId,
-        startDate: format(startDate, "yyyy-MM-dd"),
-        endDate: format(endDate, "yyyy-MM-dd"),
+        startDate: format(sevenDaysAgo, "yyyy-MM-dd"),
+        endDate: format(new Date(), "yyyy-MM-dd"),
       };
       
-      // Get total count for pagination
-      const totalRecords = await storage.getTimeRecordsCount({ userId });
-      const totalPages = Math.ceil(totalRecords / pageSize);
-      
       const records = await storage.getTimeRecords(filter);
-      
-      res.json({
-        records,
-        page,
-        pageSize,
-        totalPages,
-        totalRecords
-      });
+      res.json(records);
     } catch (err) {
       next(err);
     }

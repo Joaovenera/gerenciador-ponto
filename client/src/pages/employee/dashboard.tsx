@@ -68,9 +68,6 @@ export default function EmployeeDashboard() {
   const [isClockOutModalOpen, setIsClockOutModalOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [justificationModal, setJustificationModal] = useState({ open: false, text: "" });
-  const [page, setPage] = useState(1); // Add page state
-  const recordsPerPage = 7; // Records per page
-
 
   // Time interval to update current time
   useEffect(() => {
@@ -126,14 +123,6 @@ export default function EmployeeDashboard() {
       .toUpperCase()
       .substring(0, 2);
   };
-
-  // Calculate total pages
-  const totalPages = Math.ceil(
-    Object.entries(groupedRecords)
-      .filter(([date]) => date !== getCurrentDate())
-      .length / recordsPerPage
-  );
-
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -250,13 +239,13 @@ export default function EmployeeDashboard() {
 
       {/* Main Content - Mobile Optimized */}
       <main className="px-4 py-4 pb-16">
-        {/* Clock Card */}
+        {/* Clock Card - Improved */}
         <Card className="mb-5 border-none shadow-lg overflow-hidden">
           <CardContent className="p-0">
             <div className="bg-gradient-to-r from-primary/90 to-primary p-5 text-white">
-              <div className="flex items-start justify-between mb-8">
+              <div className="flex items-start justify-between mb-6">
                 <div>
-                  <p className="text-white/70 text-sm">{currentDate}</p>
+                  <p className="text-white/70 text-sm font-medium">{currentDate}</p>
                 </div>
                 <Badge
                   variant={currentStatus === "in" ? "success" : "destructive"}
@@ -271,10 +260,13 @@ export default function EmployeeDashboard() {
                 </Badge>
               </div>
 
-              <div className="text-center mb-5">
+              <div className="text-center mb-4">
                 <div className="text-6xl font-bold tracking-tight">
                   {currentTime}
                 </div>
+                <p className="text-white/60 text-xs mt-1">
+                  É importante registrar o ponto de entrada e saída corretamente
+                </p>
               </div>
             </div>
           </CardContent>
@@ -390,82 +382,156 @@ export default function EmployeeDashboard() {
               )}
             </TabsContent>
 
-            <TabsContent value="history" className="pt-3 pb-0 px-0">
+            <TabsContent value="history" className="pt-3 pb-4 px-0">
               {recordsLoading ? (
                 <div className="space-y-3 p-3">
                   <Skeleton className="h-24 w-full" />
                   <Skeleton className="h-24 w-full" />
                 </div>
               ) : (
-                <div className="space-y-px">
-                  {Object.entries(groupedRecords)
-                    .filter(([date]) => date !== getCurrentDate())
-                    .slice((page - 1) * recordsPerPage, page * recordsPerPage) // Apply pagination
-                    .map(([date, records]) => (
-                      <div
-                        key={date}
-                        className="border-b border-slate-100 last:border-0"
-                      >
-                        <div className="flex items-center bg-slate-50 px-3 py-1.5">
-                          <Calendar className="h-3 w-3 text-slate-400 mr-1.5" />
-                          <h4 className="text-xs font-medium text-slate-700">
-                            {date}
-                          </h4>
-                          <span className="text-xs text-slate-500 ml-1.5 capitalize">
-                            {format(
-                              parseISO(records[0].timestamp.toString()),
-                              "EEEE",
-                              { locale: ptBR },
-                            )}
-                          </span>
-                        </div>
-
-                        <div className="divide-y divide-slate-100">
-                          {records.map((record) => (
-                            <div
-                              key={record.id}
-                              className="flex items-center p-2 pl-8 hover:bg-slate-50"
-                            >
-                              <div
-                                className={`w-1.5 h-1.5 rounded-full ${record.type === "in" ? "bg-emerald-500" : "bg-rose-500"} mr-2`}
-                              ></div>
-                              <span
-                                className={`text-xs ${record.type === "in" ? "text-emerald-600" : "text-rose-600"} font-medium mr-2 w-14`}
-                              >
-                                {record.type === "in" ? "Entrada" : "Saída"}
-                              </span>
-                              <span className="text-xs font-mono">
-                                {format(new Date(record.timestamp), "HH:mm:ss")}
+                <div className="space-y-4">
+                  {/* Filtro de Data (Opcional para melhorar a navegação) */}
+                  <div className="p-3 border-b border-slate-100">
+                    <p className="text-xs font-medium text-slate-500 mb-2">HISTÓRICO DOS ÚLTIMOS 7 DIAS</p>
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm text-slate-700">
+                        {Object.entries(groupedRecords).filter(
+                          ([date]) => date !== getCurrentDate()
+                        ).length} dias com registros
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Lista de Registros por Data */}
+                  <div className="space-y-4 px-3">
+                    {Object.entries(groupedRecords)
+                      .filter(([date]) => date !== getCurrentDate())
+                      // Ordena as datas da mais recente para a mais antiga
+                      .sort(([dateA], [dateB]) => {
+                        const partsA = dateA.split('/');
+                        const partsB = dateB.split('/');
+                        const dateObjA = new Date(`${partsA[2]}-${partsA[1]}-${partsA[0]}`);
+                        const dateObjB = new Date(`${partsB[2]}-${partsB[1]}-${partsB[0]}`);
+                        return dateObjB.getTime() - dateObjA.getTime();
+                      })
+                      .slice(0, 7) // Limit to 7 days for mobile
+                      .map(([date, records]) => (
+                        <div
+                          key={date}
+                          className="bg-white rounded-lg overflow-hidden shadow-sm border border-slate-100"
+                        >
+                          <div className="flex items-center justify-between bg-slate-50 px-4 py-2 border-b border-slate-100">
+                            <div className="flex items-center">
+                              <Calendar className="h-4 w-4 text-primary mr-2" />
+                              <h4 className="text-sm font-medium text-slate-800">
+                                {date}
+                              </h4>
+                              <span className="text-xs text-slate-500 ml-2 capitalize">
+                                {format(
+                                  parseISO(records[0].timestamp.toString()),
+                                  "EEEE",
+                                  { locale: ptBR },
+                                )}
                               </span>
                             </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
+                            <Badge variant="outline" className="text-xs">
+                              {records.length} registros
+                            </Badge>
+                          </div>
 
-                  {/* Pagination Controls */}
-                  <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200">
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setPage(p => Math.max(1, p - 1))}
-                        disabled={page === 1 || recordsLoading}
-                      >
-                        Anterior
-                      </Button>
-                      <span className="text-sm text-gray-600">
-                        Página {page} de {totalPages}
-                      </span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                        disabled={page === totalPages || recordsLoading}
-                      >
-                        Próxima
-                      </Button>
-                    </div>
+                          <div className="divide-y divide-slate-100">
+                            {records.map((record) => (
+                              <div
+                                key={record.id}
+                                className="p-3 hover:bg-slate-50 transition-colors"
+                              >
+                                <div className="flex items-center justify-between mb-1">
+                                  <div className="flex items-center">
+                                    <div
+                                      className={`flex items-center justify-center h-7 w-7 rounded-full ${record.type === "in" ? "bg-emerald-100" : "bg-rose-100"} mr-2`}
+                                    >
+                                      {record.type === "in" ? (
+                                        <LogIn className="h-3.5 w-3.5 text-emerald-600" />
+                                      ) : (
+                                        <LogOut className="h-3.5 w-3.5 text-rose-600" />
+                                      )}
+                                    </div>
+                                    <div>
+                                      <p className="text-sm font-medium text-slate-800">
+                                        {record.type === "in" ? "Entrada" : "Saída"}
+                                      </p>
+                                      <p className="text-xs text-slate-500">
+                                        IP: {record.ipAddress}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="text-base font-mono font-semibold">
+                                      {format(
+                                        parseISO(record.timestamp.toString()),
+                                        "HH:mm:ss",
+                                      )}
+                                    </p>
+                                    {record.isManual && (
+                                      <Badge variant="outline" className="text-xs bg-amber-50 border-amber-200 text-amber-700 mt-1">
+                                        Registro Manual
+                                      </Badge>
+                                    )}
+                                  </div>
+                                </div>
+                                
+                                {/* Justificativa (se existir) */}
+                                {record.justification && (
+                                  <div 
+                                    className="mt-2 p-2 bg-slate-50 rounded-md border border-slate-100 cursor-pointer"
+                                    onClick={() => setJustificationModal({ open: true, text: record.justification })}
+                                  >
+                                    <div className="flex items-center mb-1">
+                                      <Activity className="h-3 w-3 text-primary mr-1" />
+                                      <span className="text-xs font-medium text-slate-700">Justificativa:</span>
+                                    </div>
+                                    <p className="text-xs text-slate-600 line-clamp-2">{record.justification}</p>
+                                    {record.justification.length > 100 && (
+                                      <p className="text-xs text-primary mt-1 text-right">Ver mais</p>
+                                    )}
+                                  </div>
+                                )}
+                                
+                                {/* Link para ver no mapa */}
+                                {record.latitude && record.longitude && (
+                                  <div className="mt-2 text-xs">
+                                    <a 
+                                      href={`https://www.google.com/maps?q=${record.latitude},${record.longitude}`} 
+                                      target="_blank" 
+                                      rel="noopener noreferrer"
+                                      className="text-primary hover:underline flex items-center"
+                                    >
+                                      <Map className="mr-1 h-3 w-3" />
+                                      Ver localização no mapa
+                                    </a>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+
+                    {Object.entries(groupedRecords).filter(
+                      ([date]) => date !== getCurrentDate(),
+                    ).length === 0 && (
+                      <div className="flex flex-col items-center justify-center p-8 text-center bg-white rounded-lg shadow-sm border border-slate-100">
+                        <div className="rounded-full bg-slate-100 p-3 mb-3">
+                          <Calendar className="h-5 w-5 text-slate-400" />
+                        </div>
+                        <h3 className="text-slate-800 font-medium mb-1 text-sm">
+                          Nenhum registro encontrado
+                        </h3>
+                        <p className="text-slate-500 text-xs max-w-xs">
+                          Seus registros anteriores aparecerão aqui.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -511,7 +577,7 @@ export default function EmployeeDashboard() {
           setIsClockOutModalOpen(false);
         }}
       />
-
+      
       {/* Justification Modal */}
       <Dialog open={justificationModal.open} onOpenChange={(open) => setJustificationModal({ ...justificationModal, open })}>
         <DialogContent className="sm:max-w-md">

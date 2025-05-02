@@ -9,7 +9,7 @@ import {
 } from "@shared/schema";
 import { IStorage } from "./storage";
 import { db, pool } from "./db";
-import { eq, and, gte, lt, desc, sql } from "drizzle-orm";
+import { eq, and, gte, lt, desc } from "drizzle-orm";
 import session from "express-session";
 import { Store } from "express-session";
 import connectPg from "connect-pg-simple";
@@ -111,15 +111,6 @@ export class DatabaseStorage implements IStorage {
       .returning();
 
     return result[0];
-  }
-
-  async getTimeRecordsCount(filter: { userId?: number }): Promise<number> {
-    const result = await db
-      .select({ count: sql`count(*)` })
-      .from(timeRecords)
-      .where(filter.userId ? eq(timeRecords.userId, filter.userId) : undefined);
-    
-    return Number(result[0]?.count || 0);
   }
 
   async getTimeRecords(filter: Partial<TimeRecordFilter>): Promise<TimeRecord[]> {
