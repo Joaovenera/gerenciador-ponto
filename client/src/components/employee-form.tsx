@@ -34,11 +34,10 @@ const employeeFormSchema = z.object({
   department: z.string().min(1, "Departamento é obrigatório"),
   status: z.string().min(1, "Status é obrigatório"),
   email: z.string().email("Email inválido"),
-  phone: z.string().nullable(),
+  phone: z.string().nullable().optional(),
   accessLevel: z.string().min(1, "Nível de acesso é obrigatório"),
   birthDate: z.string().min(1, "Data de nascimento é obrigatória"),
   username: z.string().min(1, "Nome de usuário é obrigatório"),
-  password: z.string().optional(), // Added for creation flow
 });
 
 type EmployeeFormValues = z.infer<typeof employeeFormSchema>;
@@ -84,7 +83,6 @@ export default function EmployeeForm({
           accessLevel: "employee",
           birthDate: "",
           username: "",
-          password: "",
         },
   });
 

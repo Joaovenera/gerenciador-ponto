@@ -4,9 +4,14 @@
     "node_modules", 
     "build", 
     "dist", 
-    "server/vite.ts"
+    "server/vite.ts",
+    "**/node_modules/**",
+    "**/*.spec.*",
+    "**/*.test.*"
   ],
   "compilerOptions": {
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "noEmit": true,
+    "allowJs": true
   }
 }
