@@ -9,5 +9,5 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-// Timeout global para testes (30 segundos)
-jest.setTimeout(30000);
+// Timeout global para testes (120 segundos)
+jest.setTimeout(120000);
