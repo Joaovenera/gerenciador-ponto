@@ -24,6 +24,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes
   setupAuth(app);
 
+  // Health check endpoint for Docker healthcheck
+  app.get("/api/health", (req, res) => {
+    res.status(200).json({
+      status: "ok",
+      timestamp: new Date().toISOString(),
+      service: "timetracker-api",
+      environment: process.env.NODE_ENV
+    });
+  });
+
   // Get client IP address
   app.get("/api/ip", (req, res) => {
     const ip = req.ip || req.socket.remoteAddress || "unknown";

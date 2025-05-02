@@ -1,25 +1,32 @@
 FROM node:20-alpine
 
+# Instala dependências necessárias
+RUN apk add --no-cache netcat-openbsd curl
+
 # Cria o diretório da aplicação
 WORKDIR /app
 
-# Copia apenas os pacotes primeiro
+# Define variáveis de ambiente para desenvolvimento
+ENV NODE_ENV=development
+
+# Copia apenas os arquivos de configuração de pacotes
 COPY package*.json ./
 
-# Instala dependências de produção
+# Instala todas as dependências de desenvolvimento
 RUN npm install
-
-RUN npm install -dev
 
 # Copia o restante da aplicação
 COPY . .
 
-# Dá permissão para executar o script
-RUN chmod +x /app/scripts/start.sh
+# Dá permissão para executar os scripts
+RUN chmod +x /app/scripts/*.sh
 
 # Expõe a porta
 EXPOSE 5000
 
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD wget -qO- http://localhost:5000/api/health || exit 1
+
 # Comando de start
 CMD ["sh", "/app/scripts/start.sh"]
-#CMD ["ping","google.com"]
