@@ -31,6 +31,8 @@ declare global {
   }
 }
 
+type User = Express.User;
+
 const scryptAsync = promisify(scrypt);
 const MemoryStore = createMemoryStore(session);
 
@@ -97,7 +99,7 @@ export function setupAuth(app: Express) {
   });
 
   app.post("/api/login", passport.authenticate("local"), (req, res) => {
-    const user = req.user as User;
+    const user = req.user;
     res.status(200).json(user);
   });
 
@@ -144,7 +146,7 @@ export function setupAuth(app: Express) {
     
     try {
       const { oldPassword, newPassword } = changePasswordSchema.parse(req.body);
-      const user = req.user as User;
+      const user = req.user as Express.User;
       
       // Verify old password
       if (!(await comparePasswords(oldPassword, user.password))) {
