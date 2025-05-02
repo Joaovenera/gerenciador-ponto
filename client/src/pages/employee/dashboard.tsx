@@ -68,6 +68,9 @@ export default function EmployeeDashboard() {
   const [isClockOutModalOpen, setIsClockOutModalOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [justificationModal, setJustificationModal] = useState({ open: false, text: "" });
+  const [page, setPage] = useState(1); // Add page state
+  const recordsPerPage = 7; // Records per page
+
 
   // Time interval to update current time
   useEffect(() => {
@@ -123,6 +126,14 @@ export default function EmployeeDashboard() {
       .toUpperCase()
       .substring(0, 2);
   };
+
+  // Calculate total pages
+  const totalPages = Math.ceil(
+    Object.entries(groupedRecords)
+      .filter(([date]) => date !== getCurrentDate())
+      .length / recordsPerPage
+  );
+
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -389,7 +400,7 @@ export default function EmployeeDashboard() {
                 <div className="space-y-px">
                   {Object.entries(groupedRecords)
                     .filter(([date]) => date !== getCurrentDate())
-                    .slice(0, 7) // Limit to 7 days for mobile
+                    .slice((page - 1) * recordsPerPage, page * recordsPerPage) // Apply pagination
                     .map(([date, records]) => (
                       <div
                         key={date}
@@ -432,21 +443,30 @@ export default function EmployeeDashboard() {
                       </div>
                     ))}
 
-                  {Object.keys(groupedRecords).filter(
-                    (date) => date !== getCurrentDate(),
-                  ).length === 0 && (
-                    <div className="flex flex-col items-center justify-center p-8 text-center">
-                      <div className="rounded-full bg-slate-100 p-2.5 mb-3">
-                        <Activity className="h-4 w-4 text-slate-400" />
-                      </div>
-                      <h3 className="text-slate-800 font-medium mb-1 text-sm">
-                        Sem histórico
-                      </h3>
-                      <p className="text-slate-500 text-xs max-w-xs">
-                        Não há registros para os dias anteriores.
-                      </p>
+                  {/* Pagination Controls */}
+                  <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setPage(p => Math.max(1, p - 1))}
+                        disabled={page === 1 || recordsLoading}
+                      >
+                        Anterior
+                      </Button>
+                      <span className="text-sm text-gray-600">
+                        Página {page} de {totalPages}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                        disabled={page === totalPages || recordsLoading}
+                      >
+                        Próxima
+                      </Button>
                     </div>
-                  )}
+                  </div>
                 </div>
               )}
             </TabsContent>
@@ -491,7 +511,7 @@ export default function EmployeeDashboard() {
           setIsClockOutModalOpen(false);
         }}
       />
-      
+
       {/* Justification Modal */}
       <Dialog open={justificationModal.open} onOpenChange={(open) => setJustificationModal({ ...justificationModal, open })}>
         <DialogContent className="sm:max-w-md">
