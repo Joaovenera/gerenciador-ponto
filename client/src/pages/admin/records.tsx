@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -98,6 +98,7 @@ export default function RecordsTab() {
   
   // Estado para controlar o modal de criação manual
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [ipInfo, setIpInfo] = useState({ ip: "", latitude: "", longitude: "" });
   
   // Configuração do formulário de registro manual
   const form = useForm<ManualRecordFormValues>({
@@ -113,6 +114,47 @@ export default function RecordsTab() {
       justification: "",
     },
   });
+  
+  // Obter IP e localização quando o modal for aberto
+  useEffect(() => {
+    if (createModalOpen) {
+      // Obter o IP atual
+      fetch('/api/ip')
+        .then(res => res.json())
+        .then(data => {
+          setIpInfo(prev => ({ ...prev, ip: data.ip }));
+          form.setValue("ipAddress", data.ip);
+          
+          // Usar a API de geolocalização do navegador para as coordenadas
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                const latitude = position.coords.latitude.toString();
+                const longitude = position.coords.longitude.toString();
+                
+                setIpInfo(prev => ({ 
+                  ...prev, 
+                  latitude, 
+                  longitude 
+                }));
+                
+                form.setValue("latitude", latitude);
+                form.setValue("longitude", longitude);
+              },
+              (error) => {
+                console.error("Erro ao obter localização:", error);
+                // Usar valores padrão se não conseguir obter a localização
+                form.setValue("latitude", "-23.550520");
+                form.setValue("longitude", "-46.633308");
+              }
+            );
+          }
+        })
+        .catch(err => {
+          console.error("Erro ao obter IP:", err);
+        });
+    }
+  }, [createModalOpen, form]);
   
   // Criação manual de registros
   const createRecordMutation = useMutation({
@@ -573,15 +615,23 @@ export default function RecordsTab() {
                   )}
                 />
 
-                {/* Endereço IP */}
+                {/* Endereço IP - Preenchido automaticamente */}
                 <FormField
                   control={form.control}
                   name="ipAddress"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Endereço IP*</FormLabel>
+                      <FormLabel>
+                        Endereço IP
+                        <span className="ml-2 text-xs text-gray-500">(preenchido automaticamente)</span>
+                      </FormLabel>
                       <FormControl>
-                        <Input placeholder="192.168.1.1" {...field} />
+                        <Input 
+                          placeholder="Obtendo IP..." 
+                          {...field} 
+                          disabled 
+                          className="bg-gray-50"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -590,30 +640,46 @@ export default function RecordsTab() {
               </div>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                {/* Latitude */}
+                {/* Latitude - Preenchida automaticamente */}
                 <FormField
                   control={form.control}
                   name="latitude"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Latitude*</FormLabel>
+                      <FormLabel>
+                        Latitude
+                        <span className="ml-2 text-xs text-gray-500">(preenchido automaticamente)</span>
+                      </FormLabel>
                       <FormControl>
-                        <Input placeholder="-23.550520" {...field} />
+                        <Input 
+                          placeholder="Obtendo localização..." 
+                          {...field} 
+                          disabled 
+                          className="bg-gray-50"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                {/* Longitude */}
+                {/* Longitude - Preenchida automaticamente */}
                 <FormField
                   control={form.control}
                   name="longitude"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Longitude*</FormLabel>
+                      <FormLabel>
+                        Longitude
+                        <span className="ml-2 text-xs text-gray-500">(preenchido automaticamente)</span>
+                      </FormLabel>
                       <FormControl>
-                        <Input placeholder="-46.633308" {...field} />
+                        <Input 
+                          placeholder="Obtendo localização..." 
+                          {...field} 
+                          disabled 
+                          className="bg-gray-50"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
