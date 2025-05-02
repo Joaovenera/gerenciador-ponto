@@ -158,9 +158,20 @@ export default function TimeRecordForm({
           isManual: true
         });
       } else {
-      createMutation.mutate({
-        ...data,
-        timestamp: timestampDate,
+        createMutation.mutate({
+          ...data,
+          timestamp: new Date(data.timestamp).toISOString(),
+          isManual: true
+        });
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast({
+        title: "Erro",
+        description: "Ocorreu um erro ao salvar o registro",
+        variant: "destructive",
+      });
+    }
       });
     }
   };
