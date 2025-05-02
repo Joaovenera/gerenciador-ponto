@@ -1,12 +1,15 @@
-import { useState, useEffect } from "react";
-import { useLocation, useRoute, Link } from "wouter";
+import { useState, useEffect, lazy, Suspense } from "react";
+import { useLocation, useRoute } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import AdminSidebar from "@/components/admin-sidebar";
 import AdminMobileHeader from "@/components/admin-mobile-header";
-import RecordsTab from "@/pages/admin/records";
-import EmployeesTab from "@/pages/admin/employees";
-import ReportsTabImproved from "@/pages/admin/reports-improved";
-import OverviewTab from "@/pages/admin/overview";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Lazy loading para os módulos do admin
+const RecordsTab = lazy(() => import("@/pages/admin/records"));
+const EmployeesTab = lazy(() => import("@/pages/admin/employees"));
+const ReportsTabImproved = lazy(() => import("@/pages/admin/reports-improved"));
+const OverviewTab = lazy(() => import("@/pages/admin/overview"));
 
 type AdminTab = "overview" | "records" | "employees" | "reports";
 
@@ -59,11 +62,22 @@ export default function AdminDashboard() {
         <div className="md:pl-64 flex flex-col flex-1">
           <main className="flex-1">
             <div className="py-6">
-              {/* Content based on active tab */}
-              {activeTab === "overview" && <OverviewTab />}
-              {activeTab === "records" && <RecordsTab />}
-              {activeTab === "employees" && <EmployeesTab />}
-              {activeTab === "reports" && <ReportsTabImproved />}
+              {/* Content based on active tab with loading fallback */}
+              <Suspense fallback={
+                <div className="px-4 md:px-8 space-y-6">
+                  <Skeleton className="h-8 w-64" />
+                  <Skeleton className="h-32 w-full" />
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <Skeleton className="h-24 w-full" />
+                    <Skeleton className="h-24 w-full" />
+                  </div>
+                </div>
+              }>
+                {activeTab === "overview" && <OverviewTab />}
+                {activeTab === "records" && <RecordsTab />}
+                {activeTab === "employees" && <EmployeesTab />}
+                {activeTab === "reports" && <ReportsTabImproved />}
+              </Suspense>
             </div>
           </main>
         </div>
