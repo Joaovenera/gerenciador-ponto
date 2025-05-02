@@ -71,7 +71,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get time records for logged in user (last 7 days)
   app.get("/api/time-records/me", isAuthenticated, async (req, res, next) => {
     try {
-      const userId = req.user!.id;
+      const userId = (req.user as Express.User).id;
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
       
@@ -91,7 +91,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get current status (in/out) for logged in user
   app.get("/api/time-records/status", isAuthenticated, async (req, res, next) => {
     try {
-      const userId = req.user!.id;
+      const userId = (req.user as Express.User).id;
       const status = await storage.getUserStatus(userId);
       res.json({ status });
     } catch (err) {
@@ -123,7 +123,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create a new time record manually
   app.post("/api/admin/time-records", isAdmin, async (req, res, next) => {
     try {
-      const adminId = req.user!.id;
+      const adminId = (req.user as Express.User).id;
       
       const timeRecordData = {
         ...req.body,
