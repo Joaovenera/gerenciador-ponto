@@ -25,7 +25,8 @@ export async function setupVite(app: Express, server: Server) {
     hmr: { server },
     allowedHosts: [
       "localhost",
-      ".jarmaq.com.br", // leading dot allows subdomains
+      "jarmaq.com.br",
+      ".replit.dev", // leading dot allows subdomains
     ],
   };
 
