@@ -74,6 +74,27 @@ export default function EmployeeDashboard() {
   const [isClockOutModalOpen, setIsClockOutModalOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [justificationModal, setJustificationModal] = useState({ open: false, text: "" });
+  
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+  
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 300, damping: 24 } }
+  };
+
+  const clockDigitsVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 300, damping: 24, delay: 0.3 } }
+  };
 
   // Time interval to update current time
   useEffect(() => {
