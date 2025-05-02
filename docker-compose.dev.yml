@@ -1,5 +1,6 @@
   version: '3.8'
 
+<<<<<<< HEAD
   services:
     app:
       build:
@@ -17,6 +18,27 @@
         - /app/node_modules
       depends_on:
         - db
+=======
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: timetracker-app-dev
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ./.env:/app/.env
+    networks:
+      - timetracker-network
+>>>>>>> 1e388cd (Translate documentation and improve Docker setup for better clarity)
 
     db:
       image: bitnami/postgresql:latest
