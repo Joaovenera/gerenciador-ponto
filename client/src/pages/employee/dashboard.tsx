@@ -99,7 +99,14 @@ export default function EmployeeDashboard() {
 
   // Register time record mutation
   const registerRecordMutation = useMutation({
-    mutationFn: async (recordData) => {
+    mutationFn: async (recordData: {
+      type: string;
+      ipAddress: string;
+      latitude: number;
+      longitude: number;
+      photo: string;
+      justification?: string;
+    }) => {
       const res = await apiRequest("POST", "/api/time-records", recordData);
       return await res.json();
     },
@@ -110,17 +117,17 @@ export default function EmployeeDashboard() {
   });
 
   // Group time records by date
-  const groupedRecords = timeRecords ? groupRecordsByDate(timeRecords) : {};
+  const groupedRecords: Record<string, TimeRecord[]> = timeRecords ? groupRecordsByDate(timeRecords) : {};
 
   // Get current user status
-  const currentStatus = statusData?.status || "out";
+  const currentStatus: "in" | "out" = statusData?.status || "out";
 
   // Get initials for avatar
-  const getInitials = (name) => {
+  const getInitials = (name: string): string => {
     if (!name) return "U";
     return name
       .split(" ")
-      .map((n) => n[0])
+      .map((n: string) => n[0])
       .join("")
       .toUpperCase()
       .substring(0, 2);
@@ -573,7 +580,7 @@ export default function EmployeeDashboard() {
             ...data,
             type: "in",
             ipAddress: ipData?.ip || "0.0.0.0",
-          });
+          } as any);
           setIsClockInModalOpen(false);
         }}
       />
@@ -586,7 +593,7 @@ export default function EmployeeDashboard() {
             ...data,
             type: "out",
             ipAddress: ipData?.ip || "0.0.0.0",
-          });
+          } as any);
           setIsClockOutModalOpen(false);
         }}
       />
@@ -615,12 +622,12 @@ export default function EmployeeDashboard() {
 }
 
 // Helper function to group records by date
-function groupRecordsByDate(records) {
+function groupRecordsByDate(records: TimeRecord[]): Record<string, TimeRecord[]> {
   if (!records || !Array.isArray(records)) return {};
 
-  const grouped = {};
+  const grouped: Record<string, TimeRecord[]> = {};
 
-  records.forEach((record) => {
+  records.forEach((record: TimeRecord) => {
     const date = format(new Date(record.timestamp), "dd/MM/yyyy");
 
     if (!grouped[date]) {
@@ -631,9 +638,9 @@ function groupRecordsByDate(records) {
   });
 
   // Sort records within each date
-  Object.keys(grouped).forEach((date) => {
+  Object.keys(grouped).forEach((date: string) => {
     grouped[date].sort(
-      (a, b) =>
+      (a: TimeRecord, b: TimeRecord) =>
         new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
     );
   });
@@ -642,7 +649,7 @@ function groupRecordsByDate(records) {
 }
 
 // Verifica se uma data é hoje (formato dd/MM/yyyy)
-function isToday(dateStr) {
+function isToday(dateStr: string): boolean {
   const today = getCurrentDate();
   return dateStr === today;
 }
