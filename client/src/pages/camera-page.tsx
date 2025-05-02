@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Camera, ChevronLeft, CheckCircle } from "lucide-react";
@@ -18,21 +17,21 @@ export default function CameraPage() {
   const [photoData, setPhotoData] = useState<string | null>(null);
   const [recordType, setRecordType] = useState<"in" | "out">("in");
   const [step, setStep] = useState<"camera" | "confirmation">("camera");
-  
+
   // Get geolocation
   const { position, requestLocation } = useGeolocation();
-  
+
   // Get client IP (need this for time record)
   const [clientIp, setClientIp] = useState<string>("0.0.0.0");
-  
+
   // Get IP address
   useEffect(() => {
     fetch("/api/ip")
-      .then(res => res.json())
-      .then(data => setClientIp(data.ip))
-      .catch(err => console.error("Error fetching IP:", err));
+      .then((res) => res.json())
+      .then((data) => setClientIp(data.ip))
+      .catch((err) => console.error("Error fetching IP:", err));
   }, []);
-  
+
   // Get record type from URL query params
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -40,28 +39,30 @@ export default function CameraPage() {
     if (type === "in" || type === "out") {
       setRecordType(type);
     }
-    
+
     // Request location on component mount
-    requestLocation().catch(error => {
+    requestLocation().catch((error) => {
       toast({
         title: "Erro de localização",
-        description: "Não foi possível obter sua localização. Verifique as permissões do navegador.",
+        description:
+          "Não foi possível obter sua localização. Verifique as permissões do navegador.",
         variant: "destructive",
       });
     });
-    
+
     // Start camera
-    startCamera().catch(error => {
+    startCamera().catch((error) => {
       toast({
         title: "Erro da câmera",
-        description: "Não foi possível acessar sua câmera. Verifique as permissões do navegador.",
+        description:
+          "Não foi possível acessar sua câmera. Verifique as permissões do navegador.",
         variant: "destructive",
       });
     });
-    
+
     return () => stopCamera();
   }, []);
-  
+
   // Register time record mutation
   const registerRecordMutation = useMutation({
     mutationFn: async (recordData: any) => {
@@ -88,14 +89,14 @@ export default function CameraPage() {
 
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { 
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
           facingMode: "user",
           width: { ideal: 1280 },
-          height: { ideal: 720 } 
-        } 
+          height: { ideal: 720 },
+        },
       });
-      
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
@@ -114,7 +115,7 @@ export default function CameraPage() {
   const stopCamera = () => {
     if (videoRef.current?.srcObject) {
       const stream = videoRef.current.srcObject as MediaStream;
-      stream.getTracks().forEach(track => track.stop());
+      stream.getTracks().forEach((track) => track.stop());
     }
     setIsCameraActive(false);
   };
@@ -126,17 +127,21 @@ export default function CameraPage() {
     const canvas = document.createElement("canvas");
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    
+
     const context = canvas.getContext("2d");
     if (!context) return;
-    
+
+    // Desenha a imagem espelhada horizontalmente para corrigir a inversão
+    context.translate(canvas.width, 0);
+    context.scale(-1, 1);
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
     const photo = canvas.toDataURL("image/jpeg");
     setPhotoData(photo);
     stopCamera();
     setStep("confirmation");
   };
-  
+
   const handleConfirm = () => {
     if (!position || !photoData) {
       toast({
@@ -146,7 +151,7 @@ export default function CameraPage() {
       });
       return;
     }
-    
+
     registerRecordMutation.mutate({
       latitude: position.latitude.toString(),
       longitude: position.longitude.toString(),
@@ -155,7 +160,7 @@ export default function CameraPage() {
       ipAddress: clientIp,
     });
   };
-  
+
   const handleCancel = () => {
     navigate("/");
   };
@@ -165,9 +170,9 @@ export default function CameraPage() {
       {step === "camera" && (
         <>
           <div className="absolute top-0 left-0 right-0 p-4 z-10 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent">
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={handleCancel}
               className="text-white"
             >
@@ -178,16 +183,17 @@ export default function CameraPage() {
             </h1>
             <div className="w-10"></div>
           </div>
-          
-          <video 
+
+          <video
             ref={videoRef}
-            autoPlay 
+            autoPlay
             playsInline
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transform scale-x-flip"
+            style={{ transform: "scaleX(-1)" }} // Corrige a inversão da câmera
           />
-          
+
           <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-            <Button 
+            <Button
               onClick={takePhoto}
               className="w-full bg-white text-black hover:bg-white/90"
               size="lg"
@@ -199,13 +205,13 @@ export default function CameraPage() {
           </div>
         </>
       )}
-      
+
       {step === "confirmation" && photoData && (
         <div className="flex flex-col h-full bg-gray-100">
           <div className="p-4 bg-primary text-white flex items-center">
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => {
                 setStep("camera");
                 startCamera();
@@ -216,42 +222,45 @@ export default function CameraPage() {
             </Button>
             <h1 className="font-medium">Confirmar Registro</h1>
           </div>
-          
+
           <div className="flex-1 p-4 overflow-auto">
             <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
               <h2 className="font-medium mb-2">Detalhes do Registro</h2>
               <div className="text-sm space-y-2">
                 <div>
-                  <span className="font-medium">Tipo:</span> 
-                  <span className="ml-2">{recordType === "in" ? "Entrada" : "Saída"}</span>
+                  <span className="font-medium">Tipo:</span>
+                  <span className="ml-2">
+                    {recordType === "in" ? "Entrada" : "Saída"}
+                  </span>
                 </div>
                 <div>
-                  <span className="font-medium">Funcionário:</span> 
+                  <span className="font-medium">Funcionário:</span>
                   <span className="ml-2">{user?.fullName}</span>
                 </div>
                 {position && (
                   <div>
                     <span className="font-medium">Localização:</span>
                     <span className="ml-2">
-                      Lat: {position.latitude.toFixed(6)}, Long: {position.longitude.toFixed(6)}
+                      Lat: {position.latitude.toFixed(6)}, Long:{" "}
+                      {position.longitude.toFixed(6)}
                     </span>
                   </div>
                 )}
               </div>
             </div>
-            
+
             <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
               <h2 className="font-medium mb-2">Foto Capturada</h2>
-              <img 
-                src={photoData} 
+              <img
+                src={photoData}
                 alt="Foto para registro de ponto"
                 className="w-full rounded-lg"
               />
             </div>
           </div>
-          
+
           <div className="p-4 border-t bg-white">
-            <Button 
+            <Button
               onClick={handleConfirm}
               className="w-full bg-green-500 hover:bg-green-600 mb-2"
               disabled={registerRecordMutation.isPending}
@@ -265,8 +274,8 @@ export default function CameraPage() {
                 </>
               )}
             </Button>
-            
-            <Button 
+
+            <Button
               variant="outline"
               onClick={handleCancel}
               className="w-full"
