@@ -14,6 +14,11 @@ import session from "express-session";
 import { Store } from "express-session";
 import connectPg from "connect-pg-simple";
 import { format } from "date-fns";
+import { 
+  getNowWithTimezone, 
+  adjustDateWithTimezone,
+  formatWithTimezone
+} from "./utils/date-utils";
 
 // Create PostgreSQL session store
 const PostgresSessionStore = connectPg(session);
