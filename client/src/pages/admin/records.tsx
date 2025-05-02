@@ -32,11 +32,9 @@ import {
   FileDown, 
   Search, 
   Edit, 
-  Trash2,
-  PlusCircle 
+  Trash2 
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import TimeRecordForm from "@/components/time-record-form";
 
 export default function RecordsTab() {
   const { toast } = useToast();
@@ -50,25 +48,16 @@ export default function RecordsTab() {
     open: false, 
     photo: ""
   });
-  const [recordFormModal, setRecordFormModal] = useState<{
-    open: boolean; 
-    isEditing: boolean; 
-    record?: TimeRecord;
-  }>({
-    open: false,
-    isEditing: false,
-  });
   
   // Get all time records with filters
   const { data: timeRecords, isLoading: recordsLoading } = useQuery<TimeRecord[]>({
     queryKey: ["/api/admin/time-records", dateRange, selectedEmployee, selectedType],
     queryFn: async ({ queryKey }) => {
-      const [_, dateRangeValue, employeeId, type] = queryKey;
-      const dateRangeObj = dateRangeValue as {start: string, end: string};
+      const [_, dateRange, employeeId, type] = queryKey;
       
       const params = new URLSearchParams();
-      if (dateRangeObj.start) params.append("startDate", dateRangeObj.start);
-      if (dateRangeObj.end) params.append("endDate", dateRangeObj.end);
+      if (dateRange.start) params.append("startDate", dateRange.start as string);
+      if (dateRange.end) params.append("endDate", dateRange.end as string);
       if (employeeId) params.append("userId", employeeId as string);
       if (type) params.append("type", type as string);
       
@@ -206,42 +195,28 @@ export default function RecordsTab() {
               </div>
             </div>
             
-            <div className="mt-4 flex justify-between">
+            <div className="mt-4 flex justify-end space-x-2">
+              <Button 
+                variant="default" 
+                className="flex items-center"
+                onClick={() => {
+                  queryClient.invalidateQueries({ 
+                    queryKey: ["/api/admin/time-records"] 
+                  });
+                }}
+              >
+                <Search className="h-4 w-4 mr-2" />
+                Filtrar
+              </Button>
+              
               <Button 
                 variant="outline" 
                 className="flex items-center"
-                onClick={() => setRecordFormModal({
-                  open: true,
-                  isEditing: false
-                })}
+                onClick={handleExport}
               >
-                <PlusCircle className="h-4 w-4 mr-2" />
-                Adicionar Ponto Manual
+                <FileDown className="h-4 w-4 mr-2" />
+                Exportar CSV
               </Button>
-              
-              <div className="flex space-x-2">
-                <Button 
-                  variant="default" 
-                  className="flex items-center"
-                  onClick={() => {
-                    queryClient.invalidateQueries({ 
-                      queryKey: ["/api/admin/time-records"] 
-                    });
-                  }}
-                >
-                  <Search className="h-4 w-4 mr-2" />
-                  Filtrar
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  className="flex items-center"
-                  onClick={handleExport}
-                >
-                  <FileDown className="h-4 w-4 mr-2" />
-                  Exportar CSV
-                </Button>
-              </div>
             </div>
           </div>
           
@@ -339,15 +314,7 @@ export default function RecordsTab() {
                               </Button>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                              <Button 
-                                variant="ghost" 
-                                className="text-primary hover:text-blue-700 h-8 w-8 p-0 mr-1"
-                                onClick={() => setRecordFormModal({
-                                  open: true,
-                                  isEditing: true,
-                                  record: record
-                                })}
-                              >
+                              <Button variant="ghost" className="text-primary hover:text-blue-700 h-8 w-8 p-0 mr-1">
                                 <Edit className="h-4 w-4" />
                               </Button>
                               <Button 
@@ -401,14 +368,6 @@ export default function RecordsTab() {
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* Time Record Form Modal */}
-      <TimeRecordForm
-        isOpen={recordFormModal.open}
-        onClose={() => setRecordFormModal({ open: false, isEditing: false })}
-        record={recordFormModal.record}
-        isEditing={recordFormModal.isEditing}
-      />
     </>
   );
 }
