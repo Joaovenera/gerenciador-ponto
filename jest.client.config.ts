@@ -7,6 +7,7 @@ export default {
     '^.+\.(ts|tsx)$': ['ts-jest', {
       useESM: true,
       tsconfig: 'tsconfig.json',
+      jsx: 'react',
     }],
     '^.+\.jsx?$': 'babel-jest',
   },

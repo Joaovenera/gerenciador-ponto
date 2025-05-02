@@ -74,6 +74,7 @@ export function getCurrentDateWithWeekday(): string {
 
 export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
+  // Ensure we have space for the ellipsis and format according to test expectation
   return text.slice(0, maxLength - 3) + "...";
 }
 

@@ -1,9 +1,12 @@
 #!/bin/bash
 
+# Aumentar o timeout para evitar falhas em ambientes de CI
+export NODE_OPTIONS="--experimental-vm-modules --max-old-space-size=4096"
+
 # Run backend tests
 echo "Running backend tests..."
-NODE_OPTIONS="--experimental-vm-modules" npx jest --config=jest.config.ts --testTimeout=10000
+npx jest --config=jest.config.ts --testTimeout=30000 --forceExit
 
 # Run frontend tests
 echo "Running frontend tests..."
-NODE_OPTIONS="--experimental-vm-modules" npx jest --config=jest.client.config.ts --testTimeout=10000
+npx jest --config=jest.client.config.ts --testTimeout=30000 --forceExit

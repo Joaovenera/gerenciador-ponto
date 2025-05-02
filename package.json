@@ -14,6 +14,9 @@
     "test:all": "NODE_ENV=test jest --config=jest.config.ts && jest --config=jest.client.config.ts"
   },
   "dependencies": {
+    "@babel/preset-env": "^7.27.1",
+    "@babel/preset-react": "^7.27.1",
+    "@babel/preset-typescript": "^7.27.1",
     "@hookform/resolvers": "^3.10.0",
     "@jridgewell/trace-mapping": "^0.3.25",
     "@neondatabase/serverless": "^0.10.4",
@@ -52,6 +55,7 @@
     "@types/jest": "^29.5.14",
     "@types/pg": "^8.11.14",
     "@types/supertest": "^6.0.3",
+    "babel-jest": "^29.7.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",

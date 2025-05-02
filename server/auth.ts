@@ -31,7 +31,7 @@ declare global {
   }
 }
 
-type User = Express.User;
+// Import User type (not needed now - using Express.User directly)
 
 const scryptAsync = promisify(scrypt);
 const MemoryStore = createMemoryStore(session);
