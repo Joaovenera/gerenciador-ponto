@@ -111,11 +111,13 @@ export default function TimeRecordForm({
   // Update mutation for editing
   const updateMutation = useMutation({
     mutationFn: async (data: any) => {
-      const { id, timestamp, ...updateData } = data;
-      return apiRequest("PUT", `/api/admin/time-records/${id}`, {
-        ...updateData,
-        timestamp: new Date(timestamp).toISOString(),
-      });
+      const { id, ...updateData } = data;
+      console.log("Sending update request:", updateData);
+      const response = await apiRequest("PUT", `/api/admin/time-records/${id}`, updateData);
+      if (!response.ok) {
+        throw new Error("Falha ao atualizar registro");
+      }
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/time-records"] });
@@ -136,21 +138,26 @@ export default function TimeRecordForm({
 
   // Form submission handler
   const onSubmit = async (data: ManualTimeRecordFormValues) => {
-    const timestampDate = new Date(data.timestamp).toISOString();
-
-    if (isEditing && record) {
-      console.log("Updating record:", {
-        id: record.id,
-        ...data,
-        timestamp: timestampDate,
-      });
-
-      updateMutation.mutate({
-        id: record.id,
-        ...data,
-        timestamp: timestampDate,
-      });
-    } else {
+    try {
+      if (isEditing && record) {
+        console.log("Updating record:", {
+          id: record.id,
+          ...data,
+        });
+        
+        updateMutation.mutate({
+          id: record.id,
+          userId: data.userId,
+          type: data.type,
+          timestamp: new Date(data.timestamp).toISOString(),
+          ipAddress: data.ipAddress,
+          latitude: data.latitude,
+          longitude: data.longitude,
+          photo: data.photo,
+          justification: data.justification,
+          isManual: true
+        });
+      } else {
       createMutation.mutate({
         ...data,
         timestamp: timestampDate,
