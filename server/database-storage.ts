@@ -114,16 +114,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getTimeRecordsCount(filter: { userId?: number }): Promise<number> {
-    const query = this.db
-      .selectFrom('time_records')
-      .select(eb => eb.fn.countAll().as('count'));
+    const result = await db
+      .select({ count: sql`count(*)` })
+      .from(timeRecords)
+      .where(filter.userId ? eq(timeRecords.userId, filter.userId) : undefined);
     
-    if (filter.userId) {
-      query.where('userId', '=', filter.userId);
-    }
-    
-    const result = await query.executeTakeFirst();
-    return Number(result?.count || 0);
+    return Number(result[0]?.count || 0);
   }
 
   async getTimeRecords(filter: Partial<TimeRecordFilter>): Promise<TimeRecord[]> {
