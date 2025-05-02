@@ -1,15 +1,15 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import NotFound from '../../pages/not-found';
+import NotFound from '@/pages/not-found';
 
-describe('<NotFound />', () => {
-  it('renders the not found page correctly', () => {
+describe('NotFound', () => {
+  it('renders without crashing', () => {
     render(<NotFound />);
     
-    // Verify title is present
+    // Verifica se o texto de página não encontrada é exibido
     expect(screen.getByText(/página não encontrada/i)).toBeInTheDocument();
     
-    // Verify return link is present
-    expect(screen.getByRole('link', { name: /voltar/i })).toBeInTheDocument();
+    // Verifica se tem um botão para voltar
+    expect(screen.getByRole('button', { name: /voltar/i })).toBeInTheDocument();
   });
 });

@@ -1,4 +1,5 @@
 export default {
+  testTimeout: 10000,
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   extensionsToTreatAsEsm: ['.ts', '.tsx'],

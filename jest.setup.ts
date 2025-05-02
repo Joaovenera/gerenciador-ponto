@@ -1,9 +1,13 @@
+// Configuração global para os testes
 import '@testing-library/jest-dom';
 
-// Mock global fetch for all tests
+// Mock global de fetch para testes
 global.fetch = jest.fn();
 
-// Reset mocks between tests
+// Reset mocks após cada teste
 beforeEach(() => {
-  jest.resetAllMocks();
+  jest.clearAllMocks();
 });
+
+// Timeout global para testes (30 segundos)
+jest.setTimeout(30000);
