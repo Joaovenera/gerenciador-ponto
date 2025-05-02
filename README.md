@@ -1,93 +1,119 @@
-# Time Tracker Application
+# Aplicação de Registro de Ponto
 
-This is a web-based employee time tracking system with geolocation, photo capture, and comprehensive admin functionality.
+Este é um sistema web de registro de ponto de funcionários com geolocalização, captura de fotos e funcionalidades administrativas completas.
 
-## Docker Setup
+## Configuração Docker
 
-The application has been optimized to use Docker for both development and production environments.
+A aplicação foi otimizada para usar Docker em ambientes de desenvolvimento e produção com PostgreSQL 17 self-hosted.
 
-### Prerequisites
+### Pré-requisitos
 
 - Docker
 - Docker Compose
 
-### Development Environment
+### Configuração Inicial
 
-To start the development environment with hot reloading:
+Antes de iniciar o ambiente, você deve configurar o arquivo `.env` na raiz do projeto:
+
+1. Copie o arquivo `.env.example` para `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Edite o arquivo `.env` conforme necessário para seu ambiente (veja a seção "Variáveis de Ambiente").
+
+### Ambiente de Desenvolvimento
+
+Para iniciar o ambiente de desenvolvimento com hot reloading:
 
 ```bash
 ./scripts/start-dev.sh
 ```
 
-This will:
-1. Start the PostgreSQL database
-2. Start the application in development mode
-3. Run any necessary database migrations
+Isso vai:
+1. Iniciar o PostgreSQL 17 no Docker
+2. Iniciar a aplicação em modo de desenvolvimento
+3. Executar as migrações de banco de dados necessárias
 
-The application will be accessible at http://localhost:5000
+A aplicação estará acessível em http://localhost:5000
 
-### Production Environment
+### Ambiente de Produção
 
-To start the production environment:
+Para iniciar o ambiente de produção:
 
 ```bash
 ./scripts/start-prod.sh
 ```
 
-This will:
-1. Build the application
-2. Start the PostgreSQL database
-3. Start the application in production mode
-4. Run any necessary database migrations
+Isso vai:
+1. Construir a aplicação
+2. Iniciar o PostgreSQL 17 no Docker
+3. Iniciar a aplicação em modo de produção
+4. Executar as migrações de banco de dados necessárias
 
-The application will be accessible at http://localhost:5000
+A aplicação estará acessível em http://localhost:5000
 
-### Database Migrations
+### Migrações do Banco de Dados
 
-To manually run database migrations:
+Para executar migrações de banco de dados manualmente:
 
 ```bash
 ./scripts/db-migrate.sh
 ```
 
-### Stopping the Environment
+### Parando o Ambiente
 
-To stop all running environments:
+Para parar todos os ambientes em execução:
 
 ```bash
 ./scripts/stop.sh
 ```
 
-## Directory Structure
+## Estrutura de Diretórios
 
-- `/client` - Frontend code
-- `/server` - Backend code
-- `/shared` - Shared code (schemas, types)
-- `/scripts` - Helper scripts for the Docker environment
+- `/client` - Código frontend
+- `/server` - Código backend
+- `/shared` - Código compartilhado (schemas, tipos)
+- `/scripts` - Scripts auxiliares para o ambiente Docker
 
-## Environment Variables
+## Variáveis de Ambiente
 
-The following environment variables are used:
+O projeto usa um arquivo `.env` para configuração do banco de dados PostgreSQL. Um modelo está disponível no arquivo `.env.example`. As principais variáveis são:
 
-- `NODE_ENV` - Environment mode (development or production)
-- `DATABASE_URL` - PostgreSQL connection string
+```
+# Para ambiente Docker
+DATABASE_URL=postgresql://postgres:postgres@db:5432/timetracker?sslmode=disable
+PGUSER=postgres
+PGPASSWORD=postgres
+PGDATABASE=timetracker
+PGHOST=db
+PGPORT=5432
 
-These are automatically set in the Docker Compose files.
+# Para ambiente local
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/timetracker?sslmode=disable
+PGUSER=postgres
+PGPASSWORD=postgres
+PGDATABASE=timetracker
+PGHOST=localhost
+PGPORT=5432
+```
 
-## Development Workflow
+Estas variáveis são carregadas automaticamente pelo Docker Compose e pela aplicação. Você pode personalizar os valores conforme necessário para seu ambiente.
 
-1. Make code changes
-2. The changes will be automatically reflected in the development environment due to hot reloading
-3. Test your changes
-4. Commit your changes
-5. Deploy to production
+## Fluxo de Desenvolvimento
 
-## Production Deployment
+1. Faça alterações no código
+2. As alterações serão automaticamente refletidas no ambiente de desenvolvimento devido ao hot reloading
+3. Teste suas alterações
+4. Confirme suas alterações
+5. Implante para produção
 
-To deploy to production, run:
+## Implantação de Produção
+
+Para implantar em produção, execute:
 
 ```bash
 ./scripts/start-prod.sh
 ```
 
-This will build a production-ready image and start the application in production mode.
+Isso construirá uma imagem pronta para produção e iniciará a aplicação em modo de produção.
