@@ -135,14 +135,19 @@ export default function TimeRecordForm({
   });
 
   // Form submission handler
-  const onSubmit = (data: ManualTimeRecordFormValues) => {
-    // Format the timestamp
-    const timestampDate = new Date(data.timestamp);
-    
+  const onSubmit = async (data: ManualTimeRecordFormValues) => {
+    const timestampDate = new Date(data.timestamp).toISOString();
+
     if (isEditing && record) {
-      updateMutation.mutate({
-        ...data,
+      console.log("Updating record:", {
         id: record.id,
+        ...data,
+        timestamp: timestampDate,
+      });
+
+      updateMutation.mutate({
+        id: record.id,
+        ...data,
         timestamp: timestampDate,
       });
     } else {

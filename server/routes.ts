@@ -141,7 +141,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/admin/time-records/:id", isAdmin, async (req, res, next) => {
     try {
       const id = parseInt(req.params.id);
-      const timeRecord = await storage.updateTimeRecord(id, req.body);
+      if (!id) {
+        return res.status(400).json({ message: "Invalid record ID" });
+      }
+
+      const updateData = {
+        ...req.body,
+        timestamp: new Date(req.body.timestamp),
+      };
+      
+      const timeRecord = await storage.updateTimeRecord(id, updateData);
       res.json(timeRecord);
     } catch (err) {
       next(err);
