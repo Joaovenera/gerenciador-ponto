@@ -34,10 +34,11 @@ const employeeFormSchema = z.object({
   department: z.string().min(1, "Departamento é obrigatório"),
   status: z.string().min(1, "Status é obrigatório"),
   email: z.string().email("Email inválido"),
-  phone: z.string().optional(),
+  phone: z.string().nullable(),
   accessLevel: z.string().min(1, "Nível de acesso é obrigatório"),
   birthDate: z.string().min(1, "Data de nascimento é obrigatória"),
   username: z.string().min(1, "Nome de usuário é obrigatório"),
+  password: z.string().optional(), // Added for creation flow
 });
 
 type EmployeeFormValues = z.infer<typeof employeeFormSchema>;
@@ -59,7 +60,17 @@ export default function EmployeeForm({
     resolver: zodResolver(employeeFormSchema),
     defaultValues: employee
       ? {
-          ...employee,
+          fullName: employee.fullName,
+          cpf: employee.cpf,
+          admissionDate: employee.admissionDate,
+          role: employee.role,
+          department: employee.department,
+          status: employee.status,
+          email: employee.email,
+          phone: employee.phone,
+          accessLevel: employee.accessLevel,
+          birthDate: employee.birthDate,
+          username: employee.username,
         }
       : {
           fullName: "",
@@ -69,10 +80,11 @@ export default function EmployeeForm({
           department: "",
           status: "active",
           email: "",
-          phone: "",
+          phone: null,
           accessLevel: "employee",
           birthDate: "",
           username: "",
+          password: "",
         },
   });
 
@@ -84,7 +96,7 @@ export default function EmployeeForm({
 
   // Create employee mutation
   const createEmployeeMutation = useMutation({
-    mutationFn: async (data: EmployeeFormValues) => {
+    mutationFn: async (data: EmployeeFormValues & { password: string }) => {
       const res = await apiRequest("POST", "/api/admin/users", data);
       return res.json();
     },
@@ -146,10 +158,9 @@ export default function EmployeeForm({
       // A senha inicial será a data de nascimento sem hífens
       // Converte YYYY-MM-DD para DDMMYYYY
       const [year, month, day] = data.birthDate.split("-");
-      createEmployeeMutation.mutate({
-        ...data,
-        password: `${day}${month}${year}`,
-      });
+      const formData = { ...data };
+      formData.password = `${day}${month}${year}`;
+      createEmployeeMutation.mutate(formData);
     }
   };
 
