@@ -96,6 +96,15 @@ export default function AdminMobileHeader({ activeTab, onTabChange, user }: Admi
                       Relatórios
                     </div>
                   </Link>
+                  <Link href="/admin/financial">
+                    <div 
+                      className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${activeTab === "financial" ? "bg-gray-800 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"}`}
+                      onClick={() => handleTabClick("financial")}
+                    >
+                      <DollarSign className="mr-4 h-5 w-5 text-gray-400 group-hover:text-gray-300" />
+                      Financeiro
+                    </div>
+                  </Link>
                 </nav>
               </div>
               <div className="flex-shrink-0 flex border-t border-gray-800 p-4">
@@ -129,7 +138,7 @@ export default function AdminMobileHeader({ activeTab, onTabChange, user }: Admi
       </div>
       
       {/* Mobile Tab Navigation */}
-      <div className="flex justify-between bg-gray-800 text-xs text-gray-400">
+      <div className="grid grid-cols-5 bg-gray-800 text-xs text-gray-400">
         <Button 
           variant="ghost" 
           className={`flex-1 flex flex-col items-center py-2 ${activeTab === "overview" ? "text-white border-b-2 border-primary" : ""}`}
@@ -152,7 +161,7 @@ export default function AdminMobileHeader({ activeTab, onTabChange, user }: Admi
           onClick={() => onTabChange("employees")}
         >
           <Users className="mb-1 h-5 w-5" />
-          <span>Funcionários</span>
+          <span>Funcs.</span>
         </Button>
         <Button 
           variant="ghost" 
@@ -161,6 +170,14 @@ export default function AdminMobileHeader({ activeTab, onTabChange, user }: Admi
         >
           <BarChart2 className="mb-1 h-5 w-5" />
           <span>Relatórios</span>
+        </Button>
+        <Button 
+          variant="ghost" 
+          className={`flex-1 flex flex-col items-center py-2 ${activeTab === "financial" ? "text-white border-b-2 border-primary" : ""}`}
+          onClick={() => onTabChange("financial")}
+        >
+          <DollarSign className="mb-1 h-5 w-5" />
+          <span>Financeiro</span>
         </Button>
       </div>
     </div>

@@ -10,8 +10,9 @@ const RecordsTab = lazy(() => import("@/pages/admin/records"));
 const EmployeesTab = lazy(() => import("@/pages/admin/employees"));
 const ReportsTabImproved = lazy(() => import("@/pages/admin/reports-improved"));
 const OverviewTab = lazy(() => import("@/pages/admin/overview"));
+const FinancialTab = lazy(() => import("@/pages/admin/financial"));
 
-type AdminTab = "overview" | "records" | "employees" | "reports";
+type AdminTab = "overview" | "records" | "employees" | "reports" | "financial";
 
 export default function AdminDashboard() {
   const { user } = useAuth();
@@ -22,7 +23,7 @@ export default function AdminDashboard() {
   
   // Set active tab based on URL or default to "overview"
   useEffect(() => {
-    if (params?.tab && ["overview", "records", "employees", "reports"].includes(params.tab)) {
+    if (params?.tab && ["overview", "records", "employees", "reports", "financial"].includes(params.tab)) {
       setActiveTab(params.tab as AdminTab);
     } else if (!params?.tab) {
       // If no tab is specified, update URL to include the default tab
@@ -77,6 +78,7 @@ export default function AdminDashboard() {
                 {activeTab === "records" && <RecordsTab />}
                 {activeTab === "employees" && <EmployeesTab />}
                 {activeTab === "reports" && <ReportsTabImproved />}
+                {activeTab === "financial" && <FinancialTab />}
               </Suspense>
             </div>
           </main>
