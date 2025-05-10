@@ -2,9 +2,7 @@ import { useState, useEffect, lazy, Suspense } from "react";
 import { useLocation, useRoute } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { User } from "@shared/schema";
-import { useMediaQuery } from "@/hooks/use-media-query";
 
 // Lazy loading for admin modules
 const RecordsTab = lazy(() => import("@/pages/admin/records"));
@@ -15,10 +13,10 @@ const FinancialTab = lazy(() => import("@/pages/admin/financial"));
 const WorkSchedulesTab = lazy(() => import("@/pages/admin/work-schedules"));
 const TimeBankTab = lazy(() => import("@/pages/admin/time-bank"));
 
-// Components
-import ModernSidebar from "@/components/admin/modern-sidebar";
-import TopNavigation from "@/components/admin/top-navigation";
-import MobileNavigation from "@/components/admin/mobile-navigation";
+// Componentes a serem adicionados em uma etapa futura
+// import ModernSidebar from "@/components/admin/modern-sidebar";
+// import TopNavigation from "@/components/admin/top-navigation";
+// import MobileNavigation from "@/components/admin/mobile-navigation";
 
 // Types
 export type AdminTab = "overview" | "records" | "employees" | "reports" | "financial" | "work-schedules" | "time-bank";
@@ -75,7 +73,6 @@ export default function AdminDashboard() {
   const [, params] = useRoute("/admin/:tab");
   const [activeTab, setActiveTab] = useState<AdminTab>("overview");
   const [collapsed, setCollapsed] = useState(false);
-  const isDesktop = useMediaQuery("(min-width: 1024px)");
   
   // Set active tab based on URL or default to "overview"
   useEffect(() => {
@@ -100,28 +97,50 @@ export default function AdminDashboard() {
   // Get current section information
   const currentSection = navigationItems.find(item => item.id === activeTab);
   
+  // Temporário: Use os componentes antigos enquanto construímos os novos
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-      {/* Only shown on mobile */}
-      <div className="lg:hidden">
-        <TopNavigation user={user} />
-      </div>
-      
-      <div className="flex h-screen overflow-hidden">
-        {/* Sidebar - Desktop only */}
-        <div className="hidden lg:block">
-          <ModernSidebar 
-            activeTab={activeTab} 
-            onTabChange={handleTabChange} 
-            user={user}
-            collapsed={collapsed}
-            setCollapsed={setCollapsed}
-          />
-        </div>
+      {/* Content */}
+      <div className="flex flex-col">
+        {/* Header */}
+        <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
+          <div className="flex justify-between items-center p-4">
+            <h1 className="text-2xl font-bold">Ponto Eletrônico</h1>
+            <div>
+              <span className="text-sm mr-2">{user.fullName}</span>
+              <button 
+                onClick={() => user && useAuth().logoutMutation.mutate()}
+                className="bg-red-50 text-red-600 px-3 py-1 rounded hover:bg-red-100"
+              >
+                Sair
+              </button>
+            </div>
+          </div>
+        </header>
         
-        {/* Main content area */}
-        <main className="flex-1 overflow-y-auto">
-          <div className="container mx-auto p-4 pt-6 lg:pt-8 pb-16 lg:pb-8">
+        <div className="flex">
+          {/* Sidebar - Temporário */}
+          <aside className="w-64 bg-gray-900 text-white p-4 min-h-screen">
+            <nav className="space-y-2">
+              {navigationItems.map(item => {
+                const isActive = activeTab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handleTabChange(item.id as AdminTab)}
+                    className={`w-full text-left p-2 rounded-md flex items-center ${
+                      isActive ? "bg-primary text-white" : "text-gray-300 hover:bg-gray-800"
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+            </nav>
+          </aside>
+          
+          {/* Main content */}
+          <main className="flex-1 p-6">
             <div className="mb-6">
               <h1 className="text-2xl font-bold">
                 {currentSection?.label || "Dashboard"}
@@ -131,7 +150,7 @@ export default function AdminDashboard() {
               </p>
             </div>
             
-            {/* Content based on active tab with loading fallback */}
+            {/* Conteúdo da tab atual */}
             <Suspense fallback={
               <div className="space-y-6">
                 <Skeleton className="h-8 w-64" />
@@ -150,17 +169,8 @@ export default function AdminDashboard() {
               {activeTab === "work-schedules" && <WorkSchedulesTab />}
               {activeTab === "time-bank" && <TimeBankTab />}
             </Suspense>
-          </div>
-        </main>
-      </div>
-      
-      {/* Mobile Navigation - Bottom fixed navbar */}
-      <div className="lg:hidden">
-        <MobileNavigation 
-          activeTab={activeTab} 
-          onTabChange={handleTabChange} 
-          user={user}
-        />
+          </main>
+        </div>
       </div>
     </div>
   );
