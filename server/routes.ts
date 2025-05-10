@@ -8,10 +8,20 @@ import {
   insertUserSchema,
   insertSalarySchema,
   insertFinancialTransactionSchema,
-  financialTransactionFilterSchema
+  financialTransactionFilterSchema,
+  // Novos schemas para jornada de trabalho
+  insertWorkScheduleSchema,
+  workScheduleFilterSchema,
+  insertWorkScheduleDetailsSchema,
+  insertEmployeeScheduleSchema,
+  employeeScheduleFilterSchema,
+  insertTimeBankSchema,
+  timeBankFilterSchema,
+  insertAbsenceRequestSchema,
+  absenceRequestFilterSchema
 } from "@shared/schema";
 import { z } from "zod";
-import { format } from "date-fns";
+import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
 
 // Check if user has admin access
 function isAdmin(req: Request, res: Response, next: Function) {
