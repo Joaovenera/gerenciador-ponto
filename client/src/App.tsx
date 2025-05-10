@@ -15,6 +15,8 @@ const EmployeeDashboard = lazy(() => import("@/pages/employee/dashboard"));
 const AdminDashboard = lazy(() => import("@/pages/admin/dashboard"));
 const ChangePasswordForm = lazy(() => import("@/components/change-password-form"));
 const CameraPage = lazy(() => import("./pages/camera-page"));
+const WorkSchedulesPage = lazy(() => import("@/pages/admin/work-schedules"));
+const TimeBankPage = lazy(() => import("@/pages/admin/time-bank"));
 
 // Componente de fallback enquanto os módulos são carregados
 function LoadingFallback() {
@@ -41,6 +43,8 @@ function Router() {
         <ProtectedRoute path="/" accessLevel="employee" component={EmployeeDashboard} />
         <ProtectedRoute path="/admin" accessLevel="admin" component={AdminDashboard} />
         <ProtectedRoute path="/admin/:tab" accessLevel="admin" component={AdminDashboard} />
+        <ProtectedRoute path="/admin/work-schedules" accessLevel="admin" component={WorkSchedulesPage} />
+        <ProtectedRoute path="/admin/time-bank" accessLevel="admin" component={TimeBankPage} />
         <ProtectedRoute path="/camera" accessLevel="employee" component={CameraPage} />
         <Route component={NotFound} />
       </Switch>
