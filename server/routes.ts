@@ -332,7 +332,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/admin/salaries/:id", isAdmin, async (req, res, next) => {
     try {
       const id = parseInt(req.params.id);
-      const salary = await storage.updateSalary(id, req.body);
+      const adminId = (req.user as Express.User).id;
+      const ipAddress = req.ip;
+      
+      const salary = await storage.updateSalary(
+        id, 
+        req.body, 
+        adminId,
+        ipAddress
+      );
+      
       res.json(salary);
     } catch (err) {
       next(err);
@@ -400,7 +409,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/admin/transactions/:id", isAdmin, async (req, res, next) => {
     try {
       const id = parseInt(req.params.id);
-      const transaction = await storage.updateFinancialTransaction(id, req.body);
+      const adminId = (req.user as Express.User).id;
+      const ipAddress = req.ip;
+      
+      const transaction = await storage.updateFinancialTransaction(
+        id, 
+        req.body, 
+        adminId,
+        ipAddress
+      );
+      
       res.json(transaction);
     } catch (err) {
       next(err);
@@ -435,6 +453,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader("Content-Type", "text/csv");
       res.setHeader("Content-Disposition", "attachment; filename=financial-transactions.csv");
       res.status(200).send(csvContent);
+    } catch (err) {
+      next(err);
+    }
+  });
+  
+  // Get audit logs for an entity
+  app.get("/api/admin/audit-logs/:entityType/:entityId", isAdmin, async (req, res, next) => {
+    try {
+      const { entityType, entityId } = req.params;
+      const logs = await storage.getAuditLogs(entityType, parseInt(entityId));
+      res.json(logs);
     } catch (err) {
       next(err);
     }

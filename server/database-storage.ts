@@ -239,6 +239,16 @@ export class DatabaseStorage implements IStorage {
       .values(dataToInsert)
       .returning();
 
+    // Registrar a criação no log de auditoria
+    await this.createAuditLog({
+      entityType: 'salary',
+      entityId: result[0].id,
+      action: 'create',
+      userId: result[0].createdBy,
+      newValues: result[0],
+      ipAddress: null
+    });
+
     return result[0];
   }
 
@@ -327,6 +337,16 @@ export class DatabaseStorage implements IStorage {
     const result = await db.insert(financialTransactions)
       .values(dataToInsert)
       .returning();
+
+    // Registrar a criação no log de auditoria
+    await this.createAuditLog({
+      entityType: 'financial_transaction',
+      entityId: result[0].id,
+      action: 'create',
+      userId: result[0].createdBy,
+      newValues: result[0],
+      ipAddress: null
+    });
 
     return result[0];
   }
