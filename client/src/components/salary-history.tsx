@@ -1,4 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -11,12 +12,29 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Edit, Clock } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { toast } from "@/hooks/use-toast";
 
 interface SalaryHistoryProps {
   userId: number;
 }
 
 export default function SalaryHistory({ userId }: SalaryHistoryProps) {
+  const queryClient = useQueryClient();
+  const [editingSalary, setEditingSalary] = useState<any>(null);
+  const [viewingAuditLogs, setViewingAuditLogs] = useState<any>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isAuditDialogOpen, setIsAuditDialogOpen] = useState(false);
+  
   // Get salary history
   const { data: salaryHistory, isLoading } = useQuery({
     queryKey: ["/api/admin/salaries/history", userId],
