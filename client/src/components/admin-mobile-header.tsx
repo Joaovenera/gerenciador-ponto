@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { User } from "@shared/schema";
-import { Menu, X, ClipboardList, Users, BarChart2, LogOut, User as UserIcon, LayoutDashboard } from "lucide-react";
+import { Menu, X, ClipboardList, Users, BarChart2, DollarSign, LogOut, User as UserIcon, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
-type AdminTab = "overview" | "records" | "employees" | "reports";
+type AdminTab = "overview" | "records" | "employees" | "reports" | "financial";
 
 interface AdminMobileHeaderProps {
   activeTab: AdminTab;

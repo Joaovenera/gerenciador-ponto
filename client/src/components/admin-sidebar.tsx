@@ -1,10 +1,10 @@
 import { Link } from "wouter";
 import { User } from "@shared/schema";
-import { ClipboardList, Users, BarChart2, LogOut, User as UserIcon, LayoutDashboard } from "lucide-react";
+import { ClipboardList, Users, BarChart2, DollarSign, User as UserIcon, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 
-type AdminTab = "overview" | "records" | "employees" | "reports";
+type AdminTab = "overview" | "records" | "employees" | "reports" | "financial";
 
 interface AdminSidebarProps {
   activeTab: AdminTab;
@@ -60,6 +60,16 @@ export default function AdminSidebar({ activeTab, onTabChange, user }: AdminSide
                 >
                   <BarChart2 className={`mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-300 ${activeTab === "reports" ? "text-gray-300" : ""}`} />
                   Relatórios
+                </div>
+              </Link>
+            </div>
+            <div onClick={() => onTabChange("financial")}>
+              <Link href="/admin/financial">
+                <div 
+                  className={`text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md ${activeTab === "financial" ? "bg-gray-800 text-white" : ""}`}
+                >
+                  <DollarSign className={`mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-300 ${activeTab === "financial" ? "text-gray-300" : ""}`} />
+                  Financeiro
                 </div>
               </Link>
             </div>
