@@ -261,7 +261,21 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(salaries.effectiveDate));
   }
 
-  async updateSalary(id: number, salaryData: Partial<Salary>): Promise<Salary> {
+  async updateSalary(
+    id: number, 
+    salaryData: Partial<Salary>, 
+    updatingUserId: number,
+    ipAddress?: string
+  ): Promise<Salary> {
+    // Primeiro obter o registro existente para auditoria
+    const [existingSalary] = await db.select()
+      .from(salaries)
+      .where(eq(salaries.id, id));
+      
+    if (!existingSalary) {
+      throw new Error("Salary record not found");
+    }
+    
     // Parse dates if they are strings
     let dataToUpdate = {...salaryData};
     
@@ -269,14 +283,29 @@ export class DatabaseStorage implements IStorage {
       dataToUpdate.effectiveDate = new Date(dataToUpdate.effectiveDate);
     }
     
+    // Adicionar informações de atualização
+    dataToUpdate.updatedAt = new Date();
+    dataToUpdate.updatedBy = updatingUserId;
+    
     const result = await db.update(salaries)
       .set(dataToUpdate)
       .where(eq(salaries.id, id))
       .returning();
 
     if (result.length === 0) {
-      throw new Error("Salary record not found");
+      throw new Error("Salary record update failed");
     }
+    
+    // Registrar a ação de auditoria
+    await this.createAuditLog({
+      entityType: 'salary',
+      entityId: id,
+      action: 'update',
+      userId: updatingUserId,
+      oldValues: existingSalary,
+      newValues: result[0],
+      ipAddress
+    });
 
     return result[0];
   }
@@ -338,7 +367,21 @@ export class DatabaseStorage implements IStorage {
     return await query;
   }
 
-  async updateFinancialTransaction(id: number, transactionData: Partial<FinancialTransaction>): Promise<FinancialTransaction> {
+  async updateFinancialTransaction(
+    id: number, 
+    transactionData: Partial<FinancialTransaction>, 
+    updatingUserId: number,
+    ipAddress?: string
+  ): Promise<FinancialTransaction> {
+    // Primeiro obter a transação existente para registro de auditoria
+    const [existingTransaction] = await db.select()
+      .from(financialTransactions)
+      .where(eq(financialTransactions.id, id));
+      
+    if (!existingTransaction) {
+      throw new Error("Financial transaction not found");
+    }
+    
     // Parse dates if they are strings
     let dataToUpdate = {...transactionData};
     
@@ -346,14 +389,30 @@ export class DatabaseStorage implements IStorage {
       dataToUpdate.transactionDate = new Date(dataToUpdate.transactionDate);
     }
     
+    // Adicionar informações de atualização
+    dataToUpdate.updatedAt = new Date();
+    dataToUpdate.updatedBy = updatingUserId;
+    
+    // Atualizar a transação
     const result = await db.update(financialTransactions)
       .set(dataToUpdate)
       .where(eq(financialTransactions.id, id))
       .returning();
 
     if (result.length === 0) {
-      throw new Error("Financial transaction not found");
+      throw new Error("Financial transaction update failed");
     }
+    
+    // Registrar a ação de auditoria
+    await this.createAuditLog({
+      entityType: 'financial_transaction',
+      entityId: id,
+      action: 'update',
+      userId: updatingUserId,
+      oldValues: existingTransaction,
+      newValues: result[0],
+      ipAddress
+    });
 
     return result[0];
   }
@@ -405,5 +464,28 @@ export class DatabaseStorage implements IStorage {
     }
 
     return csv;
+  }
+
+  // Audit log methods
+  async createAuditLog(auditData: InsertAuditLog): Promise<AuditLog> {
+    const result = await db.insert(auditLogs)
+      .values(auditData)
+      .returning();
+      
+    return result[0];
+  }
+  
+  async getAuditLogs(entityType: string, entityId: number): Promise<AuditLog[]> {
+    const result = await db.select()
+      .from(auditLogs)
+      .where(
+        and(
+          eq(auditLogs.entityType, entityType),
+          eq(auditLogs.entityId, entityId)
+        )
+      )
+      .orderBy(desc(auditLogs.timestamp));
+      
+    return result;
   }
 }

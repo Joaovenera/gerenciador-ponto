@@ -43,13 +43,13 @@ export interface IStorage {
   createSalary(salaryData: InsertSalary): Promise<Salary>;
   getCurrentSalary(userId: number): Promise<Salary | undefined>;
   getSalaryHistory(userId: number): Promise<Salary[]>;
-  updateSalary(id: number, salaryData: Partial<Salary>): Promise<Salary>;
+  updateSalary(id: number, salaryData: Partial<Salary>, updatingUserId: number, ipAddress?: string): Promise<Salary>;
   deleteSalary(id: number): Promise<boolean>;
   
   // Financial transaction methods
   createFinancialTransaction(transactionData: InsertFinancialTransaction): Promise<FinancialTransaction>;
   getFinancialTransactions(filter: Partial<FinancialTransactionFilter>): Promise<FinancialTransaction[]>;
-  updateFinancialTransaction(id: number, transactionData: Partial<FinancialTransaction>): Promise<FinancialTransaction>;
+  updateFinancialTransaction(id: number, transactionData: Partial<FinancialTransaction>, updatingUserId: number, ipAddress?: string): Promise<FinancialTransaction>;
   deleteFinancialTransaction(id: number): Promise<boolean>;
   exportFinancialTransactionsCSV(filter: Partial<FinancialTransactionFilter>): Promise<string>;
   
