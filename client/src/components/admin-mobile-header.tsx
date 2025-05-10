@@ -1,12 +1,24 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { User } from "@shared/schema";
-import { Menu, X, ClipboardList, Users, BarChart2, DollarSign, LogOut, User as UserIcon, LayoutDashboard } from "lucide-react";
+import { 
+  Menu, 
+  X, 
+  ClipboardList, 
+  Users, 
+  BarChart2, 
+  DollarSign, 
+  LogOut, 
+  User as UserIcon, 
+  LayoutDashboard,
+  Clock,
+  CalendarClock
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
-type AdminTab = "overview" | "records" | "employees" | "reports" | "financial";
+type AdminTab = "overview" | "records" | "employees" | "reports" | "financial" | "work-schedules" | "time-bank";
 
 interface AdminMobileHeaderProps {
   activeTab: AdminTab;
@@ -87,6 +99,24 @@ export default function AdminMobileHeader({ activeTab, onTabChange, user }: Admi
                       Funcionários
                     </div>
                   </Link>
+                  <Link href="/admin/work-schedules">
+                    <div 
+                      className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${activeTab === "work-schedules" ? "bg-gray-800 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"}`}
+                      onClick={() => handleTabClick("work-schedules")}
+                    >
+                      <CalendarClock className="mr-4 h-5 w-5 text-gray-400 group-hover:text-gray-300" />
+                      Jornadas de Trabalho
+                    </div>
+                  </Link>
+                  <Link href="/admin/time-bank">
+                    <div 
+                      className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${activeTab === "time-bank" ? "bg-gray-800 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"}`}
+                      onClick={() => handleTabClick("time-bank")}
+                    >
+                      <Clock className="mr-4 h-5 w-5 text-gray-400 group-hover:text-gray-300" />
+                      Banco de Horas
+                    </div>
+                  </Link>
                   <Link href="/admin/reports">
                     <div 
                       className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${activeTab === "reports" ? "bg-gray-800 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"}`}
@@ -138,7 +168,7 @@ export default function AdminMobileHeader({ activeTab, onTabChange, user }: Admi
       </div>
       
       {/* Mobile Tab Navigation */}
-      <div className="grid grid-cols-5 bg-gray-800 text-xs text-gray-400">
+      <div className="grid grid-cols-7 bg-gray-800 text-xs text-gray-400">
         <Button 
           variant="ghost" 
           className={`flex-1 flex flex-col items-center py-2 ${activeTab === "overview" ? "text-white border-b-2 border-primary" : ""}`}
@@ -165,6 +195,22 @@ export default function AdminMobileHeader({ activeTab, onTabChange, user }: Admi
         </Button>
         <Button 
           variant="ghost" 
+          className={`flex-1 flex flex-col items-center py-2 ${activeTab === "work-schedules" ? "text-white border-b-2 border-primary" : ""}`}
+          onClick={() => onTabChange("work-schedules")}
+        >
+          <CalendarClock className="mb-1 h-5 w-5" />
+          <span>Jornadas</span>
+        </Button>
+        <Button 
+          variant="ghost" 
+          className={`flex-1 flex flex-col items-center py-2 ${activeTab === "time-bank" ? "text-white border-b-2 border-primary" : ""}`}
+          onClick={() => onTabChange("time-bank")}
+        >
+          <Clock className="mb-1 h-5 w-5" />
+          <span>B. Horas</span>
+        </Button>
+        <Button 
+          variant="ghost" 
           className={`flex-1 flex flex-col items-center py-2 ${activeTab === "reports" ? "text-white border-b-2 border-primary" : ""}`}
           onClick={() => onTabChange("reports")}
         >
@@ -177,7 +223,7 @@ export default function AdminMobileHeader({ activeTab, onTabChange, user }: Admi
           onClick={() => onTabChange("financial")}
         >
           <DollarSign className="mb-1 h-5 w-5" />
-          <span>Financeiro</span>
+          <span>Financ.</span>
         </Button>
       </div>
     </div>
