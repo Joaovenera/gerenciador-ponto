@@ -237,6 +237,8 @@ export const insertTimeBankSchema = createInsertSchema(timeBank).omit({
 }).extend({
   date: z.string().or(z.date()),
   expirationDate: z.string().or(z.date()).optional(),
+  // Aceitar número ou string para hoursBalance (conversão feita no backend)
+  hoursBalance: z.number().or(z.string().transform(val => parseFloat(val))),
 });
 
 export const insertAbsenceRequestSchema = createInsertSchema(absenceRequests).omit({
