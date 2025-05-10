@@ -105,10 +105,15 @@ export const insertSalarySchema = createInsertSchema(salaries).omit({
 });
 
 // Financial transaction schemas
-export const insertFinancialTransactionSchema = createInsertSchema(financialTransactions).omit({
-  id: true,
-  createdAt: true,
-});
+export const insertFinancialTransactionSchema = createInsertSchema(financialTransactions)
+  .omit({
+    id: true,
+    createdAt: true,
+  })
+  .extend({
+    // Aceitar string para a data da transação e converter para Date no backend
+    transactionDate: z.string().or(z.date()),
+  });
 
 export const financialTransactionFilterSchema = z.object({
   startDate: z.string().optional(),

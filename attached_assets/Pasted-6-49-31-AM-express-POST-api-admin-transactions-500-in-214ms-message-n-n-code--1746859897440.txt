@@ -1,0 +1,62 @@
+6:49:31 AM [express] POST /api/admin/transactions 500 in 214ms :: {"message":"[\n  {\n    \"code\": …
+ZodError: [
+  {
+    "code": "invalid_type",
+    "expected": "date",
+    "received": "string",
+    "path": [
+      "transactionDate"
+    ],
+    "message": "Expected date, received string"
+  }
+]
+    at get error [as error] (file:///home/runner/workspace/node_modules/zod/lib/index.mjs:587:31)
+    at ZodObject.parse (file:///home/runner/workspace/node_modules/zod/lib/index.mjs:663:22)
+    at <anonymous> (/home/runner/workspace/server/routes.ts:348:64)
+    at Layer.handle [as handle_request] (/home/runner/workspace/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/runner/workspace/node_modules/express/lib/router/route.js:149:13)
+    at isAdmin (/home/runner/workspace/server/routes.ts:21:3)
+    at Layer.handle [as handle_request] (/home/runner/workspace/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/runner/workspace/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/home/runner/workspace/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/home/runner/workspace/node_modules/express/lib/router/layer.js:95:5)
+    at /home/runner/workspace/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/home/runner/workspace/node_modules/express/lib/router/index.js:346:12)
+    at next (/home/runner/workspace/node_modules/express/lib/router/index.js:280:10)
+    at strategy.pass (/home/runner/workspace/node_modules/passport/lib/middleware/authenticate.js:355:9)
+    at /home/runner/workspace/node_modules/passport/lib/strategies/session.js:120:12
+    at pass (/home/runner/workspace/node_modules/passport/lib/authenticator.js:352:31)
+    at deserialized (/home/runner/workspace/node_modules/passport/lib/authenticator.js:364:7)
+    at <anonymous> (/home/runner/workspace/server/auth.ts:95:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+6:49:50 AM [express] POST /api/admin/transactions 500 in 230ms :: {"message":"[\n  {\n    \"code\": …
+ZodError: [
+  {
+    "code": "invalid_type",
+    "expected": "date",
+    "received": "string",
+    "path": [
+      "transactionDate"
+    ],
+    "message": "Expected date, received string"
+  }
+]
+    at get error [as error] (file:///home/runner/workspace/node_modules/zod/lib/index.mjs:587:31)
+    at ZodObject.parse (file:///home/runner/workspace/node_modules/zod/lib/index.mjs:663:22)
+    at <anonymous> (/home/runner/workspace/server/routes.ts:348:64)
+    at Layer.handle [as handle_request] (/home/runner/workspace/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/runner/workspace/node_modules/express/lib/router/route.js:149:13)
+    at isAdmin (/home/runner/workspace/server/routes.ts:21:3)
+    at Layer.handle [as handle_request] (/home/runner/workspace/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/runner/workspace/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/home/runner/workspace/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/home/runner/workspace/node_modules/express/lib/router/layer.js:95:5)
+    at /home/runner/workspace/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/home/runner/workspace/node_modules/express/lib/router/index.js:346:12)
+    at next (/home/runner/workspace/node_modules/express/lib/router/index.js:280:10)
+    at strategy.pass (/home/runner/workspace/node_modules/passport/lib/middleware/authenticate.js:355:9)
+    at /home/runner/workspace/node_modules/passport/lib/strategies/session.js:120:12
+    at pass (/home/runner/workspace/node_modules/passport/lib/authenticator.js:352:31)
+    at deserialized (/home/runner/workspace/node_modules/passport/lib/authenticator.js:364:7)
+    at <anonymous> (/home/runner/workspace/server/auth.ts:95:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)

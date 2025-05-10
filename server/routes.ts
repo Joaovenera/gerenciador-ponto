@@ -345,10 +345,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const adminId = (req.user as Express.User).id;
       
-      const transactionData = insertFinancialTransactionSchema.parse({
+      // Validar os dados com o schema
+      const validatedData = insertFinancialTransactionSchema.parse({
         ...req.body,
         createdBy: adminId,
       });
+      
+      // Preparar os dados para inserção, garantindo que a data seja um objeto Date
+      const transactionData = {
+        ...validatedData,
+        // Converter a string de data para um objeto Date
+        transactionDate: typeof validatedData.transactionDate === 'string' 
+          ? new Date(validatedData.transactionDate) 
+          : validatedData.transactionDate,
+      };
       
       const transaction = await storage.createFinancialTransaction(transactionData);
       res.status(201).json(transaction);
