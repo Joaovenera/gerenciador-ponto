@@ -1,0 +1,41 @@
+7:46:48 AM [express] POST /api/admin/time-bank 500 in 239ms :: {"message":"invalid input syntax for …
+error: invalid input syntax for type numeric: "02:00"
+    at /home/runner/workspace/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/node_modules/src/node-postgres/session.ts:104:19)
+    at async DatabaseStorage.createTimeBank (/home/runner/workspace/server/database-storage.ts:909:20)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:722:29)
+7:47:06 AM [express] GET /api/admin/time-bank/balance/1 200 in 208ms
+7:47:12 AM [express] POST /api/admin/time-bank/compensate 400 in 30ms :: {"message":"Todos os campos…
+7:47:25 AM [express] POST /api/admin/time-bank/compensate 400 in 213ms :: {"message":"Todos os campo…
+7:47:39 AM [express] POST /api/admin/work-schedules 500 in 207ms :: {"message":"[\n  {\n    \"code\"…
+ZodError: [
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "number",
+    "path": [
+      "weeklyHours"
+    ],
+    "message": "Expected string, received number"
+  }
+]
+    at get error [as error] (file:///home/runner/workspace/node_modules/zod/lib/index.mjs:587:31)
+    at ZodObject.parse (file:///home/runner/workspace/node_modules/zod/lib/index.mjs:663:22)
+    at <anonymous> (/home/runner/workspace/server/routes.ts:490:54)
+    at Layer.handle [as handle_request] (/home/runner/workspace/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/runner/workspace/node_modules/express/lib/router/route.js:149:13)
+    at isAdmin (/home/runner/workspace/server/routes.ts:31:3)
+    at Layer.handle [as handle_request] (/home/runner/workspace/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/runner/workspace/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/home/runner/workspace/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/home/runner/workspace/node_modules/express/lib/router/layer.js:95:5)
+    at /home/runner/workspace/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/home/runner/workspace/node_modules/express/lib/router/index.js:346:12)
+    at next (/home/runner/workspace/node_modules/express/lib/router/index.js:280:10)
+    at strategy.pass (/home/runner/workspace/node_modules/passport/lib/middleware/authenticate.js:355:9)
+    at /home/runner/workspace/node_modules/passport/lib/strategies/session.js:120:12
+    at pass (/home/runner/workspace/node_modules/passport/lib/authenticator.js:352:31)
+    at deserialized (/home/runner/workspace/node_modules/passport/lib/authenticator.js:364:7)
+    at <anonymous> (/home/runner/workspace/server/auth.ts:95:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)

@@ -37,6 +37,9 @@ export const workSchedules = pgTable("work_schedules", {
   description: text("description"),
   type: workScheduleTypeEnum("type").notNull(),
   weeklyHours: decimal("weekly_hours", { precision: 5, scale: 2 }).notNull(),
+  // Campos adicionais
+  toleranceMinutes: integer("tolerance_minutes"), // Tolerância em minutos para chegadas/saídas
+  breakTime: integer("break_time"), // Tempo padrão de intervalo em minutos
   createdAt: timestamp("created_at").notNull().defaultNow(),
   createdBy: integer("created_by").notNull(),
   updatedAt: timestamp("updated_at"),
@@ -203,6 +206,11 @@ export const insertWorkScheduleSchema = createInsertSchema(workSchedules).omit({
   createdAt: true,
   updatedAt: true,
   updatedBy: true,
+}).extend({
+  // Aceitar string ou número para carga horária
+  weeklyHours: z.number().or(z.string().transform(val => Number(val))),
+  toleranceMinutes: z.number().or(z.string().transform(val => Number(val))),
+  breakTime: z.number().or(z.string().transform(val => Number(val)))
 });
 
 export const insertWorkScheduleDetailsSchema = createInsertSchema(workScheduleDetails).omit({

@@ -71,6 +71,12 @@ function TimeBankForm({ entry, users, onSuccess }: {
     
     return `${hrs.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
   };
+  
+  // Função para converter minutos para decimal (para o banco de dados)
+  const minutesToDecimal = (minutes: number): number => {
+    const hours = minutes / 60;
+    return Number(hours.toFixed(2)); // Dois dígitos de precisão
+  };
 
   // Mutação para criar um lançamento
   const createMutation = useMutation({
@@ -173,7 +179,7 @@ function TimeBankForm({ entry, users, onSuccess }: {
       date,
       expirationDate: expirationDate || null,
       type,
-      hoursBalance: minutesToHours(minutesValue),
+      hoursBalance: minutesToDecimal(minutesValue), // Usando a função de conversão para decimal
       description,
       notes: notes || null,
     };

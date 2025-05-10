@@ -893,7 +893,7 @@ export class DatabaseStorage implements IStorage {
   
   // Cria uma nova entrada no banco de horas
   async createTimeBank(timeBankData: InsertTimeBank): Promise<TimeBank> {
-    // Preparar os dados, garantindo que as datas sejam objetos Date
+    // Preparar os dados, garantindo que as datas e valores numéricos estejam corretos
     const dataToInsert = {
       ...timeBankData,
       date: typeof timeBankData.date === 'string' 
@@ -903,7 +903,11 @@ export class DatabaseStorage implements IStorage {
         ? (typeof timeBankData.expirationDate === 'string' 
             ? new Date(timeBankData.expirationDate) 
             : timeBankData.expirationDate)
-        : null
+        : null,
+      // Certifica que hoursBalance seja numérico, para compatibilidade entre string e decimal
+      hoursBalance: typeof timeBankData.hoursBalance === 'string' 
+        ? parseFloat(timeBankData.hoursBalance) 
+        : timeBankData.hoursBalance
     };
     
     const result = await db.insert(timeBank)
