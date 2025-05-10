@@ -286,16 +286,22 @@ export class DatabaseStorage implements IStorage {
       throw new Error("Salary record not found");
     }
     
-    // Parse dates if they are strings
-    let dataToUpdate = {...salaryData};
+    // Filtrar e preparar dados para atualização
+    const { id: _, createdAt: __, updatedAt: ___, updatedBy: ____, ...filteredData } = salaryData as any;
     
+    // Criar objeto com dados filtrados e informações de atualização
+    const dataToUpdate: any = {
+      ...filteredData
+    };
+    
+    // Processar datas
     if (dataToUpdate.effectiveDate && typeof dataToUpdate.effectiveDate === 'string') {
       dataToUpdate.effectiveDate = new Date(dataToUpdate.effectiveDate);
     }
     
-    // Adicionar informações de atualização
-    dataToUpdate.updatedAt = new Date();
-    dataToUpdate.updatedBy = updatingUserId;
+    // Adicionar campos de auditoria
+    dataToUpdate.updated_at = new Date();
+    dataToUpdate.updated_by = updatingUserId;
     
     const result = await db.update(salaries)
       .set(dataToUpdate)
@@ -402,16 +408,22 @@ export class DatabaseStorage implements IStorage {
       throw new Error("Financial transaction not found");
     }
     
-    // Parse dates if they are strings
-    let dataToUpdate = {...transactionData};
+    // Filtrar e preparar dados para atualização
+    const { id: _, createdAt: __, updatedAt: ___, updatedBy: ____, ...filteredData } = transactionData as any;
     
+    // Criar objeto com dados filtrados e informações de atualização
+    const dataToUpdate: any = {
+      ...filteredData
+    };
+    
+    // Processar datas
     if (dataToUpdate.transactionDate && typeof dataToUpdate.transactionDate === 'string') {
       dataToUpdate.transactionDate = new Date(dataToUpdate.transactionDate);
     }
     
-    // Adicionar informações de atualização
-    dataToUpdate.updatedAt = new Date();
-    dataToUpdate.updatedBy = updatingUserId;
+    // Adicionar campos de auditoria
+    dataToUpdate.updated_at = new Date();
+    dataToUpdate.updated_by = updatingUserId;
     
     // Atualizar a transação
     const result = await db.update(financialTransactions)
