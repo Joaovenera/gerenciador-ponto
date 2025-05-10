@@ -66,7 +66,7 @@ export default function SalaryHistory({ userId }: SalaryHistoryProps) {
     queryFn: async () => {
       if (!viewingAuditLogs) return null;
       
-      const res = await fetch(`/api/admin/audit-logs/salary/${viewingAuditLogs.id}`, {
+      const res = await fetch(`/api/admin/audit-logs/salaries/${viewingAuditLogs.id}`, {
         credentials: "include",
       });
       

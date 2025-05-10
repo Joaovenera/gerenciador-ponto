@@ -129,7 +129,7 @@ export default function FinancialTransactionsHistory({
     queryFn: async () => {
       if (!viewingAuditLogs) return null;
       
-      const res = await fetch(`/api/admin/audit-logs/financial_transaction/${viewingAuditLogs.id}`, {
+      const res = await fetch(`/api/admin/audit-logs/financial_transactions/${viewingAuditLogs.id}`, {
         credentials: "include",
       });
       
