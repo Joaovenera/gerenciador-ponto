@@ -11,8 +11,10 @@ const EmployeesTab = lazy(() => import("@/pages/admin/employees"));
 const ReportsTabImproved = lazy(() => import("@/pages/admin/reports-improved"));
 const OverviewTab = lazy(() => import("@/pages/admin/overview"));
 const FinancialTab = lazy(() => import("@/pages/admin/financial"));
+const WorkSchedulesTab = lazy(() => import("@/pages/admin/work-schedules"));
+const TimeBankTab = lazy(() => import("@/pages/admin/time-bank"));
 
-type AdminTab = "overview" | "records" | "employees" | "reports" | "financial";
+type AdminTab = "overview" | "records" | "employees" | "reports" | "financial" | "work-schedules" | "time-bank";
 
 export default function AdminDashboard() {
   const { user } = useAuth();
@@ -23,7 +25,7 @@ export default function AdminDashboard() {
   
   // Set active tab based on URL or default to "overview"
   useEffect(() => {
-    if (params?.tab && ["overview", "records", "employees", "reports", "financial"].includes(params.tab)) {
+    if (params?.tab && ["overview", "records", "employees", "reports", "financial", "work-schedules", "time-bank"].includes(params.tab)) {
       setActiveTab(params.tab as AdminTab);
     } else if (!params?.tab) {
       // If no tab is specified, update URL to include the default tab
@@ -62,7 +64,7 @@ export default function AdminDashboard() {
         {/* Main Content */}
         <div className="md:pl-64 flex flex-col flex-1">
           <main className="flex-1">
-            <div className="py-6">
+            <div className="py-6 pb-20 md:pb-6">
               {/* Content based on active tab with loading fallback */}
               <Suspense fallback={
                 <div className="px-4 md:px-8 space-y-6">
@@ -79,6 +81,8 @@ export default function AdminDashboard() {
                 {activeTab === "employees" && <EmployeesTab />}
                 {activeTab === "reports" && <ReportsTabImproved />}
                 {activeTab === "financial" && <FinancialTab />}
+                {activeTab === "work-schedules" && <WorkSchedulesTab />}
+                {activeTab === "time-bank" && <TimeBankTab />}
               </Suspense>
             </div>
           </main>
