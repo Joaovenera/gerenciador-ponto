@@ -279,10 +279,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const adminId = (req.user as Express.User).id;
       
-      const salaryData = insertSalarySchema.parse({
+      // Validar os dados com o schema
+      const validatedData = insertSalarySchema.parse({
         ...req.body,
         createdBy: adminId,
       });
+      
+      // Preparar os dados para inserção, garantindo que a data seja um objeto Date
+      const salaryData = {
+        ...validatedData,
+        // Converter a string de data para um objeto Date
+        effectiveDate: typeof validatedData.effectiveDate === 'string' 
+          ? new Date(validatedData.effectiveDate) 
+          : validatedData.effectiveDate,
+      };
       
       const salary = await storage.createSalary(salaryData);
       res.status(201).json(salary);

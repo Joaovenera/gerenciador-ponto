@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, json, decimal, date, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, json, decimal, date, pgEnum, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -66,8 +66,23 @@ export const financialTransactions = pgTable("financial_transactions", {
   transactionDate: timestamp("transaction_date").notNull().defaultNow(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   createdBy: integer("created_by").notNull(),
+  updatedAt: timestamp("updated_at"),
+  updatedBy: integer("updated_by"),
   notes: text("notes"),
   reference: text("reference"), // For tracking document references, if any
+});
+
+// Audit log table for tracking changes to important records
+export const auditLogs = pgTable("audit_logs", {
+  id: serial("id").primaryKey(),
+  entityType: text("entity_type").notNull(), // 'salary', 'financial_transaction', etc.
+  entityId: integer("entity_id").notNull(),
+  action: text("action").notNull(), // 'create', 'update', 'delete'
+  userId: integer("user_id").notNull(), // ID of user who made the change
+  timestamp: timestamp("timestamp").notNull().defaultNow(),
+  oldValues: jsonb("old_values"), // Previous values in JSON format (for updates)
+  newValues: jsonb("new_values"), // New values in JSON format
+  ipAddress: text("ip_address"),
 });
 
 // User schemas
@@ -99,10 +114,15 @@ export const timeRecordFilterSchema = z.object({
 });
 
 // Salary schemas
-export const insertSalarySchema = createInsertSchema(salaries).omit({
-  id: true,
-  createdAt: true,
-});
+export const insertSalarySchema = createInsertSchema(salaries)
+  .omit({
+    id: true,
+    createdAt: true,
+  })
+  .extend({
+    // Aceitar string para a data de vigência e converter para Date no backend
+    effectiveDate: z.string().or(z.date()),
+  });
 
 // Financial transaction schemas
 export const insertFinancialTransactionSchema = createInsertSchema(financialTransactions)

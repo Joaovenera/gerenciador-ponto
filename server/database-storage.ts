@@ -228,18 +228,12 @@ export class DatabaseStorage implements IStorage {
 
   // Salary methods
   async createSalary(salaryData: InsertSalary): Promise<Salary> {
-    // Parse dates if they are strings
-    let dataToInsert = {...salaryData};
+    // Preparar os dados para inserção
+    const { id, createdAt, ...dataToInsert } = salaryData as any;
     
-    if (dataToInsert.effectiveDate && typeof dataToInsert.effectiveDate === 'string') {
-      dataToInsert.effectiveDate = new Date(dataToInsert.effectiveDate);
-    }
-    
+    // Data já foi convertida na rota
     const result = await db.insert(salaries)
-      .values({
-        ...dataToInsert,
-        createdAt: new Date()
-      })
+      .values(dataToInsert)
       .returning();
 
     return result[0];
@@ -294,18 +288,12 @@ export class DatabaseStorage implements IStorage {
 
   // Financial transaction methods
   async createFinancialTransaction(transactionData: InsertFinancialTransaction): Promise<FinancialTransaction> {
-    // Parse dates if they are strings
-    let dataToInsert = {...transactionData};
+    // Preparar os dados para inserção
+    const { id, createdAt, ...dataToInsert } = transactionData as any;
     
-    if (dataToInsert.transactionDate && typeof dataToInsert.transactionDate === 'string') {
-      dataToInsert.transactionDate = new Date(dataToInsert.transactionDate);
-    }
-    
+    // Data já foi convertida na rota
     const result = await db.insert(financialTransactions)
-      .values({
-        ...dataToInsert,
-        createdAt: new Date()
-      })
+      .values(dataToInsert)
       .returning();
 
     return result[0];
