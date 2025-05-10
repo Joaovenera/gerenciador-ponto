@@ -241,7 +241,7 @@ export class DatabaseStorage implements IStorage {
 
     // Registrar a criação no log de auditoria
     await this.createAuditLog({
-      entityType: 'salary',
+      entityType: 'salaries',
       entityId: result[0].id,
       action: 'create',
       userId: result[0].createdBy,
@@ -314,7 +314,7 @@ export class DatabaseStorage implements IStorage {
     
     // Registrar a ação de auditoria
     await this.createAuditLog({
-      entityType: 'salary',
+      entityType: 'salaries',
       entityId: id,
       action: 'update',
       userId: updatingUserId,
@@ -346,7 +346,7 @@ export class DatabaseStorage implements IStorage {
 
     // Registrar a criação no log de auditoria
     await this.createAuditLog({
-      entityType: 'financial_transaction',
+      entityType: 'financial_transactions',
       entityId: result[0].id,
       action: 'create',
       userId: result[0].createdBy,
@@ -437,7 +437,7 @@ export class DatabaseStorage implements IStorage {
     
     // Registrar a ação de auditoria
     await this.createAuditLog({
-      entityType: 'financial_transaction',
+      entityType: 'financial_transactions',
       entityId: id,
       action: 'update',
       userId: updatingUserId,
