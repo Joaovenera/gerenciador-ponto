@@ -53,6 +53,8 @@ export const salaries = pgTable("salaries", {
   effectiveDate: timestamp("effective_date").notNull().defaultNow(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   createdBy: integer("created_by").notNull(),
+  updatedAt: timestamp("updated_at"),
+  updatedBy: integer("updated_by"),
   notes: text("notes"),
 });
 
@@ -158,3 +160,11 @@ export type InsertSalary = z.infer<typeof insertSalarySchema>;
 export type FinancialTransaction = typeof financialTransactions.$inferSelect;
 export type InsertFinancialTransaction = z.infer<typeof insertFinancialTransactionSchema>;
 export type FinancialTransactionFilter = z.infer<typeof financialTransactionFilterSchema>;
+
+// Audit log types
+export type AuditLog = typeof auditLogs.$inferSelect;
+export const insertAuditLogSchema = createInsertSchema(auditLogs).omit({
+  id: true,
+  timestamp: true,
+});
+export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;

@@ -8,11 +8,14 @@ import {
   timeRecords,
   salaries,
   financialTransactions,
+  auditLogs,
   Salary,
   InsertSalary,
   FinancialTransaction,
   InsertFinancialTransaction,
-  FinancialTransactionFilter
+  FinancialTransactionFilter,
+  AuditLog,
+  InsertAuditLog
 } from "@shared/schema";
 import { IStorage } from "./storage";
 import { db, pool } from "./db";

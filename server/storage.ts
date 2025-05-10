@@ -8,7 +8,9 @@ import {
   InsertSalary,
   FinancialTransaction,
   InsertFinancialTransaction,
-  FinancialTransactionFilter
+  FinancialTransactionFilter,
+  AuditLog,
+  InsertAuditLog
 } from "@shared/schema";
 import session from "express-session";
 import { Store } from "express-session";
@@ -50,6 +52,10 @@ export interface IStorage {
   updateFinancialTransaction(id: number, transactionData: Partial<FinancialTransaction>): Promise<FinancialTransaction>;
   deleteFinancialTransaction(id: number): Promise<boolean>;
   exportFinancialTransactionsCSV(filter: Partial<FinancialTransactionFilter>): Promise<string>;
+  
+  // Audit log methods
+  createAuditLog(auditData: InsertAuditLog): Promise<AuditLog>;
+  getAuditLogs(entityType: string, entityId: number): Promise<AuditLog[]>;
 }
 
 // Import from the DatabaseStorage implementation
