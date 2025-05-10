@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, json } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, json, decimal, date, pgEnum } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -34,6 +34,42 @@ export const timeRecords = pgTable("time_records", {
   createdBy: integer("created_by").notNull(),
 });
 
+// Financial transactions types enum
+export const transactionTypeEnum = pgEnum('transaction_type', [
+  'salary', 
+  'advance', 
+  'bonus', 
+  'vacation', 
+  'thirteenth', 
+  'adjustment',
+  'deduction'
+]);
+
+// Salary table to track salary history
+export const salaries = pgTable("salaries", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  effectiveDate: timestamp("effective_date").notNull().defaultNow(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  createdBy: integer("created_by").notNull(),
+  notes: text("notes"),
+});
+
+// Financial transactions table for all other financial operations
+export const financialTransactions = pgTable("financial_transactions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  type: transactionTypeEnum("type").notNull(),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  description: text("description").notNull(),
+  transactionDate: timestamp("transaction_date").notNull().defaultNow(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  createdBy: integer("created_by").notNull(),
+  notes: text("notes"),
+  reference: text("reference"), // For tracking document references, if any
+});
+
 // User schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -62,6 +98,25 @@ export const timeRecordFilterSchema = z.object({
   type: z.enum(["in", "out"]).optional(),
 });
 
+// Salary schemas
+export const insertSalarySchema = createInsertSchema(salaries).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Financial transaction schemas
+export const insertFinancialTransactionSchema = createInsertSchema(financialTransactions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const financialTransactionFilterSchema = z.object({
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  userId: z.number().optional(),
+  type: z.enum(['salary', 'advance', 'bonus', 'vacation', 'thirteenth', 'adjustment', 'deduction']).optional(),
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -71,3 +126,10 @@ export type ChangePassword = z.infer<typeof changePasswordSchema>;
 export type TimeRecord = typeof timeRecords.$inferSelect;
 export type InsertTimeRecord = z.infer<typeof insertTimeRecordSchema>;
 export type TimeRecordFilter = z.infer<typeof timeRecordFilterSchema>;
+
+export type Salary = typeof salaries.$inferSelect;
+export type InsertSalary = z.infer<typeof insertSalarySchema>;
+
+export type FinancialTransaction = typeof financialTransactions.$inferSelect;
+export type InsertFinancialTransaction = z.infer<typeof insertFinancialTransactionSchema>;
+export type FinancialTransactionFilter = z.infer<typeof financialTransactionFilterSchema>;

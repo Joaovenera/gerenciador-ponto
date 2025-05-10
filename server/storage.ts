@@ -3,7 +3,12 @@ import {
   InsertUser, 
   TimeRecord, 
   InsertTimeRecord, 
-  TimeRecordFilter
+  TimeRecordFilter,
+  Salary,
+  InsertSalary,
+  FinancialTransaction,
+  InsertFinancialTransaction,
+  FinancialTransactionFilter
 } from "@shared/schema";
 import session from "express-session";
 import { Store } from "express-session";
@@ -31,6 +36,20 @@ export interface IStorage {
   updateTimeRecord(id: number, recordData: Partial<TimeRecord>): Promise<TimeRecord>;
   deleteTimeRecord(id: number): Promise<boolean>;
   exportTimeRecordsCSV(filter: Partial<TimeRecordFilter>): Promise<string>;
+
+  // Salary methods
+  createSalary(salaryData: InsertSalary): Promise<Salary>;
+  getCurrentSalary(userId: number): Promise<Salary | undefined>;
+  getSalaryHistory(userId: number): Promise<Salary[]>;
+  updateSalary(id: number, salaryData: Partial<Salary>): Promise<Salary>;
+  deleteSalary(id: number): Promise<boolean>;
+  
+  // Financial transaction methods
+  createFinancialTransaction(transactionData: InsertFinancialTransaction): Promise<FinancialTransaction>;
+  getFinancialTransactions(filter: Partial<FinancialTransactionFilter>): Promise<FinancialTransaction[]>;
+  updateFinancialTransaction(id: number, transactionData: Partial<FinancialTransaction>): Promise<FinancialTransaction>;
+  deleteFinancialTransaction(id: number): Promise<boolean>;
+  exportFinancialTransactionsCSV(filter: Partial<FinancialTransactionFilter>): Promise<string>;
 }
 
 // Import from the DatabaseStorage implementation
