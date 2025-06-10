@@ -3,6 +3,35 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
+
+// Middleware para permitir hosts personalizados
+app.use((req, res, next) => {
+  // Permitir acesso através de domínios personalizados
+  const allowedHosts = [
+    'localhost',
+    'ponto.jarmaq.com.br', 
+    'jarmaq.com.br',
+    '127.0.0.1'
+  ];
+  
+  const host = req.get('Host') || '';
+  const isValidHost = allowedHosts.some(allowedHost => 
+    host === allowedHost || host.startsWith(allowedHost + ':')
+  );
+
+  // Headers CORS para permitir acesso de domínios personalizados
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+    return;
+  }
+  
+  next();
+});
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 
