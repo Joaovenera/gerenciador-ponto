@@ -1,31 +1,12 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { User } from "@shared/schema";
-import { 
-  Menu, 
-  X, 
-  ClipboardList, 
-  Users, 
-  BarChart2, 
-  DollarSign, 
-  User as UserIcon, 
-  LayoutDashboard,
-  Clock,
-  CalendarClock,
-  LogOut,
-  Settings
-} from "lucide-react";
+import { Menu, X, ClipboardList, Users, BarChart2, DollarSign, LogOut, User as UserIcon, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
-type AdminTab = "overview" | "records" | "employees" | "reports" | "financial" | "work-schedules" | "time-bank";
+type AdminTab = "overview" | "records" | "employees" | "reports" | "financial";
 
 interface AdminMobileHeaderProps {
   activeTab: AdminTab;
@@ -35,98 +16,170 @@ interface AdminMobileHeaderProps {
 
 export default function AdminMobileHeader({ activeTab, onTabChange, user }: AdminMobileHeaderProps) {
   const { logoutMutation } = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   
-  // Group navigation items into main and secondary for proper organization
-  const mainNavItems = [
-    { id: "overview", label: "Dashboard", icon: LayoutDashboard },
-    { id: "records", label: "Registros", icon: ClipboardList },
-    { id: "employees", label: "Funcs.", icon: Users },
-    { id: "time-bank", label: "B. Horas", icon: Clock }
-  ];
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
   
-  const secondaryNavItems = [
-    { id: "work-schedules", label: "Jornadas", icon: CalendarClock },
-    { id: "reports", label: "Relatórios", icon: BarChart2 },
-    { id: "financial", label: "Financ.", icon: DollarSign }
-  ];
-
+  const handleTabClick = (tab: AdminTab) => {
+    onTabChange(tab);
+    setIsMenuOpen(false);
+  };
+  
   return (
-    <div className="md:hidden">
-      {/* Header with title and user dropdown */}
-      <div className="flex items-center justify-between h-16 px-4 bg-gray-900 text-white">
+    <div className="md:hidden bg-gray-900 text-white">
+      <div className="flex items-center justify-between h-16 px-4">
         <div>
           <h1 className="text-xl font-bold">Ponto Eletrônico</h1>
         </div>
-        <div className="flex items-center">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <div className="h-8 w-8 rounded-full bg-gray-700 flex items-center justify-center text-gray-300">
-                  <UserIcon className="h-5 w-5" />
-                </div>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <div className="flex flex-col space-y-1 p-2">
-                <p className="text-sm font-medium">{user.fullName}</p>
-                <p className="text-xs text-muted-foreground">{user.email}</p>
+        <div>
+          <Button variant="ghost" className="text-gray-400" onClick={toggleMenu}>
+            <Menu className="h-6 w-6" />
+          </Button>
+          
+          {/* Mobile Menu */}
+          <div className={cn(
+            "fixed inset-0 z-40 flex transition-all duration-300 ease-in-out transform",
+            isMenuOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-full"
+          )}>
+            <div 
+              className="fixed inset-0 bg-gray-600 bg-opacity-75"
+              onClick={() => setIsMenuOpen(false)}
+            ></div>
+            <div className="relative flex-1 flex flex-col max-w-xs w-full bg-gray-900">
+              <div className="absolute top-0 right-0 pt-2 pr-2">
+                <Button 
+                  variant="ghost" 
+                  className="text-gray-400" 
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <X className="h-6 w-6" />
+                </Button>
               </div>
-              <DropdownMenuItem
-                onClick={() => logoutMutation.mutate()}
-                className="text-red-500 cursor-pointer"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Sair</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              
+              <div className="flex-1 h-0 pt-14 pb-4 overflow-y-auto">
+                <nav className="mt-5 px-2 space-y-1">
+                  <Link href="/admin/overview">
+                    <div 
+                      className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${activeTab === "overview" ? "bg-gray-800 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"}`}
+                      onClick={() => handleTabClick("overview")}
+                    >
+                      <LayoutDashboard className="mr-4 h-5 w-5 text-gray-400 group-hover:text-gray-300" />
+                      Dashboard
+                    </div>
+                  </Link>
+                  <Link href="/admin/records">
+                    <div 
+                      className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${activeTab === "records" ? "bg-gray-800 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"}`}
+                      onClick={() => handleTabClick("records")}
+                    >
+                      <ClipboardList className="mr-4 h-5 w-5 text-gray-400 group-hover:text-gray-300" />
+                      Registros de Ponto
+                    </div>
+                  </Link>
+                  <Link href="/admin/employees">
+                    <div 
+                      className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${activeTab === "employees" ? "bg-gray-800 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"}`}
+                      onClick={() => handleTabClick("employees")}
+                    >
+                      <Users className="mr-4 h-5 w-5 text-gray-400 group-hover:text-gray-300" />
+                      Funcionários
+                    </div>
+                  </Link>
+                  <Link href="/admin/reports">
+                    <div 
+                      className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${activeTab === "reports" ? "bg-gray-800 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"}`}
+                      onClick={() => handleTabClick("reports")}
+                    >
+                      <BarChart2 className="mr-4 h-5 w-5 text-gray-400 group-hover:text-gray-300" />
+                      Relatórios
+                    </div>
+                  </Link>
+                  <Link href="/admin/financial">
+                    <div 
+                      className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${activeTab === "financial" ? "bg-gray-800 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"}`}
+                      onClick={() => handleTabClick("financial")}
+                    >
+                      <DollarSign className="mr-4 h-5 w-5 text-gray-400 group-hover:text-gray-300" />
+                      Financeiro
+                    </div>
+                  </Link>
+                </nav>
+              </div>
+              <div className="flex-shrink-0 flex border-t border-gray-800 p-4">
+                <div className="flex-shrink-0 group block">
+                  <div className="flex items-center">
+                    <div>
+                      <div className="h-10 w-10 rounded-full bg-gray-700 flex items-center justify-center text-gray-300">
+                        <UserIcon className="h-6 w-6" />
+                      </div>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-base font-medium text-white">{user.fullName}</p>
+                      <Button 
+                        variant="link" 
+                        className="text-sm font-medium text-gray-400 hover:text-gray-300 p-0"
+                        onClick={() => {
+                          logoutMutation.mutate();
+                          setIsMenuOpen(false);
+                        }}
+                      >
+                        Sair
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex-shrink-0 w-14"></div>
+          </div>
         </div>
       </div>
       
-      {/* Bottom Tab Navigation - Simplified with 4 primary + 1 more menu */}
-      <div className="grid grid-cols-5 bg-gray-800 text-xs text-gray-400 fixed bottom-0 left-0 right-0 z-10 border-t border-gray-700">
-        {mainNavItems.map((item) => (
-          <Button 
-            key={item.id}
-            variant="ghost" 
-            className={`flex-1 flex flex-col items-center py-2 ${activeTab === item.id ? "text-white border-t-2 border-primary" : ""}`}
-            onClick={() => onTabChange(item.id as AdminTab)}
-          >
-            <item.icon className="mb-1 h-5 w-5" />
-            <span>{item.label}</span>
-          </Button>
-        ))}
-        
-        {/* More dropdown menu for secondary items */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button 
-              variant="ghost" 
-              className="flex-1 flex flex-col items-center py-2"
-            >
-              <Settings className="mb-1 h-5 w-5" />
-              <span>Mais</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56 mb-2">
-            {secondaryNavItems.map((item) => (
-              <DropdownMenuItem
-                key={item.id}
-                onClick={() => onTabChange(item.id as AdminTab)}
-                className={`cursor-pointer ${activeTab === item.id ? "bg-primary/10" : ""}`}
-              >
-                <item.icon className="mr-2 h-4 w-4" />
-                <span>{item.id === "work-schedules" ? "Jornadas de Trabalho" : 
-                       item.id === "reports" ? "Relatórios" : 
-                       "Financeiro"}</span>
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+      {/* Mobile Tab Navigation */}
+      <div className="grid grid-cols-5 bg-gray-800 text-xs text-gray-400">
+        <Button 
+          variant="ghost" 
+          className={`flex-1 flex flex-col items-center py-2 ${activeTab === "overview" ? "text-white border-b-2 border-primary" : ""}`}
+          onClick={() => onTabChange("overview")}
+        >
+          <LayoutDashboard className="mb-1 h-5 w-5" />
+          <span>Dashboard</span>
+        </Button>
+        <Button 
+          variant="ghost" 
+          className={`flex-1 flex flex-col items-center py-2 ${activeTab === "records" ? "text-white border-b-2 border-primary" : ""}`}
+          onClick={() => onTabChange("records")}
+        >
+          <ClipboardList className="mb-1 h-5 w-5" />
+          <span>Registros</span>
+        </Button>
+        <Button 
+          variant="ghost" 
+          className={`flex-1 flex flex-col items-center py-2 ${activeTab === "employees" ? "text-white border-b-2 border-primary" : ""}`}
+          onClick={() => onTabChange("employees")}
+        >
+          <Users className="mb-1 h-5 w-5" />
+          <span>Funcs.</span>
+        </Button>
+        <Button 
+          variant="ghost" 
+          className={`flex-1 flex flex-col items-center py-2 ${activeTab === "reports" ? "text-white border-b-2 border-primary" : ""}`}
+          onClick={() => onTabChange("reports")}
+        >
+          <BarChart2 className="mb-1 h-5 w-5" />
+          <span>Relatórios</span>
+        </Button>
+        <Button 
+          variant="ghost" 
+          className={`flex-1 flex flex-col items-center py-2 ${activeTab === "financial" ? "text-white border-b-2 border-primary" : ""}`}
+          onClick={() => onTabChange("financial")}
+        >
+          <DollarSign className="mb-1 h-5 w-5" />
+          <span>Financeiro</span>
+        </Button>
       </div>
-      
-      {/* Add padding at the bottom to account for the fixed bottom nav */}
-      <div className="pb-16"></div>
     </div>
   );
 }

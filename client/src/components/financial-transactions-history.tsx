@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -21,15 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Download, Edit, Eye, Clock } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { toast } from "@/hooks/use-toast";
+import { Download } from "lucide-react";
 
 interface FinancialTransactionsHistoryProps {
   userId?: number;
@@ -40,14 +32,9 @@ export default function FinancialTransactionsHistory({
   userId,
   showFilters = false
 }: FinancialTransactionsHistoryProps) {
-  const queryClient = useQueryClient();
   const [transactionType, setTransactionType] = useState<string | undefined>(undefined);
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
-  const [editingTransaction, setEditingTransaction] = useState<any>(null);
-  const [viewingAuditLogs, setViewingAuditLogs] = useState<any>(null);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isAuditDialogOpen, setIsAuditDialogOpen] = useState(false);
 
   // Build query params
   const buildQueryParams = () => {
@@ -121,72 +108,6 @@ export default function FinancialTransactionsHistory({
   const handleExportCSV = () => {
     const queryParams = buildQueryParams();
     window.open(`/api/admin/export-transactions?${queryParams}`, '_blank');
-  };
-  
-  // Fetch audit logs for a transaction
-  const { data: auditLogs, isLoading: isLoadingAuditLogs } = useQuery({
-    queryKey: ['/api/admin/audit-logs', viewingAuditLogs?.id],
-    queryFn: async () => {
-      if (!viewingAuditLogs) return null;
-      
-      const res = await fetch(`/api/admin/audit-logs/financial_transactions/${viewingAuditLogs.id}`, {
-        credentials: "include",
-      });
-      
-      if (!res.ok) {
-        throw new Error("Erro ao carregar histórico de auditoria");
-      }
-      
-      return res.json();
-    },
-    enabled: !!viewingAuditLogs,
-  });
-  
-  // Handle edit transaction
-  const handleEditTransaction = async (transaction: any) => {
-    setEditingTransaction(transaction);
-    setIsEditDialogOpen(true);
-  };
-  
-  // Handle view audit logs
-  const handleViewAuditLogs = (transaction: any) => {
-    setViewingAuditLogs(transaction);
-    setIsAuditDialogOpen(true);
-  };
-  
-  // Handle save transaction edit
-  const handleSaveEdit = async (updatedData: any) => {
-    try {
-      const res = await fetch(`/api/admin/transactions/${editingTransaction.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(updatedData),
-      });
-      
-      if (!res.ok) {
-        throw new Error("Erro ao atualizar transação");
-      }
-      
-      // Invalidate cache to refresh data
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/transactions'] });
-      
-      toast({
-        title: "Transação atualizada",
-        description: "A transação foi atualizada com sucesso.",
-      });
-      
-      setIsEditDialogOpen(false);
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: "Erro ao atualizar",
-        description: "Ocorreu um erro ao atualizar a transação.",
-        variant: "destructive",
-      });
-    }
   };
 
   // Filters section
@@ -305,7 +226,6 @@ export default function FinancialTransactionsHistory({
               <TableHead>Valor</TableHead>
               <TableHead>Referência</TableHead>
               <TableHead>Observações</TableHead>
-              <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -319,199 +239,11 @@ export default function FinancialTransactionsHistory({
                 <TableCell>{formatCurrency(transaction.amount)}</TableCell>
                 <TableCell>{transaction.reference || "-"}</TableCell>
                 <TableCell>{transaction.notes || "-"}</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Button 
-                      variant="ghost" 
-                      size="icon"
-                      onClick={() => handleEditTransaction(transaction)}
-                      title="Editar transação"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon"
-                      onClick={() => handleViewAuditLogs(transaction)}
-                      title="Ver histórico de alterações"
-                    >
-                      <Clock className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
-      
-      {/* Diálogo de edição de transação */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Editar Transação Financeira</DialogTitle>
-            <DialogDescription>
-              Faça as alterações necessárias na transação. Todas as alterações serão registradas para auditoria.
-            </DialogDescription>
-          </DialogHeader>
-          
-          {editingTransaction && (
-            <div className="space-y-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Tipo</label>
-                  <Select
-                    defaultValue={editingTransaction.type}
-                    onValueChange={(value) => setEditingTransaction({...editingTransaction, type: value})}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o tipo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {transactionTypes.map((type) => (
-                        <SelectItem key={type.value} value={type.value}>
-                          {type.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Valor</label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    value={editingTransaction.amount}
-                    onChange={(e) => setEditingTransaction({...editingTransaction, amount: e.target.value})}
-                  />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Descrição</label>
-                <Input
-                  value={editingTransaction.description}
-                  onChange={(e) => setEditingTransaction({...editingTransaction, description: e.target.value})}
-                />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Data da Transação</label>
-                  <Input
-                    type="date"
-                    value={format(new Date(editingTransaction.transactionDate), "yyyy-MM-dd")}
-                    onChange={(e) => setEditingTransaction({...editingTransaction, transactionDate: e.target.value})}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Referência (opcional)</label>
-                  <Input
-                    value={editingTransaction.reference || ""}
-                    onChange={(e) => setEditingTransaction({...editingTransaction, reference: e.target.value})}
-                  />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Observações (opcional)</label>
-                <Input
-                  value={editingTransaction.notes || ""}
-                  onChange={(e) => setEditingTransaction({...editingTransaction, notes: e.target.value})}
-                />
-              </div>
-              
-              <div className="flex justify-end gap-2 pt-4">
-                <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-                  Cancelar
-                </Button>
-                <Button onClick={() => handleSaveEdit(editingTransaction)}>
-                  Salvar Alterações
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-      
-      {/* Diálogo de histórico de auditoria */}
-      <Dialog open={isAuditDialogOpen} onOpenChange={setIsAuditDialogOpen}>
-        <DialogContent className="sm:max-w-[700px]">
-          <DialogHeader>
-            <DialogTitle>Histórico de Alterações</DialogTitle>
-            <DialogDescription>
-              Visualize todas as alterações feitas nesta transação financeira.
-            </DialogDescription>
-          </DialogHeader>
-          
-          {isLoadingAuditLogs ? (
-            <div className="space-y-2 py-4">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={i} className="h-12 w-full" />
-              ))}
-            </div>
-          ) : !auditLogs || auditLogs.length === 0 ? (
-            <p className="text-muted-foreground py-4">
-              Nenhum registro de alteração encontrado para esta transação.
-            </p>
-          ) : (
-            <div className="border rounded-md">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Ação</TableHead>
-                    <TableHead>Usuário</TableHead>
-                    <TableHead>Alterações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {auditLogs.map((log: any) => (
-                    <TableRow key={log.id}>
-                      <TableCell>
-                        {format(new Date(log.timestamp), "dd/MM/yyyy HH:mm:ss")}
-                      </TableCell>
-                      <TableCell>
-                        {log.action === 'create' ? 'Criação' : 
-                         log.action === 'update' ? 'Atualização' : 
-                         log.action === 'delete' ? 'Exclusão' : log.action}
-                      </TableCell>
-                      <TableCell>ID: {log.userId}</TableCell>
-                      <TableCell>
-                        {log.action === 'update' && log.oldValues && log.newValues && (
-                          <div className="text-xs">
-                            {Object.keys(log.newValues).map(key => {
-                              if (log.oldValues[key] !== log.newValues[key] && 
-                                  key !== 'id' && 
-                                  key !== 'createdAt' && 
-                                  key !== 'updatedAt' && 
-                                  key !== 'createdBy' && 
-                                  key !== 'updatedBy') {
-                                return (
-                                  <div key={key} className="py-1">
-                                    <strong>{key}:</strong>{' '}
-                                    {String(log.oldValues[key] || '-')} → {String(log.newValues[key] || '-')}
-                                  </div>
-                                );
-                              }
-                              return null;
-                            })}
-                          </div>
-                        )}
-                        {log.action === 'create' && (
-                          <span className="text-xs">Registro criado</span>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

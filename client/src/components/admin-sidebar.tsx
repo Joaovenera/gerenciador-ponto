@@ -1,19 +1,10 @@
 import { Link } from "wouter";
 import { User } from "@shared/schema";
-import { 
-  ClipboardList, 
-  Users, 
-  BarChart2, 
-  DollarSign, 
-  User as UserIcon, 
-  LayoutDashboard,
-  Clock,
-  CalendarClock
-} from "lucide-react";
+import { ClipboardList, Users, BarChart2, DollarSign, User as UserIcon, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 
-type AdminTab = "overview" | "records" | "employees" | "reports" | "financial" | "work-schedules" | "time-bank";
+type AdminTab = "overview" | "records" | "employees" | "reports" | "financial";
 
 interface AdminSidebarProps {
   activeTab: AdminTab;
@@ -59,26 +50,6 @@ export default function AdminSidebar({ activeTab, onTabChange, user }: AdminSide
                 >
                   <Users className={`mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-300 ${activeTab === "employees" ? "text-gray-300" : ""}`} />
                   Funcionários
-                </div>
-              </Link>
-            </div>
-            <div onClick={() => onTabChange("work-schedules")}>
-              <Link href="/admin/work-schedules">
-                <div 
-                  className={`text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md ${activeTab === "work-schedules" ? "bg-gray-800 text-white" : ""}`}
-                >
-                  <CalendarClock className={`mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-300 ${activeTab === "work-schedules" ? "text-gray-300" : ""}`} />
-                  Jornadas de Trabalho
-                </div>
-              </Link>
-            </div>
-            <div onClick={() => onTabChange("time-bank")}>
-              <Link href="/admin/time-bank">
-                <div 
-                  className={`text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md ${activeTab === "time-bank" ? "bg-gray-800 text-white" : ""}`}
-                >
-                  <Clock className={`mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-300 ${activeTab === "time-bank" ? "text-gray-300" : ""}`} />
-                  Banco de Horas
                 </div>
               </Link>
             </div>

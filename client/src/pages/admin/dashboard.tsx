@@ -17,85 +17,49 @@ import {
   LogOut,
   Settings,
   Sun,
-  Moon
+  Moon,
+  Calculator
 } from "lucide-react";
 
-// Lazy loading for admin modules
+// Lazy loading para os módulos do admin
 const RecordsTab = lazy(() => import("@/pages/admin/records"));
 const EmployeesTab = lazy(() => import("@/pages/admin/employees"));
-const ReportsTabImproved = lazy(() => import("@/pages/admin/reports-improved"));
 const OverviewTab = lazy(() => import("@/pages/admin/overview"));
+const ReportsTabImproved = lazy(() => import("@/pages/admin/reports-improved"));
 const FinancialTab = lazy(() => import("@/pages/admin/financial"));
-const WorkSchedulesTab = lazy(() => import("@/pages/admin/work-schedules"));
-const TimeBankTab = lazy(() => import("@/pages/admin/time-bank"));
-
-// Componentes a serem adicionados em uma etapa futura
-// import ModernSidebar from "@/components/admin/modern-sidebar";
-// import TopNavigation from "@/components/admin/top-navigation";
-// import MobileNavigation from "@/components/admin/mobile-navigation";
+// Componentes temporários para funcionalidades futuras
+const WorkSchedulesTab = () => <div className="p-6 text-center text-gray-500">Escalas de Trabalho - Em desenvolvimento</div>;
+const TimeBankTab = () => <div className="p-6 text-center text-gray-500">Banco de Horas - Em desenvolvimento</div>;
+const PayrollTab = lazy(() => import("@/pages/admin/payroll"));
 
 // Types
-export type AdminTab = "overview" | "records" | "employees" | "reports" | "financial" | "work-schedules" | "time-bank";
-
-// Navigation items configuration
-export const navigationItems = [
-  { 
-    id: "overview", 
-    label: "Dashboard", 
-    icon: "LayoutDashboard",
-    description: "Visão geral do sistema de ponto"
-  },
-  { 
-    id: "records", 
-    label: "Registros de Ponto", 
-    icon: "ClipboardList",
-    description: "Gerenciar registros de entrada e saída"
-  },
-  { 
-    id: "employees", 
-    label: "Funcionários", 
-    icon: "Users",
-    description: "Gerenciar cadastro de funcionários"
-  },
-  { 
-    id: "work-schedules", 
-    label: "Jornadas de Trabalho", 
-    icon: "CalendarClock",
-    description: "Gerenciar escalas e jornadas"
-  },
-  { 
-    id: "time-bank", 
-    label: "Banco de Horas", 
-    icon: "Clock",
-    description: "Controle de banco de horas"
-  },
-  { 
-    id: "reports", 
-    label: "Relatórios", 
-    icon: "BarChart2",
-    description: "Análises e relatórios detalhados"
-  },
-  { 
-    id: "financial", 
-    label: "Financeiro", 
-    icon: "DollarSign",
-    description: "Gerenciamento financeiro"
-  }
-];
+export type AdminTab = "overview" | "records" | "employees" | "reports" | "financial" | "work-schedules" | "time-bank" | "payroll";
 
 export default function AdminDashboard() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
   const [, params] = useRoute("/admin/:tab");
+  
   const [activeTab, setActiveTab] = useState<AdminTab>("overview");
-  const [collapsed, setCollapsed] = useState(false);
+  
+  // Navigation configuration
+  const navigationItems = [
+    { id: "overview", label: "Visão Geral", description: "Dashboard principal com resumo do sistema" },
+    { id: "records", label: "Registros", description: "Gerenciar registros de ponto" },
+    { id: "employees", label: "Funcionários", description: "Cadastro e gerenciamento de funcionários" },
+    { id: "payroll", label: "Folha de Pagamento", description: "Calcular e gerar PDFs de pagamento" },
+    { id: "reports", label: "Relatórios", description: "Relatórios e análises" },
+    { id: "financial", label: "Financeiro", description: "Gestão financeira e transações" },
+    { id: "work-schedules", label: "Escalas de Trabalho", description: "Configurar horários de trabalho" },
+    { id: "time-bank", label: "Banco de Horas", description: "Gerenciar banco de horas" }
+  ];
   
   // Set active tab based on URL or default to "overview"
   useEffect(() => {
-    if (params?.tab && navigationItems.map(item => item.id).includes(params.tab)) {
+    const validTabs = navigationItems.map(item => item.id);
+    if (params?.tab && validTabs.includes(params.tab)) {
       setActiveTab(params.tab as AdminTab);
     } else if (!params?.tab) {
-      // If no tab is specified, update URL to include the default tab
       setLocation("/admin/overview");
     }
   }, [params, setLocation]);
@@ -171,7 +135,7 @@ export default function AdminDashboard() {
         
         <div className="flex flex-1 overflow-hidden">
           {/* Sidebar */}
-          <aside className="w-64 bg-gray-900 text-white overflow-y-auto flex-shrink-0 hidden md:block">
+          <aside className="w-64 bg-gray-900 text-white overflow-y-auto flex-shrink-0 hidden md:block relative">
             <div className="p-4">
               <div className="space-y-1">
                 {navigationItems.map(item => {
@@ -183,6 +147,7 @@ export default function AdminDashboard() {
                     item.id === "employees" ? Users :
                     item.id === "reports" ? BarChart2 :
                     item.id === "financial" ? DollarSign :
+                    item.id === "payroll" ? Calculator :
                     item.id === "work-schedules" ? CalendarClock :
                     item.id === "time-bank" ? Clock : 
                     LayoutDashboard;
@@ -219,17 +184,14 @@ export default function AdminDashboard() {
           <div className="md:hidden flex w-full max-h-screen overflow-y-auto bg-gray-100 dark:bg-gray-800">
             <div className="flex flex-col w-full">
               <div className="p-4 grid grid-cols-4 gap-2">
-                {navigationItems.map(item => {
+                {navigationItems.slice(0, 4).map(item => {
                   const isActive = activeTab === item.id;
                   // Determinar qual ícone usar
                   const IconComponent = 
                     item.id === "overview" ? LayoutDashboard :
                     item.id === "records" ? ClipboardList :
                     item.id === "employees" ? Users :
-                    item.id === "reports" ? BarChart2 :
-                    item.id === "financial" ? DollarSign :
-                    item.id === "work-schedules" ? CalendarClock :
-                    item.id === "time-bank" ? Clock : 
+                    item.id === "payroll" ? Calculator :
                     LayoutDashboard;
                     
                   return (
@@ -327,6 +289,7 @@ export default function AdminDashboard() {
                     {activeTab === "employees" && <EmployeesTab />}
                     {activeTab === "reports" && <ReportsTabImproved />}
                     {activeTab === "financial" && <FinancialTab />}
+                    {activeTab === "payroll" && <PayrollTab />}
                     {activeTab === "work-schedules" && <WorkSchedulesTab />}
                     {activeTab === "time-bank" && <TimeBankTab />}
                   </div>
