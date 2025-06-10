@@ -1,0 +1,114 @@
+npm run test:all
+
+> rest-express@1.0.0 test:all
+> NODE_ENV=test jest --config=jest.config.ts && jest --config=jest.client.config.ts
+
+ FAIL  client/src/__tests__/components/not-found.test.tsx
+  ● Test suite failed to run
+
+    Jest encountered an unexpected token
+
+    Jest failed to parse a file. This happens e.g. when your code or its dependencies use non-standard JavaScript syntax, or when Jest is not configured to support such syntax.
+
+    Out of the box Jest supports Babel, which will be used to transform your files into valid JS based on your Babel configuration.
+
+    By default "node_modules" folder is ignored by transformers.
+
+    Here's what you can do:
+     • If you are trying to use ECMAScript Modules, see https://jestjs.io/docs/ecmascript-modules for how to enable it.
+     • If you are trying to use TypeScript, see https://jestjs.io/docs/getting-started#using-typescript
+     • To have some of your "node_modules" files transformed, you can specify a custom "transformIgnorePatterns" in your config.
+     • If you need a custom transformation specify a "transform" option in your config.
+     • If you simply want to mock your non-JS modules (e.g. binary assets) you can stub them out with the "moduleNameMapper" config option.
+
+    You'll find more details and examples of these config options in the docs:
+    https://jestjs.io/docs/configuration
+    For information about custom transformations, see:
+    https://jestjs.io/docs/code-transformation
+
+    Details:
+
+    /home/runner/workspace/client/src/__tests__/components/not-found.test.tsx:11
+            (0, react_2.render)(<not_found_1.default />);
+                                ^
+
+    SyntaxError: Unexpected token '<'
+
+      at Runtime.createScriptFromCode (node_modules/jest-runtime/build/index.js:1505:14)
+
+ FAIL  server/__tests__/auth.test.ts
+  ● Test suite failed to run
+
+    server/auth.ts:13:15 - error TS2310: Type 'User' recursively references itself as a base type.
+
+    13     interface User extends User {}
+                     ~~~~
+    server/auth.ts:70:21 - error TS2339: Property 'id' does not exist on type 'User'.
+
+    70     done(null, user.id);
+                           ~~
+
+ FAIL  client/src/__tests__/utils.test.ts (35.753 s)
+  ● Utils › formatTime › should format time correctly
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "14:30"
+    Received: "14:30:00"
+
+      26 |       const date = new Date('2023-05-15T14:30:00');
+      27 |       const formatted = formatTime(date);
+    > 28 |       expect(formatted).toBe('14:30');
+         |                         ^
+      29 |     });
+      30 |   });
+      31 |
+
+      at Object.<anonymous> (client/src/__tests__/utils.test.ts:28:25)
+
+  ● Utils › truncateText › should truncate text longer than maxLength
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "This is a..."
+    Received: "This is a ..."
+
+      34 |       const text = 'This is a long text that should be truncated';
+      35 |       const truncated = truncateText(text, 10);
+    > 36 |       expect(truncated).toBe('This is a...');
+         |                         ^
+      37 |       expect(truncated.length).toBeLessThan(text.length);
+      38 |     });
+      39 |
+
+      at Object.<anonymous> (client/src/__tests__/utils.test.ts:36:25)
+
+ FAIL  server/__tests__/routes.test.ts
+  ● Test suite failed to run
+
+    server/routes.ts:12:17 - error TS2339: Property 'accessLevel' does not exist on type 'User'.
+
+    12   if (req.user?.accessLevel !== "admin") return res.sendStatus(403);
+                       ~~~~~~~~~~~
+    server/routes.ts:56:32 - error TS2339: Property 'id' does not exist on type 'User'.
+
+    56       const userId = req.user!.id;
+                                      ~~
+    server/routes.ts:73:32 - error TS2339: Property 'id' does not exist on type 'User'.
+
+    73       const userId = req.user!.id;
+                                      ~~
+    server/routes.ts:93:32 - error TS2339: Property 'id' does not exist on type 'User'.
+
+    93       const userId = req.user!.id;
+                                      ~~
+    server/routes.ts:125:33 - error TS2339: Property 'id' does not exist on type 'User'.
+
+    125       const adminId = req.user!.id;
+                                        ~~
+
+Test Suites: 4 failed, 4 total
+Tests:       2 failed, 7 passed, 9 total
+Snapshots:   0 total
+Time:        42.803 s
+Ran all test suites.

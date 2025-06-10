@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "node_modules", 
+    "build", 
+    "dist", 
+    "server/vite.ts",
+    "**/node_modules/**",
+    "**/*.spec.*",
+    "**/*.test.*"
+  ],
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "noEmit": true,
+    "allowJs": true
+  }
+}

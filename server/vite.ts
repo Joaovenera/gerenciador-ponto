@@ -23,7 +23,11 @@ export async function setupVite(app: Express, server: Server) {
   const serverOptions = {
     middlewareMode: true,
     hmr: { server },
-    allowedHosts: true,
+    allowedHosts: [
+      "localhost",
+      "jarmaq.com.br",
+      ".replit.dev", // leading dot allows subdomains
+    ],
   };
 
   const vite = await createViteServer({

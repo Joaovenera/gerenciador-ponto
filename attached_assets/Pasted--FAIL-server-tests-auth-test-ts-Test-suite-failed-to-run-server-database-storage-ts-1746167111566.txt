@@ -1,0 +1,23 @@
+ FAIL  server/__tests__/auth.test.ts
+  ● Test suite failed to run
+
+    server/database-storage.ts:143:7 - error TS2740: Type 'Omit<PgSelectBase<"time_records", { id: PgColumn<{ name: "id"; tableName: "time_records"; dataType: "number"; columnType: "PgSerial"; data: number; driverParam: number; notNull: true; hasDefault: true; isPrimaryKey: true; ... 5 more ...; generated: undefined; }, {}, {}>; ... 9 more ...; createdBy: PgColumn<...>; }, ...' is missing the following properties from type 'PgSelectBase<"time_records", { id: PgColumn<{ name: "id"; tableName: "time_records"; dataType: "number"; columnType: "PgSerial"; data: number; driverParam: number; notNull: true; hasDefault: true; isPrimaryKey: true; ... 5 more ...; generated: undefined; }, {}, {}>; ... 9 more ...; createdBy: PgColumn<...>; }, ... 5...': config, joinsNotNullableMap, tableName, isPartialSelect, and 5 more.
+
+    143       query = query.where(and(...conditions));
+              ~~~~~
+    server/database-storage.ts:147:5 - error TS2740: Type 'Omit<PgSelectBase<"time_records", { id: PgColumn<{ name: "id"; tableName: "time_records"; dataType: "number"; columnType: "PgSerial"; data: number; driverParam: number; notNull: true; hasDefault: true; isPrimaryKey: true; ... 5 more ...; generated: undefined; }, {}, {}>; ... 9 more ...; createdBy: PgColumn<...>; }, ...' is missing the following properties from type 'PgSelectBase<"time_records", { id: PgColumn<{ name: "id"; tableName: "time_records"; dataType: "number"; columnType: "PgSerial"; data: number; driverParam: number; notNull: true; hasDefault: true; isPrimaryKey: true; ... 5 more ...; generated: undefined; }, {}, {}>; ... 9 more ...; createdBy: PgColumn<...>; }, ... 5...': config, joinsNotNullableMap, tableName, isPartialSelect, and 5 more.
+
+    147     query = query.orderBy(desc(timeRecords.timestamp));
+            ~~~~~
+
+ FAIL  server/__tests__/routes.test.ts
+  ● Test suite failed to run
+
+    server/database-storage.ts:143:7 - error TS2740: Type 'Omit<PgSelectBase<"time_records", { id: PgColumn<{ name: "id"; tableName: "time_records"; dataType: "number"; columnType: "PgSerial"; data: number; driverParam: number; notNull: true; hasDefault: true; isPrimaryKey: true; ... 5 more ...; generated: undefined; }, {}, {}>; ... 9 more ...; createdBy: PgColumn<...>; }, ...' is missing the following properties from type 'PgSelectBase<"time_records", { id: PgColumn<{ name: "id"; tableName: "time_records"; dataType: "number"; columnType: "PgSerial"; data: number; driverParam: number; notNull: true; hasDefault: true; isPrimaryKey: true; ... 5 more ...; generated: undefined; }, {}, {}>; ... 9 more ...; createdBy: PgColumn<...>; }, ... 5...': config, joinsNotNullableMap, tableName, isPartialSelect, and 5 more.
+
+    143       query = query.where(and(...conditions));
+              ~~~~~
+    server/database-storage.ts:147:5 - error TS2740: Type 'Omit<PgSelectBase<"time_records", { id: PgColumn<{ name: "id"; tableName: "time_records"; dataType: "number"; columnType: "PgSerial"; data: number; driverParam: number; notNull: true; hasDefault: true; isPrimaryKey: true; ... 5 more ...; generated: undefined; }, {}, {}>; ... 9 more ...; createdBy: PgColumn<...>; }, ...' is missing the following properties from type 'PgSelectBase<"time_records", { id: PgColumn<{ name: "id"; tableName: "time_records"; dataType: "number"; columnType: "PgSerial"; data: number; driverParam: number; notNull: true; hasDefault: true; isPrimaryKey: true; ... 5 more ...; generated: undefined; }, {}, {}>; ... 9 more ...; createdBy: PgColumn<...>; }, ... 5...': config, joinsNotNullableMap, tableName, isPartialSelect, and 5 more.
+
+    147     query = query.orderBy(desc(timeRecords.timestamp));
+            ~~~~~

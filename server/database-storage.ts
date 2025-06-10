@@ -5,11 +5,18 @@ import {
   InsertTimeRecord, 
   TimeRecordFilter,
   users,
-  timeRecords
+  timeRecords,
+  salaries,
+  financialTransactions,
+  Salary,
+  InsertSalary,
+  FinancialTransaction,
+  InsertFinancialTransaction,
+  FinancialTransactionFilter
 } from "@shared/schema";
 import { IStorage } from "./storage";
 import { db, pool } from "./db";
-import { eq, and, gte, lt, desc } from "drizzle-orm";
+import { eq, and, gte, lt, desc, SQL } from "drizzle-orm";
 import session from "express-session";
 import { Store } from "express-session";
 import connectPg from "connect-pg-simple";
@@ -140,11 +147,11 @@ export class DatabaseStorage implements IStorage {
     }
 
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+      query = query.where(and(...conditions)) as typeof query;
     }
 
     // Sort by timestamp (newest first)
-    query = query.orderBy(desc(timeRecords.timestamp));
+    query = query.orderBy(desc(timeRecords.timestamp)) as typeof query;
 
     return await query;
   }
@@ -164,8 +171,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateTimeRecord(id: number, recordData: Partial<TimeRecord>): Promise<TimeRecord> {
+    // Ensure timestamp is a Date object if present
+    let dataToUpdate = {...recordData};
+    
+    if (dataToUpdate.timestamp && typeof dataToUpdate.timestamp === 'string') {
+      dataToUpdate.timestamp = new Date(dataToUpdate.timestamp);
+    }
+    
     const result = await db.update(timeRecords)
-      .set(recordData)
+      .set(dataToUpdate)
       .where(eq(timeRecords.id, id))
       .returning();
 
@@ -207,6 +221,196 @@ export class DatabaseStorage implements IStorage {
       const userName = userMap.get(record.userId) || `ID: ${record.userId}`;
 
       csv += `${record.id},${userName},${date},${time},${type},${record.ipAddress},${record.latitude},${record.longitude},${record.isManual ? "Sim" : "Não"},${record.justification || ""},${createdByName}\n`;
+    }
+
+    return csv;
+  }
+
+  // Salary methods
+  async createSalary(salaryData: InsertSalary): Promise<Salary> {
+    // Parse dates if they are strings
+    let dataToInsert = {...salaryData};
+    
+    if (dataToInsert.effectiveDate && typeof dataToInsert.effectiveDate === 'string') {
+      dataToInsert.effectiveDate = new Date(dataToInsert.effectiveDate);
+    }
+    
+    const result = await db.insert(salaries)
+      .values({
+        ...dataToInsert,
+        createdAt: new Date()
+      })
+      .returning();
+
+    return result[0];
+  }
+
+  async getCurrentSalary(userId: number): Promise<Salary | undefined> {
+    // Get the most recent salary for the user
+    const result = await db.select()
+      .from(salaries)
+      .where(eq(salaries.userId, userId))
+      .orderBy(desc(salaries.effectiveDate))
+      .limit(1);
+
+    return result[0];
+  }
+
+  async getSalaryHistory(userId: number): Promise<Salary[]> {
+    // Get all salary entries for a specific user, ordered by effective date (newest first)
+    return await db.select()
+      .from(salaries)
+      .where(eq(salaries.userId, userId))
+      .orderBy(desc(salaries.effectiveDate));
+  }
+
+  async updateSalary(id: number, salaryData: Partial<Salary>): Promise<Salary> {
+    // Parse dates if they are strings
+    let dataToUpdate = {...salaryData};
+    
+    if (dataToUpdate.effectiveDate && typeof dataToUpdate.effectiveDate === 'string') {
+      dataToUpdate.effectiveDate = new Date(dataToUpdate.effectiveDate);
+    }
+    
+    const result = await db.update(salaries)
+      .set(dataToUpdate)
+      .where(eq(salaries.id, id))
+      .returning();
+
+    if (result.length === 0) {
+      throw new Error("Salary record not found");
+    }
+
+    return result[0];
+  }
+
+  async deleteSalary(id: number): Promise<boolean> {
+    const result = await db.delete(salaries)
+      .where(eq(salaries.id, id))
+      .returning({ id: salaries.id });
+
+    return result.length > 0;
+  }
+
+  // Financial transaction methods
+  async createFinancialTransaction(transactionData: InsertFinancialTransaction): Promise<FinancialTransaction> {
+    // Parse dates if they are strings
+    let dataToInsert = {...transactionData};
+    
+    if (dataToInsert.transactionDate && typeof dataToInsert.transactionDate === 'string') {
+      dataToInsert.transactionDate = new Date(dataToInsert.transactionDate);
+    }
+    
+    const result = await db.insert(financialTransactions)
+      .values({
+        ...dataToInsert,
+        createdAt: new Date()
+      })
+      .returning();
+
+    return result[0];
+  }
+
+  async getFinancialTransactions(filter: Partial<FinancialTransactionFilter>): Promise<FinancialTransaction[]> {
+    let query = db.select().from(financialTransactions);
+
+    // Apply filters
+    const conditions = [];
+
+    if (filter.userId !== undefined) {
+      conditions.push(eq(financialTransactions.userId, filter.userId));
+    }
+
+    if (filter.type !== undefined) {
+      conditions.push(eq(financialTransactions.type, filter.type));
+    }
+
+    if (filter.startDate) {
+      const startDate = new Date(filter.startDate);
+      conditions.push(gte(financialTransactions.transactionDate, startDate));
+    }
+
+    if (filter.endDate) {
+      const endDate = new Date(filter.endDate);
+      // Add one day to include the end date
+      endDate.setDate(endDate.getDate() + 1);
+      conditions.push(lt(financialTransactions.transactionDate, endDate));
+    }
+
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions)) as typeof query;
+    }
+
+    // Sort by transaction date (newest first)
+    query = query.orderBy(desc(financialTransactions.transactionDate)) as typeof query;
+
+    return await query;
+  }
+
+  async updateFinancialTransaction(id: number, transactionData: Partial<FinancialTransaction>): Promise<FinancialTransaction> {
+    // Parse dates if they are strings
+    let dataToUpdate = {...transactionData};
+    
+    if (dataToUpdate.transactionDate && typeof dataToUpdate.transactionDate === 'string') {
+      dataToUpdate.transactionDate = new Date(dataToUpdate.transactionDate);
+    }
+    
+    const result = await db.update(financialTransactions)
+      .set(dataToUpdate)
+      .where(eq(financialTransactions.id, id))
+      .returning();
+
+    if (result.length === 0) {
+      throw new Error("Financial transaction not found");
+    }
+
+    return result[0];
+  }
+
+  async deleteFinancialTransaction(id: number): Promise<boolean> {
+    const result = await db.delete(financialTransactions)
+      .where(eq(financialTransactions.id, id))
+      .returning({ id: financialTransactions.id });
+
+    return result.length > 0;
+  }
+
+  async exportFinancialTransactionsCSV(filter: Partial<FinancialTransactionFilter>): Promise<string> {
+    const transactions = await this.getFinancialTransactions(filter);
+
+    // CSV Header
+    let csv = "ID,Usuário,Tipo,Valor,Descrição,Data da Transação,Referência,Notas,Criado Por\n";
+
+    // Get all user names for reference
+    const allUsers = await this.getAllUsers();
+    const userMap = new Map<number, string>();
+    allUsers.forEach(user => {
+      userMap.set(user.id, user.fullName);
+    });
+
+    // Function to translate transaction types to Portuguese
+    const translateType = (type: string): string => {
+      const translations: Record<string, string> = {
+        'salary': 'Salário',
+        'advance': 'Adiantamento',
+        'bonus': 'Bônus',
+        'vacation': 'Férias',
+        'thirteenth': 'Décimo Terceiro',
+        'adjustment': 'Ajuste',
+        'deduction': 'Dedução'
+      };
+      return translations[type] || type;
+    };
+
+    // Add each transaction as a row
+    for (const transaction of transactions) {
+      const transactionDate = new Date(transaction.transactionDate);
+      const date = format(transactionDate, "dd/MM/yyyy");
+      const type = translateType(transaction.type);
+      const createdByName = userMap.get(transaction.createdBy) || `ID: ${transaction.createdBy}`;
+      const userName = userMap.get(transaction.userId) || `ID: ${transaction.userId}`;
+
+      csv += `${transaction.id},${userName},${type},${transaction.amount},${transaction.description},${date},${transaction.reference || ""},${transaction.notes || ""},${createdByName}\n`;
     }
 
     return csv;

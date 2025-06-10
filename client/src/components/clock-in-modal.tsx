@@ -5,15 +5,18 @@ import { useCamera } from "@/hooks/use-camera";
 import { useGeolocation } from "@/hooks/use-geolocation";
 import { Loader2, MapPin, Camera, CheckCircle } from "lucide-react";
 import { getCurrentDateTime } from "@/lib/utils";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 interface ClockInModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (data: { latitude: number; longitude: number; photo: string }) => void;
+  onConfirm: (data: { latitude: number; longitude: number; photo: string; justification?: string }) => void;
 }
 
 export default function ClockInModal({ isOpen, onClose, onConfirm }: ClockInModalProps) {
   const [step, setStep] = useState<"location" | "camera" | "confirmation">("location");
+  const [justification, setJustification] = useState<string>("");
   
   // Get geolocation
   const { 
@@ -76,6 +79,7 @@ export default function ClockInModal({ isOpen, onClose, onConfirm }: ClockInModa
         latitude: position.latitude,
         longitude: position.longitude,
         photo: photoData,
+        justification: justification.trim() || undefined
       });
     }
   };
@@ -200,6 +204,18 @@ export default function ClockInModal({ isOpen, onClose, onConfirm }: ClockInModa
                 />
               </div>
             )}
+            
+            <div className="mb-4">
+              <Label htmlFor="justification" className="font-medium text-sm mb-2">Justificativa (opcional):</Label>
+              <Textarea 
+                id="justification"
+                placeholder="Digite uma justificativa, se necessário"
+                value={justification}
+                onChange={(e) => setJustification(e.target.value)}
+                className="resize-none mt-1"
+                rows={3}
+              />
+            </div>
             
             <Button 
               onClick={handleConfirm}

@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   LogOut,
@@ -14,6 +14,15 @@ import {
   Activity,
   Menu,
   X,
+  Map,
+  Bell,
+  Settings,
+  Home,
+  FileText,
+  BarChart2,
+  RefreshCw,
+  MapPin,
+  Info
 } from "lucide-react";
 import {
   formatDateWithWeekday,
@@ -21,6 +30,7 @@ import {
   getCurrentDate,
   getTypeIcon,
   getTypeColor,
+  cn
 } from "@/lib/utils";
 import ClockInModal from "@/components/clock-in-modal";
 import ClockOutModal from "@/components/clock-out-modal";
@@ -36,6 +46,14 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -46,8 +64,9 @@ import {
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function EmployeeDashboard() {
   const { user, logoutMutation } = useAuth();
@@ -59,6 +78,38 @@ export default function EmployeeDashboard() {
   const [isClockInModalOpen, setIsClockInModalOpen] = useState(false);
   const [isClockOutModalOpen, setIsClockOutModalOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [justificationModal, setJustificationModal] = useState({ open: false, text: "" });
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { 
+        staggerChildren: 0.1,
+        when: "beforeChildren" 
+      } 
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      transition: { type: "spring", stiffness: 300, damping: 24 }
+    }
+  };
+
+  const clockDigitsVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: { 
+      opacity: 1, 
+      scale: 1,
+      transition: { type: "spring", stiffness: 300, damping: 20 }
+    }
+  };
 
   // Time interval to update current time
   useEffect(() => {
@@ -71,24 +122,38 @@ export default function EmployeeDashboard() {
   }, []);
 
   // Get user status (in/out)
-  const { data: statusData, isLoading: statusLoading } = useQuery({
+  const { data: statusData, isLoading: statusLoading, refetch: refetchStatus } = useQuery<{status: "in" | "out"}>({  
     queryKey: ["/api/time-records/status"],
     refetchInterval: 30000, // Refetch every 30s
   });
 
   // Get client IP
-  const { data: ipData } = useQuery({
+  const { data: ipData } = useQuery<{ip: string}>({  
     queryKey: ["/api/ip"],
   });
 
   // Get user's time records
-  const { data: timeRecords, isLoading: recordsLoading } = useQuery({
+  const { data: timeRecords, isLoading: recordsLoading, refetch: refetchRecords } = useQuery<TimeRecord[]>({  
     queryKey: ["/api/time-records/me"],
   });
 
+  // Manual refetch function with animation
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await Promise.all([refetchStatus(), refetchRecords()]);
+    setTimeout(() => setRefreshing(false), 800);
+  };
+
   // Register time record mutation
   const registerRecordMutation = useMutation({
-    mutationFn: async (recordData) => {
+    mutationFn: async (recordData: {
+      type: string;
+      ipAddress: string;
+      latitude: number;
+      longitude: number;
+      photo: string;
+      justification?: string;
+    }) => {
       const res = await apiRequest("POST", "/api/time-records", recordData);
       return await res.json();
     },
@@ -99,51 +164,99 @@ export default function EmployeeDashboard() {
   });
 
   // Group time records by date
-  const groupedRecords = timeRecords ? groupRecordsByDate(timeRecords) : {};
+  const groupedRecords: Record<string, TimeRecord[]> = timeRecords ? groupRecordsByDate(timeRecords) : {};
 
   // Get current user status
-  const currentStatus = statusData?.status || "out";
+  const currentStatus: "in" | "out" = statusData?.status || "out";
 
   // Get initials for avatar
-  const getInitials = (name) => {
+  const getInitials = (name: string): string => {
     if (!name) return "U";
     return name
       .split(" ")
-      .map((n) => n[0])
+      .map((n: string) => n[0])
       .join("")
       .toUpperCase()
       .substring(0, 2);
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Mobile-optimized Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
-        <div className="px-4 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <Clock className="h-4 w-4 text-primary" />
-            <div className="font-bold text-primary text-base">
+    <motion.div 
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100/70"
+    >
+      {/* Modern Animated Header */}
+      <motion.header 
+        variants={itemVariants}
+        className="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm"
+      >
+        <div className="container px-4 py-3 flex items-center justify-between mx-auto max-w-4xl">
+          <motion.div 
+            className="flex items-center gap-2"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <motion.div
+              className="h-8 w-8 bg-primary rounded-full flex items-center justify-center shadow-sm"
+              animate={{ rotate: [0, 5, 0, -5, 0] }}
+              transition={{ repeat: Infinity, repeatDelay: 4, duration: 1 }}
+            >
+              <Clock className="h-4 w-4 text-white" />
+            </motion.div>
+            <div className="font-bold text-primary text-lg bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600">
               Ponto Eletrônico
             </div>
-          </div>
+          </motion.div>
 
           {user && (
-            <div className="flex items-center">
+            <div className="flex items-center gap-3">
+              <AnimatePresence>
+                {refreshing && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8, rotate: 0 }}
+                    animate={{ opacity: 1, scale: 1, rotate: 360 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.6, ease: "easeInOut" }}
+                  >
+                    <RefreshCw className="h-5 w-5 text-primary" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleRefresh}
+                className="p-2 rounded-full hover:bg-slate-100 transition-colors"
+                disabled={refreshing}
+              >
+                <RefreshCw className={cn(
+                  "h-5 w-5 text-slate-500", 
+                  refreshing && "animate-spin text-primary"
+                )} />
+              </motion.button>
+              
               <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className="rounded-full">
-                    <Menu className="h-5 w-5" />
-                  </Button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="p-2 rounded-full hover:bg-slate-100 transition-colors"
+                  >
+                    <Menu className="h-5 w-5 text-slate-700" />
+                  </motion.button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-72">
+                <SheetContent side="right" className="w-80 border-l border-slate-200 shadow-xl">
                   <SheetHeader className="pb-6">
                     <SheetTitle className="flex items-center justify-between">
-                      <span>Menu</span>
+                      <span className="text-xl font-bold text-slate-800">Menu</span>
                       <SheetClose asChild>
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="rounded-full h-8 w-8"
+                          className="rounded-full h-8 w-8 hover:bg-slate-100"
                         >
                           <X className="h-4 w-4" />
                         </Button>
@@ -152,300 +265,672 @@ export default function EmployeeDashboard() {
                   </SheetHeader>
 
                   <div className="space-y-6">
-                    {/* User Profile Card */}
-                    <div className="p-4 bg-slate-100 rounded-lg">
+                    {/* User Profile Card - Enhanced */}
+                    <motion.div 
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.1 }}
+                      className="p-5 bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl border border-primary/10 shadow-sm"
+                    >
                       <div className="flex items-center gap-3">
-                        <Avatar className="h-12 w-12 border border-white shadow-sm">
-                          <AvatarFallback className="bg-primary/10 text-primary font-medium">
-                            {getInitials(user.fullName)}
-                          </AvatarFallback>
-                        </Avatar>
+                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                          <Avatar className="h-14 w-14 border-2 border-white shadow-md">
+                            <AvatarFallback className="bg-gradient-to-br from-primary to-blue-600 text-white font-medium text-xl">
+                              {getInitials(user.fullName)}
+                            </AvatarFallback>
+                          </Avatar>
+                        </motion.div>
                         <div>
-                          <p className="font-medium">{user.fullName}</p>
-                          <p className="text-xs text-slate-500">{user.email}</p>
+                          <motion.p 
+                            initial={{ x: -10, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            transition={{ delay: 0.2 }}
+                            className="font-semibold text-slate-800 text-lg"
+                          >
+                            {user.fullName}
+                          </motion.p>
+                          <motion.p 
+                            initial={{ x: -10, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            transition={{ delay: 0.3 }}
+                            className="text-sm text-slate-500"
+                          >
+                            {user.email}
+                          </motion.p>
+                          <motion.div 
+                            initial={{ x: -10, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            transition={{ delay: 0.4 }}
+                            className="mt-1.5"
+                          >
+                            <Badge variant={currentStatus === "in" ? "success" : "destructive"} className="text-xs font-normal uppercase">
+                              {currentStatus === "in" ? "Presente" : "Ausente"}
+                            </Badge>
+                          </motion.div>
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
 
-                    {/* Menu Items */}
-                    <div className="space-y-1.5">
-                      <h3 className="text-xs font-medium text-slate-500 px-1 mb-2">
-                        MENU
-                      </h3>
-
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start font-normal text-base"
-                        onClick={() => {
-                          setSidebarOpen(false);
-                        }}
+                    {/* Menu Items - Enhanced with animations */}
+                    <div className="space-y-1.5 pt-2">
+                      <motion.h3 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.5 }}
+                        className="text-xs font-medium text-slate-500 px-1 mb-2"
                       >
-                        <Clock className="mr-3 h-5 w-5" />
-                        Dashboard
-                      </Button>
+                        MENU
+                      </motion.h3>
 
-                      {user.accessLevel === "admin" && (
+                      <motion.div
+                        initial={{ y: 10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.6 }}
+                      >
                         <Button
                           variant="ghost"
-                          className="w-full justify-start font-normal text-base"
+                          className="w-full justify-start font-normal text-base px-3 py-6 hover:bg-primary/5"
+                          onClick={() => setSidebarOpen(false)}
+                        >
+                          <Home className="mr-3 h-5 w-5 text-primary" />
+                          Dashboard
+                        </Button>
+                      </motion.div>
+
+                      <motion.div
+                        initial={{ y: 10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.7 }}
+                      >
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start font-normal text-base px-3 py-6 hover:bg-primary/5"
+                          onClick={() => setSidebarOpen(false)}
+                        >
+                          <FileText className="mr-3 h-5 w-5 text-primary" />
+                          Meus Registros
+                        </Button>
+                      </motion.div>
+
+                      {user.accessLevel === "admin" && (
+                        <motion.div
+                          initial={{ y: 10, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          transition={{ delay: 0.8 }}
+                        >
+                          <Button
+                            variant="ghost"
+                            className="w-full justify-start font-normal text-base px-3 py-6 hover:bg-primary/5"
+                            onClick={() => {
+                              navigate("/admin");
+                              setSidebarOpen(false);
+                            }}
+                          >
+                            <BarChart2 className="mr-3 h-5 w-5 text-primary" />
+                            Painel Administrativo
+                          </Button>
+                        </motion.div>
+                      )}
+
+                      <motion.div
+                        initial={{ y: 10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.9 }}
+                      >
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start font-normal text-base text-rose-500 hover:text-rose-600 hover:bg-rose-50 px-3 py-6"
                           onClick={() => {
-                            navigate("/admin");
+                            logoutMutation.mutate();
                             setSidebarOpen(false);
                           }}
                         >
-                          <User className="mr-3 h-5 w-5" />
-                          Painel Administrativo
+                          <LogOut className="mr-3 h-5 w-5" />
+                          Sair
                         </Button>
-                      )}
-
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start font-normal text-base text-rose-500 hover:text-rose-600 hover:bg-rose-50"
-                        onClick={() => {
-                          logoutMutation.mutate();
-                          setSidebarOpen(false);
-                        }}
-                      >
-                        <LogOut className="mr-3 h-5 w-5" />
-                        Sair
-                      </Button>
+                      </motion.div>
                     </div>
 
-                    {/* Connection Info */}
-                    <div className="mt-auto pt-6">
-                      <div className="text-xs text-slate-500 flex items-center justify-between px-1">
-                        <span>IP: </span>
-                        <Badge variant="outline" className="font-mono">
-                          {ipData?.ip || "..."}
-                        </Badge>
+                    {/* Connection Info - Enhanced */}
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 1 }}
+                      className="mt-auto pt-6 border-t border-slate-200"
+                    >
+                      <div className="p-4 bg-slate-50 rounded-lg">
+                        <p className="text-xs text-slate-500 mb-2 flex items-center">
+                          <Info className="h-3 w-3 mr-1" />
+                          INFORMAÇÕES DE CONEXÃO
+                        </p>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5">
+                            <MapPin className="h-3.5 w-3.5 text-slate-400" />
+                            <span className="text-xs text-slate-600">IP:</span>
+                          </div>
+                          <Badge variant="outline" className="font-mono text-xs bg-white">
+                            {ipData?.ip || "..."}
+                          </Badge>
+                        </div>
                       </div>
-                    </div>
+                    </motion.div>
                   </div>
                 </SheetContent>
               </Sheet>
             </div>
           )}
         </div>
-      </header>
+      </motion.header>
 
-      {/* Main Content - Mobile Optimized */}
-      <main className="px-4 py-4 pb-16">
-        {/* Clock Card */}
-        <Card className="mb-5 border-none shadow-lg overflow-hidden">
-          <CardContent className="p-0">
-            <div className="bg-gradient-to-r from-primary/90 to-primary p-5 text-white">
-              <div className="flex items-start justify-between mb-8">
-                <div>
-                  <p className="text-white/70 text-sm">{currentDate}</p>
-                </div>
-                <Badge
-                  variant={currentStatus === "in" ? "success" : "destructive"}
-                  className="px-2.5 py-0.5 text-xs bg-white/20 text-white border-0"
+      {/* Main Content - Enhanced with animations */}
+      <main className="container px-4 py-6 pb-20 mx-auto max-w-4xl">
+        {/* Clock Card - Enhanced with animations */}
+        <motion.div variants={itemVariants}>
+          <Card className="mb-6 overflow-hidden border-none shadow-xl bg-white/80 backdrop-blur-sm">
+            <CardContent className="p-0">
+              <div className="bg-gradient-to-r from-primary/90 to-primary p-6 text-white">
+                <motion.div 
+                  className="flex items-start justify-between mb-6"
+                  variants={itemVariants}
                 >
-                  <div
-                    className={`w-1.5 h-1.5 rounded-full mr-1.5 ${currentStatus === "in" ? "bg-green-400" : "bg-red-400"}`}
-                  ></div>
-                  <span>
-                    {currentStatus === "in" ? "Na empresa" : "Fora da empresa"}
-                  </span>
-                </Badge>
+                  <motion.div variants={itemVariants}>
+                    <motion.p 
+                      className="text-white/80 text-sm font-medium"
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 }}
+                    >
+                      {currentDate}
+                    </motion.p>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.2, type: "spring" }}
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    <Badge
+                      variant={currentStatus === "in" ? "success" : "destructive"}
+                      className="px-3 py-1 text-xs bg-white/20 text-white border-0 shadow-sm"
+                    >
+                      <motion.div
+                        animate={currentStatus === "in" 
+                          ? { scale: [1, 1.2, 1], opacity: [1, 0.8, 1] } 
+                          : {}
+                        }
+                        transition={{ repeat: Infinity, repeatDelay: 2, duration: 1.5 }}
+                        className={`w-2 h-2 rounded-full mr-2 ${currentStatus === "in" ? "bg-green-400" : "bg-red-400"}`}
+                      ></motion.div>
+                      <span>
+                        {currentStatus === "in" ? "Na empresa" : "Fora da empresa"}
+                      </span>
+                    </Badge>
+                  </motion.div>
+                </motion.div>
+
+                <motion.div 
+                  className="text-center mb-4"
+                  variants={itemVariants}
+                >
+                  <motion.div 
+                    className="text-7xl font-bold tracking-tighter"
+                    variants={clockDigitsVariants}                    
+                  >
+                    {currentTime}
+                  </motion.div>
+                  <motion.p 
+                    className="text-white/70 text-sm mt-2"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    É importante registrar o ponto de entrada e saída corretamente
+                  </motion.p>
+                </motion.div>
               </div>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-              <div className="text-center mb-5">
-                <div className="text-6xl font-bold tracking-tight">
-                  {currentTime}
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          <Button
-            onClick={() => navigate("/camera?type=in")}
-            disabled={
-              currentStatus === "in" || registerRecordMutation.isPending
-            }
-            className="flex flex-col items-center justify-center py-4 gap-3 bg-emerald-500 hover:bg-emerald-600 transition-all duration-300 shadow-md h-24 disabled:opacity-50 disabled:shadow-none"
+        {/* Action Buttons - Enhanced with animations */}
+        <motion.div 
+          variants={itemVariants}
+          className="grid grid-cols-2 gap-4 mb-6"
+        >
+          <motion.div 
+            whileHover={{ scale: currentStatus === "in" ? 1 : 1.03, y: currentStatus === "in" ? 0 : -2 }} 
+            whileTap={{ scale: currentStatus === "in" ? 1 : 0.97 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            className={currentStatus === "in" ? "relative" : ""}
           >
-            <LogIn className="h-6 w-6" />
-            <span className="font-medium">Entrada</span>
-          </Button>
-
-          <Button
-            onClick={() => navigate("/camera?type=out")}
-            disabled={
-              currentStatus === "out" || registerRecordMutation.isPending
-            }
-            className="flex flex-col items-center justify-center py-4 gap-3 bg-rose-500 hover:bg-rose-600 transition-all duration-300 shadow-md h-24 disabled:opacity-50 disabled:shadow-none"
-          >
-            <LogOut className="h-6 w-6" />
-            <span className="font-medium">Saída</span>
-          </Button>
-        </div>
-
-        {/* Records Section */}
-        <Card className="border-none shadow-md overflow-hidden">
-          <Tabs defaultValue="today" className="w-full">
-            <div className="px-4 pt-3 pb-0">
-              <TabsList className="grid grid-cols-2 w-full">
-                <TabsTrigger value="today">Hoje</TabsTrigger>
-                <TabsTrigger value="history">Histórico</TabsTrigger>
-              </TabsList>
-            </div>
-
-            <TabsContent value="today" className="pb-0 px-0 pt-3">
-              {recordsLoading ? (
-                <div className="space-y-3 p-3">
-                  <Skeleton className="h-16 w-full" />
-                  <Skeleton className="h-16 w-full" />
-                </div>
-              ) : (
-                <div className="pb-4">
-                  {groupedRecords[getCurrentDate()] &&
-                  groupedRecords[getCurrentDate()].length > 0 ? (
-                    <div className="divide-y divide-slate-100">
-                      {groupedRecords[getCurrentDate()].map((record) => (
-                        <div
-                          key={record.id}
-                          className="flex items-center p-3 hover:bg-slate-50"
-                        >
-                          <div
-                            className={`h-10 w-10 rounded-full ${record.type === "in" ? "bg-emerald-100" : "bg-rose-100"} flex items-center justify-center mr-3`}
-                          >
-                            {record.type === "in" ? (
-                              <LogIn className="h-5 w-5 text-emerald-600" />
-                            ) : (
-                              <LogOut className="h-5 w-5 text-rose-600" />
-                            )}
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <p className="font-medium text-slate-900 text-sm">
-                                  {record.type === "in" ? "Entrada" : "Saída"}
-                                </p>
-                                <p className="text-xs text-slate-500">
-                                  Registrado com sucesso
-                                </p>
-                              </div>
-                              <div className="text-right">
-                                <p className="text-base font-mono font-semibold">
-                                  {format(
-                                    new Date(record.timestamp),
-                                    "HH:mm:ss",
-                                  )}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center p-8 text-center">
-                      <div className="rounded-full bg-slate-100 p-3 mb-3">
-                        <Calendar className="h-5 w-5 text-slate-400" />
-                      </div>
-                      <h3 className="text-slate-800 font-medium mb-1 text-sm">
-                        Nenhum registro hoje
-                      </h3>
-                      <p className="text-slate-500 text-xs max-w-xs">
-                        Utilize os botões acima para registrar sua entrada e
-                        saída.
-                      </p>
-                    </div>
-                  )}
-                </div>
+            <Button
+              onClick={() => navigate("/camera?type=in")}
+              disabled={currentStatus === "in" || registerRecordMutation.isPending}
+              className={cn(
+                "w-full flex flex-col items-center justify-center py-6 gap-3 transition-all duration-300 shadow-md h-28 rounded-xl",
+                currentStatus === "in" ? 
+                  "bg-gray-300 cursor-not-allowed" : 
+                  "bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700"
               )}
-            </TabsContent>
-
-            <TabsContent value="history" className="pt-3 pb-0 px-0">
-              {recordsLoading ? (
-                <div className="space-y-3 p-3">
-                  <Skeleton className="h-24 w-full" />
-                  <Skeleton className="h-24 w-full" />
+            >
+              <motion.div 
+                animate={currentStatus === "in" ? {} : { y: [0, -5, 0] }}
+                transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+              >
+                <LogIn className={cn("h-7 w-7", currentStatus === "in" ? "text-gray-500" : "")} />
+              </motion.div>
+              <span className={cn("font-semibold text-lg", currentStatus === "in" ? "text-gray-600" : "")}>Entrada</span>
+            </Button>
+            
+            {currentStatus === "in" && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/5 rounded-xl">
+                <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg border border-gray-200">
+                  <p className="text-gray-700 text-sm font-medium flex items-center">
+                    <span className="bg-green-100 p-1 rounded-full mr-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-600"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </span>
+                    Você já está na empresa
+                  </p>
                 </div>
-              ) : (
-                <div className="space-y-px">
-                  {Object.entries(groupedRecords)
-                    .filter(([date]) => date !== getCurrentDate())
-                    .slice(0, 7) // Limit to 7 days for mobile
-                    .map(([date, records]) => (
-                      <div
-                        key={date}
-                        className="border-b border-slate-100 last:border-0"
-                      >
-                        <div className="flex items-center bg-slate-50 px-3 py-1.5">
-                          <Calendar className="h-3 w-3 text-slate-400 mr-1.5" />
-                          <h4 className="text-xs font-medium text-slate-700">
-                            {date}
-                          </h4>
-                          <span className="text-xs text-slate-500 ml-1.5 capitalize">
-                            {format(
-                              parseISO(records[0].timestamp.toString()),
-                              "EEEE",
-                              { locale: ptBR },
-                            )}
-                          </span>
-                        </div>
+              </div>
+            )}
+          </motion.div>
 
-                        <div className="divide-y divide-slate-100">
-                          {records.map((record) => (
-                            <div
+          <motion.div 
+            whileHover={{ scale: currentStatus === "out" ? 1 : 1.03, y: currentStatus === "out" ? 0 : -2 }} 
+            whileTap={{ scale: currentStatus === "out" ? 1 : 0.97 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            className={currentStatus === "out" ? "relative" : ""}
+          >
+            <Button
+              onClick={() => navigate("/camera?type=out")}
+              disabled={currentStatus === "out" || registerRecordMutation.isPending}
+              className={cn(
+                "w-full flex flex-col items-center justify-center py-6 gap-3 transition-all duration-300 shadow-md h-28 rounded-xl",
+                currentStatus === "out" ? 
+                  "bg-gray-300 cursor-not-allowed" : 
+                  "bg-gradient-to-br from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700"
+              )}
+            >
+              <motion.div 
+                animate={currentStatus === "out" ? {} : { y: [0, 5, 0] }}
+                transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+              >
+                <LogOut className={cn("h-7 w-7", currentStatus === "out" ? "text-gray-500" : "")} />
+              </motion.div>
+              <span className={cn("font-semibold text-lg", currentStatus === "out" ? "text-gray-600" : "")}>Saída</span>
+            </Button>
+            
+            {currentStatus === "out" && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/5 rounded-xl">
+                <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg border border-gray-200">
+                  <p className="text-gray-700 text-sm font-medium flex items-center">
+                    <span className="bg-rose-100 p-1 rounded-full mr-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-rose-600"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </span>
+                    Você já está fora da empresa
+                  </p>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        </motion.div>
+
+        {/* Records Section - Enhanced with animations */}
+        <motion.div variants={itemVariants}>
+          <Card className="border-none shadow-lg overflow-hidden bg-white/80 backdrop-blur-sm">
+            <Tabs defaultValue="today" className="w-full">
+              <div className="px-4 pt-4 pb-0">
+                <TabsList className="grid grid-cols-2 w-full">
+                  <TabsTrigger value="today">Hoje</TabsTrigger>
+                  <TabsTrigger value="history">Histórico</TabsTrigger>
+                </TabsList>
+              </div>
+
+              <TabsContent value="today" className="pb-0 px-0 pt-3">
+                {recordsLoading ? (
+                  <div className="space-y-3 p-4">
+                    <Skeleton className="h-16 w-full rounded-xl" />
+                    <Skeleton className="h-16 w-full rounded-xl" />
+                  </div>
+                ) : (
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="pb-4"
+                  >
+                    {groupedRecords[getCurrentDate()] &&
+                    groupedRecords[getCurrentDate()].length > 0 ? (
+                      <div className="divide-y divide-slate-100">
+                        <AnimatePresence>
+                          {groupedRecords[getCurrentDate()].map((record, index) => (
+                            <motion.div
                               key={record.id}
-                              className="flex items-center p-2 pl-8 hover:bg-slate-50"
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, height: 0 }}
+                              transition={{ delay: index * 0.1, duration: 0.3 }}
+                              whileHover={{ backgroundColor: "rgba(241, 245, 249, 0.7)" }}
+                              className="flex items-center p-4 cursor-pointer"
+                              onClick={() => record.justification && setJustificationModal({ open: true, text: record.justification })}
                             >
-                              <div
-                                className={`w-1.5 h-1.5 rounded-full ${record.type === "in" ? "bg-emerald-500" : "bg-rose-500"} mr-2`}
-                              ></div>
-                              <span
-                                className={`text-xs ${record.type === "in" ? "text-emerald-600" : "text-rose-600"} font-medium mr-2 w-14`}
+                              <motion.div
+                                whileHover={{ scale: 1.1, rotate: 5 }}
+                                whileTap={{ scale: 0.9 }}
+                                className={`h-12 w-12 rounded-full ${record.type === "in" ? "bg-emerald-100" : "bg-rose-100"} flex items-center justify-center mr-4 shadow-sm`}
                               >
-                                {record.type === "in" ? "Entrada" : "Saída"}
-                              </span>
-                              <span className="text-xs font-mono">
-                                {format(new Date(record.timestamp), "HH:mm:ss")}
-                              </span>
-                            </div>
+                                {record.type === "in" ? (
+                                  <LogIn className="h-6 w-6 text-emerald-600" />
+                                ) : (
+                                  <LogOut className="h-6 w-6 text-rose-600" />
+                                )}
+                              </motion.div>
+                              <div className="flex-1">
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <p className="font-medium text-slate-900 text-base">
+                                      {record.type === "in" ? "Entrada" : "Saída"}
+                                    </p>
+                                    <p className="text-xs text-slate-500">
+                                      {record.justification ? (
+                                        <span 
+                                          className="flex items-center text-primary cursor-pointer hover:underline"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setJustificationModal({ open: true, text: record.justification || "" });
+                                          }}
+                                        >
+                                          <Activity className="h-3 w-3 mr-1" />
+                                          <span>Com justificativa</span>
+                                        </span>
+                                      ) : (
+                                        "Registrado com sucesso"
+                                      )}
+                                    </p>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="text-xl font-mono font-semibold">
+                                      {format(
+                                        new Date(record.timestamp),
+                                        "HH:mm:ss",
+                                      )}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            </motion.div>
                           ))}
-                        </div>
+                        </AnimatePresence>
                       </div>
-                    ))}
+                    ) : (
+                      <motion.div 
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.2, type: "spring" }}
+                        className="flex flex-col items-center justify-center py-10 px-4 text-center"
+                      >
+                        <motion.div 
+                          className="rounded-full bg-slate-100 p-4 mb-4 shadow-sm"
+                          whileHover={{ scale: 1.1, rotate: 10 }}
+                          whileTap={{ scale: 0.9 }}
+                          animate={{ y: [0, -8, 0] }}
+                          transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+                        >
+                          <Calendar className="h-8 w-8 text-slate-400" />
+                        </motion.div>
+                        <h3 className="text-slate-800 font-semibold mb-2 text-lg">
+                          Nenhum registro hoje
+                        </h3>
+                        <p className="text-slate-500 text-sm max-w-xs">
+                          Utilize os botões acima para registrar sua entrada e
+                          saída no sistema de ponto eletrônico.
+                        </p>
+                      </motion.div>
+                    )}
+                  </motion.div>
+                )}
+              </TabsContent>
 
-                  {Object.keys(groupedRecords).filter(
-                    (date) => date !== getCurrentDate(),
-                  ).length === 0 && (
-                    <div className="flex flex-col items-center justify-center p-8 text-center">
-                      <div className="rounded-full bg-slate-100 p-2.5 mb-3">
-                        <Activity className="h-4 w-4 text-slate-400" />
+              <TabsContent value="history" className="pt-3 pb-4 px-0">
+                {recordsLoading ? (
+                  <div className="space-y-3 p-4">
+                    <Skeleton className="h-32 w-full rounded-xl" />
+                    <Skeleton className="h-32 w-full rounded-xl" />
+                  </div>
+                ) : (
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="space-y-4"
+                  >
+                    {/* Filtro de Data (Opcional para melhorar a navegação) */}
+                    <div className="p-4 border-b border-slate-100">
+                      <p className="text-xs font-medium text-slate-500 mb-2">HISTÓRICO DE REGISTROS</p>
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm text-slate-700 font-medium">
+                          {Object.entries(groupedRecords).length} dias com registros
+                        </div>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="text-xs text-primary flex items-center hover:underline"
+                          onClick={handleRefresh}
+                        >
+                          <RefreshCw className="h-3 w-3 mr-1" />
+                          Atualizar
+                        </motion.button>
                       </div>
-                      <h3 className="text-slate-800 font-medium mb-1 text-sm">
-                        Sem histórico
-                      </h3>
-                      <p className="text-slate-500 text-xs max-w-xs">
-                        Não há registros para os dias anteriores.
-                      </p>
                     </div>
-                  )}
-                </div>
-              )}
-            </TabsContent>
-          </Tabs>
-        </Card>
+                    
+                    {/* Lista de Registros por Data */}
+                    <div className="space-y-4 px-4">
+                      <AnimatePresence>
+                        {Object.entries(groupedRecords)
+                          // Ordena as datas da mais recente para a mais antiga
+                          .sort(([dateA], [dateB]) => {
+                            const partsA = dateA.split('/');
+                            const partsB = dateB.split('/');
+                            const dateObjA = new Date(`${partsA[2]}-${partsA[1]}-${partsA[0]}`);
+                            const dateObjB = new Date(`${partsB[2]}-${partsB[1]}-${partsB[0]}`);
+                            return dateObjB.getTime() - dateObjA.getTime();
+                          })
+                          .slice(0, 7) // Limit to 7 days for mobile
+                          .map(([date, records], dateIndex) => (
+                            <motion.div
+                              key={date}
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: dateIndex * 0.05 }}
+                              className="bg-white rounded-xl overflow-hidden shadow-md border border-slate-100"
+                            >
+                              <motion.div 
+                                className="flex items-center justify-between bg-slate-50 px-4 py-3 border-b border-slate-100"
+                                whileHover={{ backgroundColor: "rgba(248, 250, 252, 0.8)" }}
+                              >
+                                <div className="flex items-center">
+                                  <Calendar className="h-4 w-4 text-primary mr-2" />
+                                  <h4 className="text-sm font-medium text-slate-800">
+                                    {date}
+                                  </h4>
+                                  <span className="text-xs text-slate-500 ml-2 capitalize">
+                                    {format(
+                                      parseISO(records[0].timestamp.toString()),
+                                      "EEEE",
+                                      { locale: ptBR },
+                                    )}
+                                  </span>
+                                </div>
+                                <Badge variant="outline" className="text-xs bg-white shadow-sm">
+                                  {records.length} registros
+                                </Badge>
+                              </motion.div>
+
+                              <div className="divide-y divide-slate-100">
+                                <AnimatePresence>
+                                  {records.map((record, index) => (
+                                    <motion.div
+                                      key={record.id}
+                                      initial={{ opacity: 0, y: 10 }}
+                                      animate={{ opacity: 1, y: 0 }}
+                                      transition={{ delay: 0.1 + (index * 0.03) }}
+                                      whileHover={{ backgroundColor: "rgba(241, 245, 249, 0.5)" }}
+                                      className="p-4 transition-colors"
+                                      onClick={() => record.justification && setJustificationModal({ open: true, text: record.justification })}
+                                    >
+                                      <div className="flex items-center justify-between mb-2">
+                                        <div className="flex items-center">
+                                          <motion.div
+                                            whileHover={{ scale: 1.1, rotate: 5 }}
+                                            whileTap={{ scale: 0.9 }}
+                                            className={`flex items-center justify-center h-9 w-9 rounded-full ${record.type === "in" ? "bg-emerald-100" : "bg-rose-100"} mr-3 shadow-sm`}
+                                          >
+                                            {record.type === "in" ? (
+                                              <LogIn className="h-4 w-4 text-emerald-600" />
+                                            ) : (
+                                              <LogOut className="h-4 w-4 text-rose-600" />
+                                            )}
+                                          </motion.div>
+                                          <div>
+                                            <p className="text-sm font-medium text-slate-800">
+                                              {record.type === "in" ? "Entrada" : "Saída"}
+                                            </p>
+                                            <p className="text-xs text-slate-500">
+                                              IP: {record.ipAddress}
+                                            </p>
+                                          </div>
+                                        </div>
+                                        <div className="text-right">
+                                          <p className="text-lg font-mono font-semibold text-slate-700">
+                                            {format(
+                                              parseISO(record.timestamp.toString()),
+                                              "HH:mm:ss",
+                                            )}
+                                          </p>
+                                          {record.isManual && (
+                                            <Badge variant="outline" className="text-xs bg-amber-50 border-amber-200 text-amber-700 mt-1">
+                                              Registro Manual
+                                            </Badge>
+                                          )}
+                                        </div>
+                                      </div>
+                                      
+                                      {/* Justificativa (se existir) */}
+                                      {record.justification && (
+                                        <motion.div 
+                                          initial={{ opacity: 0, height: 0 }}
+                                          animate={{ opacity: 1, height: "auto" }}
+                                          transition={{ delay: 0.1 }}
+                                          className="mt-2 p-3 bg-slate-50 rounded-lg border border-slate-100 cursor-pointer shadow-sm"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setJustificationModal({ open: true, text: record.justification || "" });
+                                          }}
+                                        >
+                                          <div className="flex items-center mb-1">
+                                            <Activity className="h-3 w-3 text-primary mr-1" />
+                                            <span className="text-xs font-medium text-slate-700">Justificativa:</span>
+                                          </div>
+                                          <p className="text-xs text-slate-600 line-clamp-2">{record.justification}</p>
+                                          {record.justification.length > 100 && (
+                                            <p className="text-xs text-primary mt-1 text-right">Ver mais</p>
+                                          )}
+                                        </motion.div>
+                                      )}
+                                      
+                                      {/* Link para ver no mapa */}
+                                      {record.latitude && record.longitude && (
+                                        <motion.div 
+                                          initial={{ opacity: 0 }}
+                                          animate={{ opacity: 1 }}
+                                          transition={{ delay: 0.2 }}
+                                          className="mt-2 text-xs"
+                                        >
+                                          <a 
+                                            href={`https://www.google.com/maps?q=${record.latitude},${record.longitude}`} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="text-primary hover:underline flex items-center"
+                                          >
+                                            <MapPin className="h-3 w-3 mr-1" />
+                                            Ver localização no mapa
+                                          </a>
+                                        </motion.div>
+                                      )}
+                                    </motion.div>
+                                  ))}
+                                </AnimatePresence>
+                              </div>
+                            </motion.div>
+                          ))}
+                      </AnimatePresence>
+
+                      {Object.entries(groupedRecords).length === 0 && (
+                        <motion.div 
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: 0.3, type: "spring" }}
+                          className="flex flex-col items-center justify-center py-12 px-4 text-center bg-white rounded-xl shadow-md border border-slate-100"
+                        >
+                          <motion.div 
+                            className="rounded-full bg-slate-100 p-4 mb-4"
+                            whileHover={{ scale: 1.1, rotate: 10 }}
+                            whileTap={{ scale: 0.9 }}
+                            animate={{ y: [0, -8, 0] }}
+                            transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+                          >
+                            <Calendar className="h-8 w-8 text-slate-400" />
+                          </motion.div>
+                          <h3 className="text-slate-800 font-semibold mb-2">
+                            Nenhum registro encontrado
+                          </h3>
+                          <p className="text-slate-500 text-sm max-w-xs">
+                            Seus registros anteriores aparecerão aqui quando você começar a usar o sistema.
+                          </p>
+                        </motion.div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </TabsContent>
+            </Tabs>
+          </Card>
+        </motion.div>
       </main>
 
-      {/* Fixed Action Bar for Mobile */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-3 flex items-center justify-center">
-        <div className="text-xs text-slate-500 flex gap-1 items-center">
-          <Clock className="h-3 w-3 text-slate-400" />
-          <span>
-            Ponto Eletrônico • IP:{" "}
-            <span className="font-mono">{ipData?.ip || "..."}</span>
-          </span>
+      {/* Fixed Action Bar for Mobile - Enhanced with animations */}
+      <motion.div 
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.8, type: "spring" }}
+        className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-lg"
+      >
+        <div className="container mx-auto max-w-4xl px-4 py-3 flex items-center justify-between">
+          <div className="text-xs text-slate-500 flex gap-1 items-center">
+            <Clock className="h-3 w-3 text-primary" />
+            <span>
+              Ponto Eletrônico • IP:{" "}
+              <span className="font-mono">{ipData?.ip || "..."}</span>
+            </span>
+          </div>
+          
+          <motion.div 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-xs text-primary"
+              onClick={handleRefresh}
+            >
+              <RefreshCw className="h-3 w-3 mr-1" />
+              Atualizar
+            </Button>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Modals */}
       <ClockInModal
@@ -456,7 +941,7 @@ export default function EmployeeDashboard() {
             ...data,
             type: "in",
             ipAddress: ipData?.ip || "0.0.0.0",
-          });
+          } as any);
           setIsClockInModalOpen(false);
         }}
       />
@@ -469,21 +954,54 @@ export default function EmployeeDashboard() {
             ...data,
             type: "out",
             ipAddress: ipData?.ip || "0.0.0.0",
-          });
+          } as any);
           setIsClockOutModalOpen(false);
         }}
       />
-    </div>
+      
+      {/* Justification Modal - Enhanced */}
+      <Dialog open={justificationModal.open} onOpenChange={(open) => setJustificationModal({ ...justificationModal, open })}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Justificativa</DialogTitle>
+            <DialogDescription>
+              Justificativa fornecida para este registro de ponto.
+            </DialogDescription>
+          </DialogHeader>
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="p-4 bg-slate-50 rounded-lg border border-slate-100 shadow-inner"
+          >
+            <p className="text-sm text-slate-700 whitespace-pre-wrap">{justificationModal.text}</p>
+          </motion.div>
+          <DialogFooter>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button 
+                onClick={() => setJustificationModal({ open: false, text: "" })}
+                className="bg-primary hover:bg-primary/90"
+              >
+                Fechar
+              </Button>
+            </motion.div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </motion.div>
   );
 }
 
 // Helper function to group records by date
-function groupRecordsByDate(records) {
+function groupRecordsByDate(records: TimeRecord[]): Record<string, TimeRecord[]> {
   if (!records || !Array.isArray(records)) return {};
 
-  const grouped = {};
+  const grouped: Record<string, TimeRecord[]> = {};
 
-  records.forEach((record) => {
+  records.forEach((record: TimeRecord) => {
     const date = format(new Date(record.timestamp), "dd/MM/yyyy");
 
     if (!grouped[date]) {
@@ -494,12 +1012,18 @@ function groupRecordsByDate(records) {
   });
 
   // Sort records within each date
-  Object.keys(grouped).forEach((date) => {
+  Object.keys(grouped).forEach((date: string) => {
     grouped[date].sort(
-      (a, b) =>
+      (a: TimeRecord, b: TimeRecord) =>
         new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
     );
   });
 
   return grouped;
+}
+
+// Verifica se uma data é hoje (formato dd/MM/yyyy)
+function isToday(dateStr: string): boolean {
+  const today = getCurrentDate();
+  return dateStr === today;
 }

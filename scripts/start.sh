@@ -1,17 +1,60 @@
 #!/bin/sh
 
-# Espera o banco de dados ficar pronto
-echo "Aguardando o banco de dados ficar pronto..."
-until nc -z db 5432; do
-  sleep 2
+# Configuração para capturar sinais e encerrar adequadamente
+trap 'echo "Recebeu sinal de interrupção. Encerrando..."; exit 0' INT TERM
+
+# Configuração para exibição de registros coloridos
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
+# Função para registrar com timestamp
+log() {
+  echo "$(date +'%Y-%m-%d %H:%M:%S') - $1"
+}
+
+# Verifica se o banco de dados está acessível
+log "${YELLOW}Verificando conexão com o banco de dados...${NC}"
+
+DB_HOST="db"
+DB_PORT="5432"
+MAX_RETRIES=30
+RETRY_INTERVAL=2
+
+COUNTER=0
+while ! nc -z "$DB_HOST" "$DB_PORT"; do
+  if [ $COUNTER -eq $MAX_RETRIES ]; then
+    log "${RED}Erro: Não foi possível conectar ao banco de dados após $MAX_RETRIES tentativas.${NC}"
+    exit 1
+  fi
+  
+  COUNTER=$((COUNTER+1))
+  log "${YELLOW}Aguardando conexão com o banco de dados... ($COUNTER/$MAX_RETRIES)${NC}"
+  sleep $RETRY_INTERVAL
 done
-echo "Banco de dados está pronto!"
 
-# Instala dependências de dev
-npm install --include=dev
+log "${GREEN}Conexão com o banco de dados estabelecida com sucesso!${NC}"
 
-# Roda migrações
-npm run db:push
+# Instala dependências de desenvolvimento
+log "${CYAN}Instalando dependências de desenvolvimento...${NC}"
+if npm install --include=dev; then
+  log "${GREEN}Dependências instaladas com sucesso!${NC}"
+else
+  log "${RED}Erro ao instalar dependências.${NC}"
+  exit 1
+fi
 
-# Inicia a aplicação
-npm run dev
+# Executa migrações do banco de dados
+log "${YELLOW}Executando migrações do banco de dados...${NC}"
+if npm run db:push; then
+  log "${GREEN}Migrações executadas com sucesso!${NC}"
+else
+  log "${RED}Erro ao executar migrações do banco de dados.${NC}"
+  exit 1
+fi
+
+# Inicia o servidor em modo de desenvolvimento
+log "${GREEN}Iniciando aplicação em modo de desenvolvimento...${NC}"
+exec npm run dev

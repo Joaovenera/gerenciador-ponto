@@ -2,14 +2,22 @@ import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, hashPassword } from "./auth";
-import { insertTimeRecordSchema, timeRecordFilterSchema, insertUserSchema } from "@shared/schema";
+import { 
+  insertTimeRecordSchema, 
+  timeRecordFilterSchema, 
+  insertUserSchema,
+  insertSalarySchema,
+  insertFinancialTransactionSchema,
+  financialTransactionFilterSchema
+} from "@shared/schema";
 import { z } from "zod";
 import { format } from "date-fns";
 
 // Check if user has admin access
 function isAdmin(req: Request, res: Response, next: Function) {
   if (!req.isAuthenticated()) return res.sendStatus(401);
-  if (req.user?.accessLevel !== "admin") return res.sendStatus(403);
+  const user = req.user as Express.User;
+  if (user.accessLevel !== "admin") return res.sendStatus(403);
   next();
 }
 
@@ -22,6 +30,16 @@ function isAuthenticated(req: Request, res: Response, next: Function) {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes
   setupAuth(app);
+
+  // Health check endpoint for Docker healthcheck
+  app.get("/api/health", (req, res) => {
+    res.status(200).json({
+      status: "ok",
+      timestamp: new Date().toISOString(),
+      service: "timetracker-api",
+      environment: process.env.NODE_ENV
+    });
+  });
 
   // Get client IP address
   app.get("/api/ip", (req, res) => {
@@ -53,7 +71,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Time Record Routes
   app.post("/api/time-records", isAuthenticated, async (req, res, next) => {
     try {
-      const userId = req.user!.id;
+      const userId = (req.user as Express.User).id;
       const timeRecordData = insertTimeRecordSchema.parse({
         ...req.body,
         userId,
@@ -70,7 +88,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get time records for logged in user (last 7 days)
   app.get("/api/time-records/me", isAuthenticated, async (req, res, next) => {
     try {
-      const userId = req.user!.id;
+      const userId = (req.user as Express.User).id;
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
       
@@ -90,7 +108,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get current status (in/out) for logged in user
   app.get("/api/time-records/status", isAuthenticated, async (req, res, next) => {
     try {
-      const userId = req.user!.id;
+      const userId = (req.user as Express.User).id;
       const status = await storage.getUserStatus(userId);
       res.json({ status });
     } catch (err) {
@@ -122,7 +140,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create a new time record manually
   app.post("/api/admin/time-records", isAdmin, async (req, res, next) => {
     try {
-      const adminId = req.user!.id;
+      const adminId = (req.user as Express.User).id;
       
       const timeRecordData = {
         ...req.body,
@@ -248,6 +266,154 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.setHeader("Content-Type", "text/csv");
       res.setHeader("Content-Disposition", "attachment; filename=time-records.csv");
+      res.status(200).send(csvContent);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // SALARY AND FINANCIAL MANAGEMENT ROUTES
+  
+  // Create a new salary record
+  app.post("/api/admin/salaries", isAdmin, async (req, res, next) => {
+    try {
+      const adminId = (req.user as Express.User).id;
+      
+      const salaryData = insertSalarySchema.parse({
+        ...req.body,
+        createdBy: adminId,
+      });
+      
+      const salary = await storage.createSalary(salaryData);
+      res.status(201).json(salary);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // Get current salary for a user
+  app.get("/api/admin/salaries/current/:userId", isAdmin, async (req, res, next) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const salary = await storage.getCurrentSalary(userId);
+      
+      if (!salary) {
+        return res.status(404).json({ message: "Não existe registro de salário para este funcionário" });
+      }
+      
+      res.json(salary);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // Get salary history for a user
+  app.get("/api/admin/salaries/history/:userId", isAdmin, async (req, res, next) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const salaries = await storage.getSalaryHistory(userId);
+      res.json(salaries);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // Update a salary record
+  app.put("/api/admin/salaries/:id", isAdmin, async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      const salary = await storage.updateSalary(id, req.body);
+      res.json(salary);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // Delete a salary record
+  app.delete("/api/admin/salaries/:id", isAdmin, async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteSalary(id);
+      res.sendStatus(204);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // Create a new financial transaction
+  app.post("/api/admin/transactions", isAdmin, async (req, res, next) => {
+    try {
+      const adminId = (req.user as Express.User).id;
+      
+      const transactionData = insertFinancialTransactionSchema.parse({
+        ...req.body,
+        createdBy: adminId,
+      });
+      
+      const transaction = await storage.createFinancialTransaction(transactionData);
+      res.status(201).json(transaction);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // Get financial transactions with filtering
+  app.get("/api/admin/transactions", isAdmin, async (req, res, next) => {
+    try {
+      const { startDate, endDate, userId, type } = req.query;
+      
+      const filter = financialTransactionFilterSchema.parse({
+        startDate: startDate as string | undefined,
+        endDate: endDate as string | undefined,
+        userId: userId ? parseInt(userId as string) : undefined,
+        type: type as string | undefined,
+      });
+      
+      const transactions = await storage.getFinancialTransactions(filter);
+      res.json(transactions);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // Update a financial transaction
+  app.put("/api/admin/transactions/:id", isAdmin, async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      const transaction = await storage.updateFinancialTransaction(id, req.body);
+      res.json(transaction);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // Delete a financial transaction
+  app.delete("/api/admin/transactions/:id", isAdmin, async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteFinancialTransaction(id);
+      res.sendStatus(204);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // Export financial transactions as CSV
+  app.get("/api/admin/export-transactions", isAdmin, async (req, res, next) => {
+    try {
+      const { startDate, endDate, userId, type } = req.query;
+      
+      const filter = financialTransactionFilterSchema.parse({
+        startDate: startDate as string | undefined,
+        endDate: endDate as string | undefined,
+        userId: userId ? parseInt(userId as string) : undefined,
+        type: type as string | undefined,
+      });
+      
+      const csvContent = await storage.exportFinancialTransactionsCSV(filter);
+      
+      res.setHeader("Content-Type", "text/csv");
+      res.setHeader("Content-Disposition", "attachment; filename=financial-transactions.csv");
       res.status(200).send(csvContent);
     } catch (err) {
       next(err);

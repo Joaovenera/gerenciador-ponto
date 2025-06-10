@@ -1,0 +1,55 @@
+ npm run test:all
+
+> rest-express@1.0.0 test:all
+> NODE_ENV=test jest --config=jest.config.ts && jest --config=jest.client.config.ts
+
+ FAIL  client/src/__tests__/components/not-found.test.tsx
+  ● Test suite failed to run
+
+    Jest encountered an unexpected token
+
+    Jest failed to parse a file. This happens e.g. when your code or its dependencies use non-standard JavaScript syntax, or when Jest is not configured to support such syntax.
+
+    Out of the box Jest supports Babel, which will be used to transform your files into valid JS based on your Babel configuration.
+
+    By default "node_modules" folder is ignored by transformers.
+
+    Here's what you can do:
+     • If you are trying to use ECMAScript Modules, see https://jestjs.io/docs/ecmascript-modules for how to enable it.
+     • If you are trying to use TypeScript, see https://jestjs.io/docs/getting-started#using-typescript
+     • To have some of your "node_modules" files transformed, you can specify a custom "transformIgnorePatterns" in your config.
+     • If you need a custom transformation specify a "transform" option in your config.
+     • If you simply want to mock your non-JS modules (e.g. binary assets) you can stub them out with the "moduleNameMapper" config option.
+
+    You'll find more details and examples of these config options in the docs:
+    https://jestjs.io/docs/configuration
+    For information about custom transformations, see:
+    https://jestjs.io/docs/code-transformation
+
+    Details:
+
+    /home/runner/workspace/client/src/__tests__/components/not-found.test.tsx:23
+            return <a {...props}>{children}</a>;
+                   ^
+
+    SyntaxError: Unexpected token '<'
+
+      at Runtime.createScriptFromCode (node_modules/jest-runtime/build/index.js:1505:14)
+
+ PASS  client/src/__tests__/utils.test.ts (13.629 s)
+ PASS  server/__tests__/auth.test.ts (13.698 s)
+ FAIL  server/__tests__/routes.test.ts (15.533 s)
+
+
+  ● Test suite failed to run
+
+    Server is not running.
+
+
+
+A worker process has failed to exit gracefully and has been force exited. This is likely caused by tests leaking due to improper teardown. Try running with --detectOpenHandles to find leaks. Active timers can also cause this, ensure that .unref() was called on them.
+Test Suites: 2 failed, 2 passed, 4 total
+Tests:       14 passed, 14 total
+Snapshots:   0 total
+Time:        16.473 s, estimated 37 s
+Ran all test suites.

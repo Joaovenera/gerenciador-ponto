@@ -5,14 +5,33 @@ import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
-import { User, LoginCredentials, changePasswordSchema } from "@shared/schema";
+import { LoginCredentials, changePasswordSchema } from "@shared/schema";
 import createMemoryStore from "memorystore";
 
 declare global {
   namespace Express {
-    interface User extends User {}
+    // Definindo o tipo User para o Express que terá as mesmas propriedades do nosso User da aplicação
+    interface User {
+      id: number;
+      fullName: string;
+      cpf: string;
+      profilePicture: string | null;
+      admissionDate: string;
+      role: string;
+      department: string;
+      status: string;
+      email: string;
+      phone: string | null;
+      accessLevel: string;
+      birthDate: string;
+      username: string;
+      password: string;
+      firstLogin: boolean;
+    }
   }
 }
+
+// Import User type (not needed now - using Express.User directly)
 
 const scryptAsync = promisify(scrypt);
 const MemoryStore = createMemoryStore(session);
@@ -66,7 +85,7 @@ export function setupAuth(app: Express) {
     }),
   );
 
-  passport.serializeUser((user, done) => {
+  passport.serializeUser((user: Express.User, done) => {
     done(null, user.id);
   });
 
@@ -80,7 +99,7 @@ export function setupAuth(app: Express) {
   });
 
   app.post("/api/login", passport.authenticate("local"), (req, res) => {
-    const user = req.user as User;
+    const user = req.user as Express.User;
     res.status(200).json(user);
   });
 
@@ -119,7 +138,7 @@ export function setupAuth(app: Express) {
 
   app.get("/api/user", (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    res.json(req.user);
+    res.json(req.user as Express.User);
   });
 
   app.post("/api/change-password", async (req, res, next) => {
@@ -127,7 +146,7 @@ export function setupAuth(app: Express) {
     
     try {
       const { oldPassword, newPassword } = changePasswordSchema.parse(req.body);
-      const user = req.user as User;
+      const user = req.user as Express.User;
       
       // Verify old password
       if (!(await comparePasswords(oldPassword, user.password))) {

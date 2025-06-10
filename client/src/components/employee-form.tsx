@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller, SubmitHandler, DefaultValues } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -34,7 +34,7 @@ const employeeFormSchema = z.object({
   department: z.string().min(1, "Departamento é obrigatório"),
   status: z.string().min(1, "Status é obrigatório"),
   email: z.string().email("Email inválido"),
-  phone: z.string().optional(),
+  phone: z.string().optional().or(z.literal('')),
   accessLevel: z.string().min(1, "Nível de acesso é obrigatório"),
   birthDate: z.string().min(1, "Data de nascimento é obrigatória"),
   username: z.string().min(1, "Nome de usuário é obrigatório"),
@@ -55,11 +55,21 @@ export default function EmployeeForm({
   const [isResetPassword, setIsResetPassword] = useState(false);
 
   // Set up form with default values
-  const form = useForm<EmployeeFormValues>({
+  const form = useForm<EmployeeFormValues, any, EmployeeFormValues>({
     resolver: zodResolver(employeeFormSchema),
     defaultValues: employee
       ? {
-          ...employee,
+          fullName: employee.fullName,
+          cpf: employee.cpf,
+          admissionDate: employee.admissionDate,
+          role: employee.role,
+          department: employee.department,
+          status: employee.status,
+          email: employee.email,
+          phone: employee.phone || "",
+          accessLevel: employee.accessLevel,
+          birthDate: employee.birthDate,
+          username: employee.username,
         }
       : {
           fullName: "",
@@ -84,7 +94,7 @@ export default function EmployeeForm({
 
   // Create employee mutation
   const createEmployeeMutation = useMutation({
-    mutationFn: async (data: EmployeeFormValues) => {
+    mutationFn: async (data: EmployeeFormValues & { password: string }) => {
       const res = await apiRequest("POST", "/api/admin/users", data);
       return res.json();
     },
@@ -135,7 +145,7 @@ export default function EmployeeForm({
   });
 
   // Form submission handler
-  const onSubmit = (data: EmployeeFormValues) => {
+  const onSubmit: SubmitHandler<EmployeeFormValues> = async (data) => {
     if (employee) {
       updateEmployeeMutation.mutate({
         ...data,
@@ -146,10 +156,11 @@ export default function EmployeeForm({
       // A senha inicial será a data de nascimento sem hífens
       // Converte YYYY-MM-DD para DDMMYYYY
       const [year, month, day] = data.birthDate.split("-");
+      // Create a new object with a definite password field
       createEmployeeMutation.mutate({
         ...data,
         password: `${day}${month}${year}`,
-      });
+      } as EmployeeFormValues & { password: string });
     }
   };
 
@@ -269,7 +280,11 @@ export default function EmployeeForm({
               <FormItem>
                 <FormLabel>Telefone</FormLabel>
                 <FormControl>
-                  <Input placeholder="(00) 00000-0000" {...field} />
+                  <Input 
+                    placeholder="(00) 00000-0000" 
+                    {...field} 
+                    value={field.value || ""} 
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

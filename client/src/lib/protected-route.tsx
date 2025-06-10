@@ -1,12 +1,13 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
 import { Redirect, Route } from "wouter";
+import { ComponentType, LazyExoticComponent } from 'react';
 
 type AccessLevel = "employee" | "admin";
 
 interface ProtectedRouteProps {
   path: string;
-  component: () => React.JSX.Element;
+  component: (() => React.JSX.Element) | LazyExoticComponent<ComponentType<any>>;
   accessLevel?: AccessLevel;
 }
 

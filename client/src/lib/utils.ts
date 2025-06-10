@@ -19,7 +19,7 @@ export function formatDate(dateString: string | Date, formatStr: string = "dd/MM
 export function formatTime(dateString: string | Date): string {
   try {
     const date = typeof dateString === "string" ? parseISO(dateString) : dateString;
-    return format(date, "HH:mm:ss", { locale: ptBR });
+    return format(date, "HH:mm", { locale: ptBR });
   } catch (error) {
     return "Horário inválido";
   }
@@ -74,7 +74,8 @@ export function getCurrentDateWithWeekday(): string {
 
 export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength) + "...";
+  // Ensure we have space for the ellipsis and format according to test expectation
+  return text.slice(0, maxLength - 3) + "...";
 }
 
 export function getStatusColor(status: "active" | "inactive" | string): string {
